@@ -1,0 +1,111 @@
+package app.mblackman.orderfulfillment.ui.login
+
+import android.app.Application
+import android.content.Context
+import android.content.SharedPreferences
+import android.text.TextUtils
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import app.mblackman.orderfulfillment.BuildConfig
+import app.mblackman.orderfulfillment.R
+import app.mblackman.orderfulfillment.network.SessionManager
+import com.github.scribejava.apis.EtsyApi
+import com.github.scribejava.core.builder.ServiceBuilder
+import com.github.scribejava.core.model.OAuth1RequestToken
+import kotlinx.coroutines.*
+
+class LoginViewModel(
+    private val sessionManager: SessionManager,
+    private val application: Application
+) : ViewModel() {
+
+    enum class LoginStatus { GETTING_AUTH_URL, AWAITING_OAUTH_VERIFIER, ERROR, DONE }
+
+    private var prefs: SharedPreferences = application.getSharedPreferences(
+        application.getString(R.string.app_name),
+        Context.MODE_PRIVATE
+    )
+
+    private var viewModelJob = Job()
+    private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
+
+    private val apiService = ServiceBuilder(BuildConfig.ETSY_CONSUMER_KEY)
+        .apiSecret(BuildConfig.ETSY_CONSUMER_SECRET)
+        .callback(application.getString(R.string.etsy_login_callback_uri))
+        .build(EtsyApi.instance("transactions_r"))
+
+    private val _authorizationUrl = MutableLiveData<String>()
+    val authorizationUrl: LiveData<String>
+        get() = _authorizationUrl
+
+    private val _loginStatus = MutableLiveData<LoginStatus>(LoginStatus.GETTING_AUTH_URL)
+    val loginStatus: LiveData<LoginStatus>
+        get() = _loginStatus
+
+    companion object {
+        private const val TEMP_TOKEN_SECRET_PREF_NAME = "etsy_temp_token_secret"
+        private const val TEMP_TOKEN_PREF_NAME = "etsy_temp_token"
+        private const val TEMP_RAW_PREF_NAME = "etsy_temp_raw"
+
+    }
+
+    fun setAccessToken(oauthToken: String, oauthVerifier: String) {
+        uiScope.launch {
+            getAccessToken(oauthToken, oauthVerifier)
+        }
+    }
+
+    private suspend fun getAccessToken(oauthToken: String, oauthVerifier: String) {
+        withContext(Dispatchers.IO) {
+            val token = prefs.getString(TEMP_TOKEN_PREF_NAME, "")
+            val secret = prefs.getString(TEMP_TOKEN_SECRET_PREF_NAME, "")
+            val raw = prefs.getString(TEMP_RAW_PREF_NAME, "")
+            val requestToken = OAuth1RequestToken(token, secret, raw)
+            val accessToken = apiService.getAccessToken(requestToken, oauthVerifier)
+            if (accessToken.isEmpty) {
+                // No access token retrieved.
+                _loginStatus.value = LoginStatus.GETTING_AUTH_URL
+
+                uiScope.launch {
+                    getAuthorizationPage()
+                }
+            } else {
+                // Retrieved access token
+                sessionManager.saveAuthToken(accessToken.token)
+                _loginStatus.value = LoginStatus.DONE
+            }
+        }
+    }
+
+    fun getAuthorization() {
+        val existingAccessKey = sessionManager.fetchAuthToken()
+
+        if (TextUtils.isEmpty(existingAccessKey)) {
+            // Haven't retrieved an access token yet.
+            uiScope.launch {
+                getAuthorizationPage()
+            }
+        } else {
+            _loginStatus.value = LoginStatus.DONE
+        }
+    }
+
+    private suspend fun getAuthorizationPage() {
+        withContext(Dispatchers.IO) {
+            try {
+                val authUrl = apiService.getAuthorizationUrl(apiService.requestToken)
+                prefs.edit()
+                    .putString(TEMP_TOKEN_SECRET_PREF_NAME, apiService.requestToken.tokenSecret)
+                    .putString(TEMP_TOKEN_PREF_NAME, apiService.requestToken.token)
+                    .putString(TEMP_RAW_PREF_NAME, apiService.requestToken.rawResponse)
+                    .apply()
+                _authorizationUrl.postValue(authUrl)
+                _loginStatus.postValue(LoginStatus.AWAITING_OAUTH_VERIFIER)
+            } catch (e: Exception) {
+                _loginStatus.postValue(LoginStatus.ERROR)
+                throw e
+            }
+        }
+    }
+}
