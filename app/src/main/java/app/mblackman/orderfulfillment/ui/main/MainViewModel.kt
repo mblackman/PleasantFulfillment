@@ -1,5 +1,6 @@
 package app.mblackman.orderfulfillment.ui.main
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import app.mblackman.orderfulfillment.network.EtsyApiService
 import kotlinx.coroutines.CoroutineScope
@@ -24,7 +25,12 @@ class MainViewModel(private val apiService: EtsyApiService) : ViewModel() {
 
     private fun getUnshippedReceipts() {
         coroutineScope.launch {
-            val receipts = apiService.getUnshippedReceiptsAsync(SHOP_ID).await()
+
+            try {
+                apiService.getUnshippedReceiptsAsync(SHOP_ID).await()
+            } catch (e: Exception) {
+                Log.e(MainViewModel::class.java.name, e.toString())
+            }
         }
     }
 }

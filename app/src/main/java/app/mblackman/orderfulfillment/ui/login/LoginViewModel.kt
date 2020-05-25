@@ -70,25 +70,21 @@ class LoginViewModel(
     /**
      * Gets the access token from the api using the given OAuth validation.
      *
-     * @param oauthToken The OAuth token string.
      * @param oauthVerifier The OAuth verification string.
      */
-    fun setAccessToken(oauthToken: String, oauthVerifier: String) {
+    fun setAccessToken(oauthVerifier: String) {
         uiScope.launch {
-            getAccessToken(oauthToken, oauthVerifier)
+            getAccessToken(oauthVerifier)
         }
     }
 
-    private suspend fun getAccessToken(oauthToken: String, oauthVerifier: String) {
+    private suspend fun getAccessToken(oauthVerifier: String) {
         withContext(Dispatchers.IO) {
-            val token = prefs.getString(TEMP_TOKEN_PREF_NAME, "")
-            val secret = prefs.getString(TEMP_TOKEN_SECRET_PREF_NAME, "")
-            val raw = prefs.getString(TEMP_RAW_PREF_NAME, "")
-            val requestToken = OAuth1RequestToken(token, secret, raw)
+            val requestToken = getSavedOAuthToken()
             val accessToken = apiService.getAccessToken(requestToken, oauthVerifier)
             if (accessToken.isEmpty) {
                 // No access token retrieved.
-                _loginStatus.value = LoginStatus.GETTING_AUTH_URL
+                _loginStatus.postValue(LoginStatus.GETTING_AUTH_URL)
 
                 uiScope.launch {
                     getAuthorizationPage()
@@ -96,7 +92,7 @@ class LoginViewModel(
             } else {
                 // Retrieved access token
                 sessionManager.saveAuthToken(accessToken.token)
-                _loginStatus.value = LoginStatus.DONE
+                _loginStatus.postValue(LoginStatus.DONE)
             }
         }
     }
@@ -120,12 +116,9 @@ class LoginViewModel(
     private suspend fun getAuthorizationPage() {
         withContext(Dispatchers.IO) {
             try {
-                val authUrl = apiService.getAuthorizationUrl(apiService.requestToken)
-                prefs.edit()
-                    .putString(TEMP_TOKEN_SECRET_PREF_NAME, apiService.requestToken.tokenSecret)
-                    .putString(TEMP_TOKEN_PREF_NAME, apiService.requestToken.token)
-                    .putString(TEMP_RAW_PREF_NAME, apiService.requestToken.rawResponse)
-                    .apply()
+                val requestToken = apiService.requestToken
+                val authUrl = apiService.getAuthorizationUrl(requestToken)
+                setSavedOAuthToken(requestToken)
                 _authorizationUrl.postValue(authUrl)
                 _loginStatus.postValue(LoginStatus.AWAITING_OAUTH_VERIFIER)
             } catch (e: Exception) {
@@ -133,5 +126,27 @@ class LoginViewModel(
                 throw e
             }
         }
+    }
+
+    private fun setSavedOAuthToken(requestToken: OAuth1RequestToken) {
+        prefs.edit()
+            .putString(TEMP_TOKEN_SECRET_PREF_NAME, requestToken.tokenSecret)
+            .putString(TEMP_TOKEN_PREF_NAME, requestToken.token)
+            .putString(TEMP_RAW_PREF_NAME, requestToken.rawResponse)
+            .apply()
+    }
+
+    private fun getSavedOAuthToken(): OAuth1RequestToken {
+        val token = prefs.getString(TEMP_TOKEN_PREF_NAME, "")
+        val secret = prefs.getString(TEMP_TOKEN_SECRET_PREF_NAME, "")
+        val raw = prefs.getString(TEMP_RAW_PREF_NAME, "")
+        val requestToken = OAuth1RequestToken(token, secret, raw)
+        prefs.edit()
+            .remove(TEMP_TOKEN_PREF_NAME)
+            .remove(TEMP_TOKEN_SECRET_PREF_NAME)
+            .remove(TEMP_RAW_PREF_NAME)
+            .apply()
+
+        return requestToken
     }
 }

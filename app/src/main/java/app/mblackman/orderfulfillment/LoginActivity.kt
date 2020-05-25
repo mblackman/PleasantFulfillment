@@ -50,10 +50,9 @@ class LoginActivity : AppCompatActivity() {
     // Tries to parse expected uris. Will handle callbacks.
     private fun handleUriIntent(uri: Uri) {
         if (uri.toString().startsWith(getString(R.string.etsy_login_callback_uri))) {
-            val token = uri.getQueryParameter("oauth_token")
             val verifier = uri.getQueryParameter("oauth_verifier")
-            if (!TextUtils.isEmpty(token) && !TextUtils.isEmpty(verifier)) {
-                loginViewModel.setAccessToken(token!!, verifier!!)
+            if (!TextUtils.isEmpty(verifier)) {
+                loginViewModel.setAccessToken(verifier!!)
             }
         }
     }
