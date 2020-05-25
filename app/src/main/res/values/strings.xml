@@ -1,4 +1,4 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">Order Fulfillment Scanner</string>
+    <string name="app_name">Pleasant Fulfillment</string>
     <string name="etsy_login_callback_uri" tools:ignore="ExtraTranslation">app.mblackman.orderfulfillment://logincallback</string>
 </resources>

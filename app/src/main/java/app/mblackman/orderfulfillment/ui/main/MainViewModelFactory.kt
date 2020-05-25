@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import app.mblackman.orderfulfillment.network.EtsyApiService
 
+/**
+ * Creates a main view model.
+ */
 class MainViewModelFactory(
     private val apiService: EtsyApiService
 ) : ViewModelProvider.Factory {

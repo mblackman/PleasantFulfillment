@@ -12,6 +12,9 @@ import app.mblackman.orderfulfillment.network.SessionManager
 import app.mblackman.orderfulfillment.ui.login.LoginViewModel
 import app.mblackman.orderfulfillment.ui.login.LoginViewModelFactory
 
+/**
+ * Handles retrieving and maintaining login credentials for online endpoint.
+ */
 class LoginActivity : AppCompatActivity() {
 
     private val loginViewModel: LoginViewModel by lazy {
@@ -24,6 +27,7 @@ class LoginActivity : AppCompatActivity() {
 
         val uri = intent?.data
         if (uri != null) {
+            // If a uri is passed to the activity, try to handle any callbacks.
             handleUriIntent(uri)
         }
 
@@ -43,6 +47,7 @@ class LoginActivity : AppCompatActivity() {
         loginViewModel.getAuthorization()
     }
 
+    // Tries to parse expected uris. Will handle callbacks.
     private fun handleUriIntent(uri: Uri) {
         if (uri.toString().startsWith(getString(R.string.etsy_login_callback_uri))) {
             val token = uri.getQueryParameter("oauth_token")

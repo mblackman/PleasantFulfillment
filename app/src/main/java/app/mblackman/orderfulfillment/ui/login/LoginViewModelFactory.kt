@@ -5,6 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import app.mblackman.orderfulfillment.network.SessionManager
 
+/**
+ * Creates a new login view model.
+ */
 class LoginViewModelFactory(
     private val sessionManager: SessionManager,
     private val application: Application

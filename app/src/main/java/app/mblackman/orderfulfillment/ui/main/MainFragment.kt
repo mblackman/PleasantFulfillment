@@ -18,10 +18,8 @@ class MainFragment : Fragment() {
     private val viewModel: MainViewModel by lazy {
         val application = requireNotNull(this.activity).application
         val sessionManager = SessionManager(application)
-        val apiService = EtsyServiceGenerator(
-            application,
-            sessionManager
-        ).createService(EtsyApiService::class.java)
+        val apiService = EtsyServiceGenerator(sessionManager)
+            .createService(EtsyApiService::class.java)
         val viewModelFactory = MainViewModelFactory(apiService)
         ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
     }

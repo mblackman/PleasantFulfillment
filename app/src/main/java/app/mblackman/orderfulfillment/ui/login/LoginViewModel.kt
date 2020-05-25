@@ -15,11 +15,20 @@ import com.github.scribejava.core.builder.ServiceBuilder
 import com.github.scribejava.core.model.OAuth1RequestToken
 import kotlinx.coroutines.*
 
+/**
+ * Handles authenticating and storing credentials to web endpoints.
+ *
+ * @param sessionManager The session manager to manage credentials with.
+ * @param application The application context.
+ */
 class LoginViewModel(
     private val sessionManager: SessionManager,
     private val application: Application
 ) : ViewModel() {
 
+    /**
+     * The status of the login process.
+     */
     enum class LoginStatus { GETTING_AUTH_URL, AWAITING_OAUTH_VERIFIER, ERROR, DONE }
 
     private var prefs: SharedPreferences = application.getSharedPreferences(
@@ -36,10 +45,18 @@ class LoginViewModel(
         .build(EtsyApi.instance("transactions_r"))
 
     private val _authorizationUrl = MutableLiveData<String>()
+
+    /**
+     * Gets the authorization url to load.
+     */
     val authorizationUrl: LiveData<String>
         get() = _authorizationUrl
 
     private val _loginStatus = MutableLiveData<LoginStatus>(LoginStatus.GETTING_AUTH_URL)
+
+    /**
+     * Gets the login status.
+     */
     val loginStatus: LiveData<LoginStatus>
         get() = _loginStatus
 
@@ -50,6 +67,12 @@ class LoginViewModel(
 
     }
 
+    /**
+     * Gets the access token from the api using the given OAuth validation.
+     *
+     * @param oauthToken The OAuth token string.
+     * @param oauthVerifier The OAuth verification string.
+     */
     fun setAccessToken(oauthToken: String, oauthVerifier: String) {
         uiScope.launch {
             getAccessToken(oauthToken, oauthVerifier)
@@ -78,6 +101,9 @@ class LoginViewModel(
         }
     }
 
+    /**
+     * Tries to get the store authorization, else loads the login web page.
+     */
     fun getAuthorization() {
         val existingAccessKey = sessionManager.fetchAuthToken()
 
