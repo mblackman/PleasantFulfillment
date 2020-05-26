@@ -91,7 +91,7 @@ class LoginViewModel(
                 }
             } else {
                 // Retrieved access token
-                sessionManager.saveAuthToken(accessToken.token)
+                sessionManager.saveAuthToken(accessToken.token, accessToken.tokenSecret)
                 _loginStatus.postValue(LoginStatus.DONE)
             }
         }

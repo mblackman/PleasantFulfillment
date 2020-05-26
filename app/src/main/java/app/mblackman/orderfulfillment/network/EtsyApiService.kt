@@ -18,4 +18,7 @@ interface EtsyApiService {
     @GET("shops/{shopId}/receipts")
     fun getUnshippedReceiptsAsync(@Path("shopId") shopId: Int):
             Deferred<List<Receipt>>
+
+    @GET("users/__SELF__")
+    fun getUserSelf(): Deferred<User>
 }

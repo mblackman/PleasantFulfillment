@@ -13,20 +13,23 @@ private const val BASE_URL = "https://openapi.etsy.com/v2/"
 /**
  * Generates services to access the Etsy api.
  */
-class EtsyServiceGenerator(private val sessionManager: SessionManager) {
+class EtsyServiceGenerator(sessionManager: SessionManager) {
 
     private val moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
         .build()
 
-    private val httpClient = OkHttpClient.Builder()
+    private val httpClient = OkHttpClient
+        .Builder()
+        .addInterceptor(EtsyApiInterceptor(sessionManager, BuildConfig.ETSY_CONSUMER_KEY))
+        .build()
 
-    private val retrofitBuilder = Retrofit.Builder()
+    private val retrofit = Retrofit.Builder()
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .addCallAdapterFactory(CoroutineCallAdapterFactory())
+        .client(httpClient)
         .baseUrl(BASE_URL)
-
-    private var retrofit = retrofitBuilder.build()
+        .build()
 
     /**
      * Create a service.
@@ -35,12 +38,6 @@ class EtsyServiceGenerator(private val sessionManager: SessionManager) {
      * @return The new service.
      */
     fun <S> createService(serviceClass: Class<S>): S {
-        val interceptor = AuthenticationInterceptor(sessionManager, BuildConfig.ETSY_CONSUMER_KEY)
-        if (!httpClient.interceptors().contains(interceptor)) {
-            httpClient.addInterceptor(interceptor)
-            retrofitBuilder.client(httpClient.build())
-            retrofit = retrofitBuilder.build()
-        }
         return retrofit.create(serviceClass)
     }
 }

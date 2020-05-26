@@ -21,16 +21,18 @@ class SessionManager(context: Context) {
 
     companion object {
         const val USER_TOKEN = "user_token"
+        const val USER_TOKEN_SECRET = "user_token_secret"
         private var authenticationListener: AuthenticationListener? = null
     }
 
     /**
      * Function to save auth token
      */
-    fun saveAuthToken(token: String) {
-        val editor = prefs.edit()
-        editor.putString(USER_TOKEN, token)
-        editor.apply()
+    fun saveAuthToken(token: String, secret: String) {
+        prefs.edit()
+            .putString(USER_TOKEN, token)
+            .putString(USER_TOKEN_SECRET, secret)
+            .apply()
     }
 
     /**
@@ -38,6 +40,13 @@ class SessionManager(context: Context) {
      */
     fun fetchAuthToken(): String? {
         return prefs.getString(USER_TOKEN, null)
+    }
+
+    /**
+     * Function to fetch auth token
+     */
+    fun fetchAuthTokenSecret(): String? {
+        return prefs.getString(USER_TOKEN_SECRET, null)
     }
 
     /**
@@ -53,7 +62,6 @@ class SessionManager(context: Context) {
      * Call whenever authentication has failed for the stored credentials.
      */
     fun onAuthenticationFailed() {
-        prefs.edit().remove(USER_TOKEN).apply()
         authenticationListener?.onAuthenticationFailed()
     }
 }

@@ -27,7 +27,8 @@ class MainViewModel(private val apiService: EtsyApiService) : ViewModel() {
         coroutineScope.launch {
 
             try {
-                apiService.getUnshippedReceiptsAsync(SHOP_ID).await()
+                val user = apiService.getUserSelf().await()
+                apiService.getUnshippedReceiptsAsync(user.id).await()
             } catch (e: Exception) {
                 Log.e(MainViewModel::class.java.name, e.toString())
             }

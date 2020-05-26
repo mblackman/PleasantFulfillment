@@ -103,6 +103,12 @@ dependencies {
     // Volley
     implementation "com.android.volley:volley:$version_volley"
 
+    // Scribejava
     implementation "com.github.scribejava:scribejava-core:$version_scribe_java"
     implementation "com.github.scribejava:scribejava-apis:$version_scribe_java"
+
+    // okhttp-signpost
+    implementation "se.akerfeldt:okhttp-signpost:$version_okhttp_signpost"
+    implementation "com.squareup.okhttp3:okhttp:$version_okhttp3"
+    implementation "oauth.signpost:signpost-core:$version_signpost"
 }
