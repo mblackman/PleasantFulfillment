@@ -2,6 +2,7 @@ package app.mblackman.orderfulfillment.ui.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import app.mblackman.orderfulfillment.data.repository.OrderRepository
 
 /**
  * Creates a main view model.
