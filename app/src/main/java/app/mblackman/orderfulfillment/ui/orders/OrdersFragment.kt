@@ -1,4 +1,4 @@
-package app.mblackman.orderfulfillment.ui.main
+package app.mblackman.orderfulfillment.ui.orders
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,12 +10,12 @@ import androidx.lifecycle.ViewModelProvider
 import app.mblackman.orderfulfillment.R
 import app.mblackman.orderfulfillment.databinding.MainFragmentBinding
 
-class MainFragment : Fragment() {
+class OrdersFragment : Fragment() {
 
-    private val viewModel: MainViewModel by lazy {
+    private val viewModel: OrdersViewModel by lazy {
         val application = requireNotNull(this.activity).application
-        val viewModelFactory = MainViewModelFactory(application)
-        ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
+        val viewModelFactory = OrdersViewModelFactory(application)
+        ViewModelProvider(this, viewModelFactory).get(OrdersViewModel::class.java)
     }
 
     override fun onCreateView(

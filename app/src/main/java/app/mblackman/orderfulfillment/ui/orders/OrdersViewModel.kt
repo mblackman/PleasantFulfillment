@@ -1,4 +1,4 @@
-package app.mblackman.orderfulfillment.ui.main
+package app.mblackman.orderfulfillment.ui.orders
 
 import android.app.Application
 import androidx.lifecycle.LiveData
@@ -15,9 +15,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 
 /**
- * The main application logic to control user experience.
+ * The orders application logic to control user experience.
  */
-class MainViewModel(private val application: Application) : ViewModel() {
+class OrdersViewModel(private val application: Application) : ViewModel() {
 
     private var viewModelJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
