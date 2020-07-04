@@ -27,8 +27,11 @@ class MainActivity : AppCompatActivity() {
         // Register the authentication listener with the session.
         val sessionManager = SessionManager(application)
         sessionManager.setAuthenticationListener(authenticationListener)
-        sessionManager.clearAuthToken()
         setContentView(R.layout.main_activity)
+
+        if (!sessionManager.isSessionValid) {
+            startLoginActivity()
+        }
     }
 
     // Starts the login activity.

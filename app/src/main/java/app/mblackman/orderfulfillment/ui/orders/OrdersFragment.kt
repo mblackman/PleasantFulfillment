@@ -18,21 +18,15 @@ import app.mblackman.orderfulfillment.data.repository.OrderRepository
 import app.mblackman.orderfulfillment.data.repository.OrderRepositoryImpl
 import app.mblackman.orderfulfillment.data.repository.ReceiptToOrderMapper
 import app.mblackman.orderfulfillment.databinding.OrderDetailsFragmentBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 
 class OrdersFragment : Fragment() {
-
-    private var viewModelJob = Job()
-    private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
     private val orderRepository: OrderRepository by lazy {
         val application = requireNotNull(this.activity).application
         val sessionManager = SessionManager(application)
-        val apiService = EtsyServiceGenerator(sessionManager)
-            .createService(EtsyApiService::class.java)
-        OrderRepositoryImpl(apiService, getDatabase(application), ReceiptToOrderMapper(), uiScope)
+        val etsyApiService =
+            EtsyServiceGenerator(sessionManager).createService(EtsyApiService::class.java)
+        OrderRepositoryImpl(etsyApiService, getDatabase(application), ReceiptToOrderMapper())
     }
 
     private val viewModel: OrdersViewModel by lazy {

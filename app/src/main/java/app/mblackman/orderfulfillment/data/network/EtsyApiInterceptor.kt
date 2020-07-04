@@ -15,8 +15,7 @@ import java.io.IOException
  * @param apiKey The api key for the etsy api.
  */
 class EtsyApiInterceptor(
-    private val sessionManager: SessionManager,
-    private val apiKey: String
+    private val sessionManager: SessionManager
 ) : Interceptor {
 
     @Throws(IOException::class)
@@ -35,16 +34,9 @@ class EtsyApiInterceptor(
                 OkHttpOAuthConsumer(BuildConfig.ETSY_CONSUMER_KEY, BuildConfig.ETSY_CONSUMER_SECRET)
             consumer.setTokenWithSecret(authToken, authTokenSecret)
             request = consumer.sign(requestBuilder.build()).unwrap() as Request
-
         } else {
-            // Add the API key if no authentication is set.
-            val originalHttpUrl = original.url()
-            val url = originalHttpUrl.newBuilder()
-                .addQueryParameter("api_key", apiKey)
-                .build()
-
-            requestBuilder.url(url)
-            request = requestBuilder.build()
+            sessionManager.onAuthenticationFailed()
+            return chain.proceed(original)
         }
 
         val response = chain.proceed(request)

@@ -1,5 +1,6 @@
 package app.mblackman.orderfulfillment.data.network
 
+import kotlinx.coroutines.Deferred
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -20,10 +21,10 @@ interface EtsyApiService {
      * @return A list of all receipts.
      */
     @GET("shops/{shopId}/receipts/{status}")
-    suspend fun getReceiptsAsync(
+    fun getReceiptsAsync(
         @Path("shopId") shopId: Int,
         @Path("status") status: ShipmentStatus = ShipmentStatus.ALL
-    ): Response<EtsyResponseWrapper<Receipt>>
+    ): Deferred<Response<EtsyResponseWrapper<Receipt>>>
 
     /**
      * Gets the user for the authenticated user.
@@ -31,5 +32,5 @@ interface EtsyApiService {
      * @return The user.
      */
     @GET("users/__SELF__")
-    suspend fun getUserSelfAsync(): Response<EtsyResponseWrapper<User>>
+    fun getUserSelfAsync(): Deferred<Response<EtsyResponseWrapper<User>>>
 }

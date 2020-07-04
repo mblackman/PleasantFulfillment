@@ -5,9 +5,6 @@ import app.mblackman.orderfulfillment.data.database.OrderDetails
 import app.mblackman.orderfulfillment.data.database.StoreDatabase
 import app.mblackman.orderfulfillment.data.network.EtsyApiService
 import app.mblackman.orderfulfillment.data.network.Receipt
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import timber.log.Timber
 
 /**
  * Implementation of OrderRepository that fetches order details from the web
@@ -16,34 +13,31 @@ import timber.log.Timber
 class OrderRepositoryImpl(
     private val etsyApiService: EtsyApiService,
     private val storeDatabase: StoreDatabase,
-    private val receiptToOrderMapper: Mapper<Receipt, OrderDetails>,
-    private val scope: CoroutineScope
+    private val receiptToOrderMapper: Mapper<Receipt, OrderDetails>
 ) : OrderRepository() {
 
     /**
      * Gets the live data collection of the order details.
      */
-    override fun getOrderDetails(): LiveData<List<OrderDetails>> {
-        scope.launch {
-            try {
-                val userResponse = etsyApiService.getUserSelfAsync()
+    override suspend fun getOrderDetails(): LiveData<List<OrderDetails>> {
 
-                if (userResponse.isSuccessful && userResponse.body()?.results?.size == 1) {
-                    val user = userResponse.body()!!.results.first()
-                    val receiptResponse = etsyApiService.getReceiptsAsync(
-                        user.id,
-                        EtsyApiService.ShipmentStatus.UNSHIPPED
+        val selfUser = safeApiCall(
+            call = { etsyApiService.getUserSelfAsync().await() },
+            error = "Failed to get self user."
+        )
+
+        if (selfUser?.count == 1) {
+            val receipts = safeApiCall(
+                call = { etsyApiService.getReceiptsAsync(selfUser.results.first().id).await() },
+                error = "Failed to get receipts."
+            )
+
+            receipts?.results?.let {
+                storeDatabase.storeDao.insertAll(it.map { receipt ->
+                    receiptToOrderMapper.map(
+                        receipt
                     )
-
-                    if (receiptResponse.isSuccessful) {
-                        val mappedResults =
-                            receiptResponse.body()!!.results.map { receiptToOrderMapper.map(it) }
-                        storeDatabase.storeDao.insertAll(mappedResults)
-                    }
-                }
-
-            } catch (e: Exception) {
-                Timber.log(1, e)
+                })
             }
         }
 

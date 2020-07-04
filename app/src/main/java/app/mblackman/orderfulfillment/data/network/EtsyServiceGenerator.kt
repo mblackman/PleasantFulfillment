@@ -1,6 +1,5 @@
 package app.mblackman.orderfulfillment.data.network
 
-import app.mblackman.orderfulfillment.BuildConfig
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -21,7 +20,7 @@ class EtsyServiceGenerator(sessionManager: SessionManager) {
 
     private val httpClient = OkHttpClient
         .Builder()
-        .addInterceptor(EtsyApiInterceptor(sessionManager, BuildConfig.ETSY_CONSUMER_KEY))
+        .addInterceptor(EtsyApiInterceptor(sessionManager))
         .build()
 
     private val retrofit = Retrofit.Builder()
