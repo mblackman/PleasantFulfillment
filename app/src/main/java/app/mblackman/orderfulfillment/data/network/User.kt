@@ -1,4 +1,4 @@
-package app.mblackman.orderfulfillment.network
+package app.mblackman.orderfulfillment.data.network
 
 import com.squareup.moshi.Json
 

@@ -1,4 +1,4 @@
-package app.mblackman.orderfulfillment.network
+package app.mblackman.orderfulfillment.data.network
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -32,6 +32,16 @@ class SessionManager(context: Context) {
         prefs.edit()
             .putString(USER_TOKEN, token)
             .putString(USER_TOKEN_SECRET, secret)
+            .apply()
+    }
+
+    /**
+     * Clears the auth token from the session.
+     */
+    fun clearAuthToken() {
+        prefs.edit()
+            .remove(USER_TOKEN)
+            .remove(USER_TOKEN_SECRET)
             .apply()
     }
 

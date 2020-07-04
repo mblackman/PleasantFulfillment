@@ -1,4 +1,4 @@
-package app.mblackman.orderfulfillment.network
+package app.mblackman.orderfulfillment.data.network
 
 import app.mblackman.orderfulfillment.BuildConfig
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory

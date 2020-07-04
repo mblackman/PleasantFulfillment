@@ -1,14 +1,13 @@
 package app.mblackman.orderfulfillment
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
 import androidx.appcompat.app.AppCompatActivity
-import androidx.browser.customtabs.CustomTabsIntent
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import app.mblackman.orderfulfillment.network.SessionManager
+import app.mblackman.orderfulfillment.data.network.SessionManager
 import app.mblackman.orderfulfillment.ui.login.LoginViewModel
 import app.mblackman.orderfulfillment.ui.login.LoginViewModelFactory
 
@@ -35,12 +34,11 @@ class LoginActivity : AppCompatActivity() {
 
         loginViewModel.authorizationUrl.observe(this, Observer {
             it?.let {
-                val builder = CustomTabsIntent.Builder()
-                val customTabsIntent = builder
-                    .setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary))
-                    .build()
-
-                customTabsIntent.launchUrl(this, Uri.parse(it))
+                val parsedUri: Uri = Uri.parse(it)
+                val intent = Intent(Intent.ACTION_VIEW, parsedUri)
+                if (intent.resolveActivity(packageManager) != null) {
+                    startActivity(intent)
+                }
             }
         })
 

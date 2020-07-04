@@ -9,7 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import app.mblackman.orderfulfillment.BuildConfig
 import app.mblackman.orderfulfillment.R
-import app.mblackman.orderfulfillment.network.SessionManager
+import app.mblackman.orderfulfillment.data.network.SessionManager
 import com.github.scribejava.apis.EtsyApi
 import com.github.scribejava.core.builder.ServiceBuilder
 import com.github.scribejava.core.model.OAuth1RequestToken

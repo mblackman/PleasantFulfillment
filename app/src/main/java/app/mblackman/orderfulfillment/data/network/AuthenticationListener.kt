@@ -1,4 +1,4 @@
-package app.mblackman.orderfulfillment.network
+package app.mblackman.orderfulfillment.data.network
 
 /**
  * Interface for callback methods to listen raise.
