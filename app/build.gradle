@@ -110,4 +110,8 @@ dependencies {
     implementation "se.akerfeldt:okhttp-signpost:$version_okhttp_signpost"
     implementation "com.squareup.okhttp3:okhttp:$version_okhttp3"
     implementation "oauth.signpost:signpost-core:$version_signpost"
+
+    // Room database
+    implementation "androidx.room:room-runtime:$version_room"
+    kapt "androidx.room:room-compiler:$version_room"
 }

@@ -9,9 +9,10 @@ import androidx.fragment.app.Fragment
 import app.mblackman.orderfulfillment.R
 import app.mblackman.orderfulfillment.databinding.LoginFragmentBinding
 
-
+/**
+ * The fragment that creates the login view.
+ */
 class LoginFragment : Fragment() {
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

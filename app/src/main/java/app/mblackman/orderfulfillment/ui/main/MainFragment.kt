@@ -8,22 +8,13 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import app.mblackman.orderfulfillment.R
-import app.mblackman.orderfulfillment.data.network.EtsyApiService
-import app.mblackman.orderfulfillment.data.network.EtsyServiceGenerator
-import app.mblackman.orderfulfillment.data.network.SessionManager
-import app.mblackman.orderfulfillment.data.repository.OrderRepositoryImpl
-import app.mblackman.orderfulfillment.data.repository.ReceiptToOrderMapper
 import app.mblackman.orderfulfillment.databinding.MainFragmentBinding
 
 class MainFragment : Fragment() {
 
     private val viewModel: MainViewModel by lazy {
         val application = requireNotNull(this.activity).application
-        val sessionManager = SessionManager(application)
-        val apiService = EtsyServiceGenerator(sessionManager)
-            .createService(EtsyApiService::class.java)
-        val orderRepository = OrderRepositoryImpl(apiService, ReceiptToOrderMapper())
-        val viewModelFactory = MainViewModelFactory(orderRepository)
+        val viewModelFactory = MainViewModelFactory(application)
         ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
     }
 

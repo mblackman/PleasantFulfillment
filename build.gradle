@@ -18,6 +18,7 @@ buildscript {
         version_okhttp_signpost = "1.1.0"
         version_okhttp3 = "3.14.7"
         version_signpost = "1.2.1.2"
+        version_room = "2.0.0"
     }
 
     repositories {
