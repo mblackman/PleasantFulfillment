@@ -9,7 +9,7 @@
         android:id="@+id/mainFragment"
         android:name="app.mblackman.orderfulfillment.ui.orders.OrdersFragment"
         android:label="main_fragment"
-        tools:layout="@layout/main_fragment">
+        tools:layout="@layout/order_details_fragment">
         <action
             android:id="@+id/action_mainFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
