@@ -18,5 +18,5 @@
         android:id="@+id/loginFragment"
         android:name="app.mblackman.orderfulfillment.ui.login.LoginFragment"
         android:label="login_fragment"
-        tools:layout="@layout/login_fragment"></fragment>
+        tools:layout="@layout/login_fragment" />
 </navigation>

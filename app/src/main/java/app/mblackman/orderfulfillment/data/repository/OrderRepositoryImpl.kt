@@ -45,21 +45,6 @@ class OrderRepositoryImpl(
             }
         }
 
-        val details = storeDatabase.storeDao.getOrderDetails()
-
-        if (details.value == null || details.value!!.isEmpty()) {
-            val testValues = listOf(
-                OrderDetails("1"),
-                OrderDetails("2"),
-                OrderDetails("3"),
-                OrderDetails("4"),
-                OrderDetails("5")
-            )
-            withContext(Dispatchers.IO) {
-                storeDatabase.storeDao.insertAll(testValues)
-            }
-        }
-
-        return details
+        return storeDatabase.storeDao.getOrderDetails()
     }
 }

@@ -14,8 +14,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-private val ITEM_VIEW_TYPE_HEADER = 0
-private val ITEM_VIEW_TYPE_ITEM = 1
+private const val ITEM_VIEW_TYPE_HEADER = 0
+private const val ITEM_VIEW_TYPE_ITEM = 1
 
 class OrderDetailAdapter :
     ListAdapter<DataItem, RecyclerView.ViewHolder>(OrderDetailsDiffCallback()) {
@@ -58,7 +58,7 @@ class OrderDetailAdapter :
         }
     }
 
-    class ViewHolder private constructor(val binding: ListItemOrderDetailsBinding) :
+    class ViewHolder private constructor(private val binding: ListItemOrderDetailsBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: OrderDetails) {
@@ -103,8 +103,8 @@ sealed class DataItem {
     }
 
     object Header : DataItem() {
-        override val id = String()
+        override val id = Int.MIN_VALUE
     }
 
-    abstract val id: String
+    abstract val id: Int
 }
