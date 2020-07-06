@@ -6,7 +6,7 @@ import app.mblackman.orderfulfillment.data.database.OrderDetails
 import app.mblackman.orderfulfillment.data.database.StoreDatabase
 import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.data.network.EtsyApiService
-import app.mblackman.orderfulfillment.data.network.Receipt
+import app.mblackman.orderfulfillment.data.network.json.Receipt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
