@@ -12,7 +12,6 @@ import java.io.IOException
  * Intercepts requests to the Esty Api and modifies the url.
  *
  * @param sessionManager Holds the session data, including access tokens and secrets.
- * @param apiKey The api key for the etsy api.
  */
 class EtsyApiInterceptor(
     private val sessionManager: SessionManager
@@ -47,5 +46,4 @@ class EtsyApiInterceptor(
 
         return response
     }
-
 }

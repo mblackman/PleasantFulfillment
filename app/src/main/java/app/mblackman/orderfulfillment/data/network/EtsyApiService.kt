@@ -33,4 +33,12 @@ interface EtsyApiService {
      */
     @GET("users/__SELF__")
     fun getUserSelfAsync(): Deferred<Response<EtsyResponseWrapper<User>>>
+
+    /**
+     * Gets the shop for the authenticated user.
+     *
+     * @return The shop belonging to the user.
+     */
+    @GET("shops/__SELF__")
+    fun getShopSelfAsync(): Deferred<Response<EtsyResponseWrapper<Shop>>>
 }
