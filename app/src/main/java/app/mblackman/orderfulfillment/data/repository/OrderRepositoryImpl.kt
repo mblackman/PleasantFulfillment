@@ -27,17 +27,23 @@ class OrderRepositoryImpl(
     override suspend fun getOrderDetails(): LiveData<List<Order>> {
 
         val selfShop = safeApiCall(
-            call = { etsyApiService.getShopSelfAsync().await() },
+            call = { _, _ -> etsyApiService.getShopSelfAsync().await() },
             error = "Failed to get self user."
         )
 
-        if (selfShop?.count == 1) {
+        if (selfShop?.size == 1) {
             val receipts = safeApiCall(
-                call = { etsyApiService.getReceiptsAsync(selfShop.results.first().id).await() },
+                call = { limit, offset ->
+                    etsyApiService.findAllReceiptsAsync(
+                        selfShop.first().id,
+                        limit,
+                        offset
+                    ).await()
+                },
                 error = "Failed to get receipts."
             )
 
-            receipts?.results?.let {
+            receipts?.let {
                 withContext(Dispatchers.IO) {
                     storeDatabase.storeDao.insertAll(it.map { receipt ->
                         receiptToOrderDetailsMapper.map(

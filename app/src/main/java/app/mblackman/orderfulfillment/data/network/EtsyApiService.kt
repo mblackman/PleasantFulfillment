@@ -9,28 +9,27 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 
+const val LimitPropertyName = "limit"
+const val OffsetPropertyName = "offset"
+const val LimitAndOffsetParameters = "limit={$LimitPropertyName}&offset={$OffsetPropertyName}"
+
 /**
  * Provides an interface for methods used on Etsy api.
  */
 interface EtsyApiService {
-
-    /**
-     * Represents the status of a shipment.
-     */
-    enum class ShipmentStatus {
-        OPEN, UNSHIPPED, UNPAID, COMPLETED, PROCESSING, ALL
-    }
-
     /**
      * Gets all orders for the given shop.
      *
      * @param shopId The id of the shop to get orders for.
+     * @param limit The number of receipts to get per request.
+     * @param offset The offset from 0 to get the receipts.
      * @return A list of all receipts.
      */
-    @GET("shops/{shopId}/receipts/{status}")
-    fun getReceiptsAsync(
+    @GET("shops/{shopId}/receipts?$LimitAndOffsetParameters")
+    fun findAllReceiptsAsync(
         @Path("shopId") shopId: Int,
-        @Path("status") status: ShipmentStatus = ShipmentStatus.ALL
+        @Path(LimitPropertyName) limit: Int,
+        @Path(OffsetPropertyName) offset: Int
     ): Deferred<Response<EtsyResponseWrapper<Receipt>>>
 
     /**
