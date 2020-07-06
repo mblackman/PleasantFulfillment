@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="orderDetails"
-            type="app.mblackman.orderfulfillment.data.database.OrderDetails" />
+            name="order"
+            type="app.mblackman.orderfulfillment.data.domain.Order" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -20,7 +20,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:text="@{orderDetails.id}"
+            android:text="@{order.id}"
             tools:text="{58335-634643-4646464}" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

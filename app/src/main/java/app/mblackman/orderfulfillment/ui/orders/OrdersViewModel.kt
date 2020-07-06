@@ -3,7 +3,7 @@ package app.mblackman.orderfulfillment.ui.orders
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import app.mblackman.orderfulfillment.data.database.OrderDetails
+import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.data.repository.OrderRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,9 +18,9 @@ class OrdersViewModel(private val orderRepository: OrderRepository) : ViewModel(
     private var viewModelJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
-    private val _orderDetails = MutableLiveData<List<OrderDetails>>()
+    private val _orderDetails = MutableLiveData<List<Order>>()
 
-    val orderDetails: LiveData<List<OrderDetails>>
+    val orderDetails: LiveData<List<Order>>
         get() = _orderDetails
 
     init {

@@ -1,8 +1,10 @@
 package app.mblackman.orderfulfillment.data.repository
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Transformations
 import app.mblackman.orderfulfillment.data.database.OrderDetails
 import app.mblackman.orderfulfillment.data.database.StoreDatabase
+import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.data.network.EtsyApiService
 import app.mblackman.orderfulfillment.data.network.Receipt
 import kotlinx.coroutines.Dispatchers
@@ -15,13 +17,14 @@ import kotlinx.coroutines.withContext
 class OrderRepositoryImpl(
     private val etsyApiService: EtsyApiService,
     private val storeDatabase: StoreDatabase,
-    private val receiptToOrderMapper: Mapper<Receipt, OrderDetails>
+    private val receiptToOrderDetailsMapper: Mapper<Receipt, OrderDetails>,
+    private val orderDetailToOrderMapper: Mapper<OrderDetails, Order>
 ) : OrderRepository() {
 
     /**
      * Gets the live data collection of the order details.
      */
-    override suspend fun getOrderDetails(): LiveData<List<OrderDetails>> {
+    override suspend fun getOrderDetails(): LiveData<List<Order>> {
 
         val selfShop = safeApiCall(
             call = { etsyApiService.getShopSelfAsync().await() },
@@ -37,7 +40,7 @@ class OrderRepositoryImpl(
             receipts?.results?.let {
                 withContext(Dispatchers.IO) {
                     storeDatabase.storeDao.insertAll(it.map { receipt ->
-                        receiptToOrderMapper.map(
+                        receiptToOrderDetailsMapper.map(
                             receipt
                         )
                     })
@@ -45,6 +48,8 @@ class OrderRepositoryImpl(
             }
         }
 
-        return storeDatabase.storeDao.getOrderDetails()
+        return Transformations.map(storeDatabase.storeDao.getOrderDetails()) {
+            it.map { orderDetails -> orderDetailToOrderMapper.map(orderDetails) }
+        }
     }
 }

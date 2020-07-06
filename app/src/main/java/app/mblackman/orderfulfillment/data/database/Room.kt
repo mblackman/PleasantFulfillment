@@ -26,7 +26,7 @@ interface StoreDao {
 /**
  * The database with the dao.
  */
-@Database(entities = [OrderDetails::class], version = 1)
+@Database(entities = [OrderDetails::class], version = 1, exportSchema = false)
 abstract class StoreDatabase : RoomDatabase() {
 
     abstract val storeDao: StoreDao

@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import app.mblackman.orderfulfillment.R
-import app.mblackman.orderfulfillment.data.database.OrderDetails
+import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.databinding.ListItemOrderDetailsBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -46,7 +46,7 @@ class OrderDetailAdapter :
         }
     }
 
-    fun addHeaderAndSubmitList(list: List<OrderDetails>?) {
+    fun addHeaderAndSubmitList(list: List<Order>?) {
         adapterScope.launch {
             val items = when (list) {
                 null -> listOf(DataItem.Header)
@@ -61,8 +61,8 @@ class OrderDetailAdapter :
     class ViewHolder private constructor(private val binding: ListItemOrderDetailsBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: OrderDetails) {
-            binding.orderDetails = item
+        fun bind(item: Order) {
+            binding.order = item
             binding.executePendingBindings()
         }
 
@@ -98,7 +98,7 @@ class OrderDetailsDiffCallback : DiffUtil.ItemCallback<DataItem>() {
 }
 
 sealed class DataItem {
-    data class OrderDetailsItem(val orderDetails: OrderDetails) : DataItem() {
+    data class OrderDetailsItem(val orderDetails: Order) : DataItem() {
         override val id = orderDetails.id
     }
 

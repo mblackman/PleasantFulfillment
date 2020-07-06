@@ -14,6 +14,7 @@ import app.mblackman.orderfulfillment.data.database.getDatabase
 import app.mblackman.orderfulfillment.data.network.EtsyApiService
 import app.mblackman.orderfulfillment.data.network.EtsyServiceGenerator
 import app.mblackman.orderfulfillment.data.network.SessionManager
+import app.mblackman.orderfulfillment.data.repository.OrderDetailsToOrderMapper
 import app.mblackman.orderfulfillment.data.repository.OrderRepository
 import app.mblackman.orderfulfillment.data.repository.OrderRepositoryImpl
 import app.mblackman.orderfulfillment.data.repository.ReceiptToOrderMapper
@@ -26,7 +27,12 @@ class OrdersFragment : Fragment() {
         val sessionManager = SessionManager(application)
         val etsyApiService =
             EtsyServiceGenerator(sessionManager).createService(EtsyApiService::class.java)
-        OrderRepositoryImpl(etsyApiService, getDatabase(application), ReceiptToOrderMapper())
+        OrderRepositoryImpl(
+            etsyApiService,
+            getDatabase(application),
+            ReceiptToOrderMapper(),
+            OrderDetailsToOrderMapper()
+        )
     }
 
     private val viewModel: OrdersViewModel by lazy {
