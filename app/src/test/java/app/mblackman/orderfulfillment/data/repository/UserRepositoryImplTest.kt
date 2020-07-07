@@ -3,7 +3,6 @@ package app.mblackman.orderfulfillment.data.repository
 import app.mblackman.orderfulfillment.data.MockConfiguration
 import app.mblackman.orderfulfillment.data.database.StoreDatabase
 import app.mblackman.orderfulfillment.data.network.EtsyApiService
-import app.mblackman.orderfulfillment.data.network.json.EtsyResponseWrapper
 import com.google.common.truth.Truth.assertWithMessage
 import io.mockk.every
 import io.mockk.mockk
@@ -12,7 +11,6 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Test
-import retrofit2.Response
 import app.mblackman.orderfulfillment.data.database.User as DatabaseUser
 import app.mblackman.orderfulfillment.data.network.json.User as EtsyUser
 
@@ -78,11 +76,7 @@ class UserRepositoryImplTest {
         }
 
         etsyUser?.let {
-            val etsyResponse = EtsyResponseWrapper(1, listOf(it), "User")
-            val response = mockk<Response<EtsyResponseWrapper<EtsyUser>>>(relaxed = true)
-            every { response.isSuccessful } returns true
-            every { response.body() } returns etsyResponse
-            every { etsyApiService.getUserSelfAsync() } returns CompletableDeferred(response)
+            every { etsyApiService.getUserSelfAsync() } returns CompletableDeferred(listOf(it).toEtsyResponse())
         }
 
         return UserRepositoryImpl(
