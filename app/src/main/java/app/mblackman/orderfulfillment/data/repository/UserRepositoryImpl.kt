@@ -3,6 +3,7 @@ package app.mblackman.orderfulfillment.data.repository
 import app.mblackman.orderfulfillment.data.Configuration
 import app.mblackman.orderfulfillment.data.database.StoreDatabase
 import app.mblackman.orderfulfillment.data.network.EtsyApiService
+import timber.log.Timber
 import app.mblackman.orderfulfillment.data.database.User as DatabaseUser
 import app.mblackman.orderfulfillment.data.domain.User as DomainUser
 import app.mblackman.orderfulfillment.data.network.json.User as EtsyUser
@@ -41,12 +42,15 @@ class UserRepositoryImpl(
             error = "Failed to get self user."
         )
 
-        if (selfUser?.size == 1) {
-            val user = selfUser[0]
-            configuration.currentUserId = user.id
-            return etsyToDomainUserMapper.map(user)
+        if (selfUser == null || selfUser.isEmpty()) {
+            Timber.e("No users found from Etsy for self.")
+            return null
+        } else if (selfUser.size > 1) {
+            Timber.e("More than one user found.")
         }
 
-        return null
+        val user = selfUser[0]
+        configuration.currentUserId = user.id
+        return etsyToDomainUserMapper.map(user)
     }
 }

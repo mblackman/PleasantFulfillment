@@ -54,6 +54,16 @@ class UserRepositoryImplTest {
             .that(configuration.currentUserId).isEqualTo(etsyUser.id)
     }
 
+    @Test
+    fun getNoUser() {
+        val repo = setupMocks(100, null, null)
+
+        val result = runBlocking { repo.getCurrentUserAsync() }
+
+        assertWithMessage("No user should be retrieved.")
+            .that(result).isNull()
+    }
+
     private fun setupMocks(
         configurationUserId: Int?,
         dbUser: DatabaseUser?,
