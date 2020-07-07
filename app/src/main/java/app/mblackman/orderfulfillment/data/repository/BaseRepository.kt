@@ -9,6 +9,7 @@ import timber.log.Timber
  */
 open class BaseRepository {
 
+
     /**
      * Safely make Retrofit API calls, and wrap any errors with a provided message.
      *

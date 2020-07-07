@@ -13,7 +13,7 @@ interface StoreDao {
     /**
      * Gets all the order details from the dao.
      */
-    @Query("select * from orderdetails")
+    @Query("SELECT * FROM orderdetails")
     fun getOrderDetails(): LiveData<List<OrderDetails>>
 
     /**
@@ -24,12 +24,29 @@ interface StoreDao {
 }
 
 /**
- * The database with the dao.
+ * Dao interface to define methods to interact with room database.
  */
-@Database(entities = [OrderDetails::class], version = 1, exportSchema = false)
+@Dao
+interface UserDao {
+
+    /**
+     * Gets a user by id.
+     *
+     * @param id The id to look up the user with.
+     * @return The user if found, else null.
+     */
+    @Query("SELECT * FROM user WHERE id = :id")
+    fun findUserById(id: Int): User?
+}
+
+/**
+ * The database containing all the data for the store and user.
+ */
+@Database(entities = [OrderDetails::class, User::class], version = 1, exportSchema = false)
 abstract class StoreDatabase : RoomDatabase() {
 
     abstract val storeDao: StoreDao
+    abstract val userDao: UserDao
 }
 
 private lateinit var INSTANCE: StoreDatabase
@@ -46,7 +63,7 @@ fun getDatabase(context: Context): StoreDatabase {
             INSTANCE = Room.databaseBuilder(
                 context.applicationContext,
                 StoreDatabase::class.java,
-                "store"
+                "StoreDatabase"
             ).build()
         }
     }
