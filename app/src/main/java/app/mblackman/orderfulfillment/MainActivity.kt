@@ -3,8 +3,8 @@ package app.mblackman.orderfulfillment
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import app.mblackman.orderfulfillment.data.network.AuthenticationListener
-import app.mblackman.orderfulfillment.data.network.SessionManager
+import app.mblackman.orderfulfillment.data.network.etsy.AuthenticationListener
+import app.mblackman.orderfulfillment.data.network.etsy.SessionManager
 import timber.log.Timber
 
 /**
@@ -13,7 +13,8 @@ import timber.log.Timber
 class MainActivity : AppCompatActivity() {
 
     // Listener for session authentication change. Opens the login activity.
-    private val authenticationListener: AuthenticationListener = object : AuthenticationListener {
+    private val authenticationListener: AuthenticationListener = object :
+        AuthenticationListener {
         override fun onAuthenticationFailed() {
             startLoginActivity()
         }
@@ -25,7 +26,10 @@ class MainActivity : AppCompatActivity() {
         Timber.plant(Timber.DebugTree())
 
         // Register the authentication listener with the session.
-        val sessionManager = SessionManager(application)
+        val sessionManager =
+            SessionManager(
+                application
+            )
         sessionManager.setAuthenticationListener(authenticationListener)
         setContentView(R.layout.main_activity)
 

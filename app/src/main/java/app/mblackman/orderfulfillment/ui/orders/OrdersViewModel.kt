@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import app.mblackman.orderfulfillment.data.domain.Order
+import app.mblackman.orderfulfillment.data.domain.Shop
 import app.mblackman.orderfulfillment.data.repository.OrderRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +30,7 @@ class OrdersViewModel(private val orderRepository: OrderRepository) : ViewModel(
 
     private fun getCurrentDetails() {
         uiScope.launch {
-            val details = orderRepository.getOrderDetails()
+            val details = orderRepository.getOrderDetails(Shop(1))
             _orderDetails.postValue(details.value)
         }
     }

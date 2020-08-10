@@ -1,6 +1,6 @@
 package app.mblackman.orderfulfillment.data.repository
 
-import app.mblackman.orderfulfillment.data.network.json.EtsyResponseWrapper
+import app.mblackman.orderfulfillment.data.network.etsy.json.EtsyResponseWrapper
 import io.mockk.every
 import io.mockk.mockk
 import retrofit2.Response

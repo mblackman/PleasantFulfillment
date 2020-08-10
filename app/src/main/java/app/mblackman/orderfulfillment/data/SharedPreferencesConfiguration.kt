@@ -10,6 +10,7 @@ import app.mblackman.orderfulfillment.R
 class SharedPreferencesConfiguration(context: Context) : Configuration {
 
     private val CURRENT_USER_ID_PROPERTY_NAME = "CURRENT_USER_ID"
+    private val CURRENT_USER_SHOP_ID_PROPERTY_NAME = "CURRENT_USER_SHOP_ID"
 
     private var prefs: SharedPreferences =
         context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE)
@@ -18,12 +19,25 @@ class SharedPreferencesConfiguration(context: Context) : Configuration {
      * Gets or sets the id of the application user.
      */
     override var currentUserId: Int?
-        get() = prefs.getInt(CURRENT_USER_ID_PROPERTY_NAME, 0)
+        get() = getInt(CURRENT_USER_ID_PROPERTY_NAME)
         set(value) {
-            if (value == null) {
-                prefs.edit().remove(CURRENT_USER_ID_PROPERTY_NAME).apply()
-            } else {
-                prefs.edit().putInt(CURRENT_USER_ID_PROPERTY_NAME, value).apply()
-            }
+            setInt(CURRENT_USER_ID_PROPERTY_NAME, value)
         }
+
+    override var currentUserShopId: Int?
+        get() = getInt(CURRENT_USER_SHOP_ID_PROPERTY_NAME)
+        set(value) {
+            setInt(CURRENT_USER_SHOP_ID_PROPERTY_NAME, value)
+        }
+
+    private fun getInt(keyName: String) =
+        if (prefs.contains(keyName)) prefs.getInt(keyName, 0) else null
+
+    private fun setInt(keyName: String, value: Int?) {
+        if (value == null) {
+            prefs.edit().remove(keyName).apply()
+        } else {
+            prefs.edit().putInt(keyName, value).apply()
+        }
+    }
 }

@@ -3,7 +3,7 @@ package app.mblackman.orderfulfillment.ui.login
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import app.mblackman.orderfulfillment.data.network.SessionManager
+import app.mblackman.orderfulfillment.data.network.etsy.SessionManager
 
 /**
  * Creates a new login view model.

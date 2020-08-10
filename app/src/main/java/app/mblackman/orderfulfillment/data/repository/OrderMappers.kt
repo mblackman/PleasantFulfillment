@@ -2,7 +2,7 @@ package app.mblackman.orderfulfillment.data.repository
 
 import app.mblackman.orderfulfillment.data.database.OrderDetails
 import app.mblackman.orderfulfillment.data.domain.Order
-import app.mblackman.orderfulfillment.data.network.json.Receipt
+import app.mblackman.orderfulfillment.data.network.etsy.json.Receipt
 
 /**
  * Maps a receipt object to order details.

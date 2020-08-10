@@ -5,8 +5,9 @@ import androidx.lifecycle.Transformations
 import app.mblackman.orderfulfillment.data.database.OrderDetails
 import app.mblackman.orderfulfillment.data.database.StoreDatabase
 import app.mblackman.orderfulfillment.data.domain.Order
-import app.mblackman.orderfulfillment.data.network.EtsyApiService
-import app.mblackman.orderfulfillment.data.network.json.Receipt
+import app.mblackman.orderfulfillment.data.domain.Shop
+import app.mblackman.orderfulfillment.data.network.etsy.EtsyApiService
+import app.mblackman.orderfulfillment.data.network.etsy.json.Receipt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -23,34 +24,30 @@ class OrderRepositoryImpl(
 
     /**
      * Gets the live data collection of the order details.
+     *
+     * @param shop The shop to get order details from.
+     * @return A live data with the collection of order details.
      */
-    override suspend fun getOrderDetails(): LiveData<List<Order>> {
+    override suspend fun getOrderDetails(shop: Shop): LiveData<List<Order>> {
 
-        val selfShop = safeApiCall(
-            call = { _, _ -> etsyApiService.getShopSelfAsync().await() },
-            error = "Failed to get self user."
+        val receipts = safeApiCall(
+            call = { limit, offset ->
+                etsyApiService.findAllReceiptsAsync(
+                    shop.id,
+                    limit,
+                    offset
+                ).await()
+            },
+            error = "Failed to get receipts."
         )
 
-        if (selfShop?.size == 1) {
-            val receipts = safeApiCall(
-                call = { limit, offset ->
-                    etsyApiService.findAllReceiptsAsync(
-                        selfShop.first().id,
-                        limit,
-                        offset
-                    ).await()
-                },
-                error = "Failed to get receipts."
-            )
-
-            receipts?.let {
-                withContext(Dispatchers.IO) {
-                    storeDatabase.storeDao.insertAll(it.map { receipt ->
-                        receiptToOrderDetailsMapper.map(
-                            receipt
-                        )
-                    })
-                }
+        receipts?.let {
+            withContext(Dispatchers.IO) {
+                storeDatabase.storeDao.insertAll(it.map { receipt ->
+                    receiptToOrderDetailsMapper.map(
+                        receipt
+                    )
+                })
             }
         }
 

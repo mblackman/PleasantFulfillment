@@ -1,4 +1,4 @@
-package app.mblackman.orderfulfillment.data.network
+package app.mblackman.orderfulfillment.data.network.etsy
 
 /**
  * Interface for callback methods to listen raise.

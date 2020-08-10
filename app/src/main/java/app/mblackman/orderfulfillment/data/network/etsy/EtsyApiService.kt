@@ -1,9 +1,9 @@
-package app.mblackman.orderfulfillment.data.network
+package app.mblackman.orderfulfillment.data.network.etsy
 
-import app.mblackman.orderfulfillment.data.network.json.EtsyResponseWrapper
-import app.mblackman.orderfulfillment.data.network.json.Receipt
-import app.mblackman.orderfulfillment.data.network.json.Shop
-import app.mblackman.orderfulfillment.data.network.json.User
+import app.mblackman.orderfulfillment.data.network.etsy.json.EtsyResponseWrapper
+import app.mblackman.orderfulfillment.data.network.etsy.json.Receipt
+import app.mblackman.orderfulfillment.data.network.etsy.json.Shop
+import app.mblackman.orderfulfillment.data.network.etsy.json.User
 import kotlinx.coroutines.Deferred
 import retrofit2.Response
 import retrofit2.http.GET

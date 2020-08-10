@@ -2,7 +2,7 @@ package app.mblackman.orderfulfillment.data.repository
 
 import app.mblackman.orderfulfillment.data.MockConfiguration
 import app.mblackman.orderfulfillment.data.database.StoreDatabase
-import app.mblackman.orderfulfillment.data.network.EtsyApiService
+import app.mblackman.orderfulfillment.data.network.etsy.EtsyApiService
 import com.google.common.truth.Truth.assertWithMessage
 import io.mockk.every
 import io.mockk.mockk
@@ -12,7 +12,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Test
 import app.mblackman.orderfulfillment.data.database.User as DatabaseUser
-import app.mblackman.orderfulfillment.data.network.json.User as EtsyUser
+import app.mblackman.orderfulfillment.data.network.etsy.json.User as EtsyUser
 
 class UserRepositoryImplTest {
 

@@ -7,7 +7,7 @@ import android.text.TextUtils
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import app.mblackman.orderfulfillment.data.network.SessionManager
+import app.mblackman.orderfulfillment.data.network.etsy.SessionManager
 import app.mblackman.orderfulfillment.ui.login.LoginViewModel
 import app.mblackman.orderfulfillment.ui.login.LoginViewModelFactory
 
@@ -17,7 +17,11 @@ import app.mblackman.orderfulfillment.ui.login.LoginViewModelFactory
 class LoginActivity : AppCompatActivity() {
 
     private val loginViewModel: LoginViewModel by lazy {
-        val viewModelFactory = LoginViewModelFactory(SessionManager(application), application)
+        val viewModelFactory = LoginViewModelFactory(
+            SessionManager(
+                application
+            ), application
+        )
         ViewModelProvider(this, viewModelFactory).get(LoginViewModel::class.java)
     }
 

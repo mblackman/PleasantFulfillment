@@ -1,4 +1,4 @@
-package app.mblackman.orderfulfillment.data.network
+package app.mblackman.orderfulfillment.data.network.etsy
 
 import android.text.TextUtils
 import app.mblackman.orderfulfillment.BuildConfig

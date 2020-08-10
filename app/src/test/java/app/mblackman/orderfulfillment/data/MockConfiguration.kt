@@ -5,4 +5,6 @@ package app.mblackman.orderfulfillment.data
  */
 class MockConfiguration : Configuration {
     override var currentUserId: Int? = null
+
+    override var currentUserShopId: Int? = null
 }

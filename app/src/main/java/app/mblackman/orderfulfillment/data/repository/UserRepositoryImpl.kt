@@ -2,11 +2,11 @@ package app.mblackman.orderfulfillment.data.repository
 
 import app.mblackman.orderfulfillment.data.Configuration
 import app.mblackman.orderfulfillment.data.database.StoreDatabase
-import app.mblackman.orderfulfillment.data.network.EtsyApiService
+import app.mblackman.orderfulfillment.data.network.etsy.EtsyApiService
 import timber.log.Timber
 import app.mblackman.orderfulfillment.data.database.User as DatabaseUser
 import app.mblackman.orderfulfillment.data.domain.User as DomainUser
-import app.mblackman.orderfulfillment.data.network.json.User as EtsyUser
+import app.mblackman.orderfulfillment.data.network.etsy.json.User as EtsyUser
 
 /**
  * Implementation of UserRepository. Gets user data from various data sources.

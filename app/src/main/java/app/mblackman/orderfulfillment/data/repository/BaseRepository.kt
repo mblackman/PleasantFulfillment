@@ -1,6 +1,6 @@
 package app.mblackman.orderfulfillment.data.repository
 
-import app.mblackman.orderfulfillment.data.network.json.EtsyResponseWrapper
+import app.mblackman.orderfulfillment.data.network.etsy.json.EtsyResponseWrapper
 import retrofit2.Response
 import timber.log.Timber
 
