@@ -8,7 +8,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import app.mblackman.orderfulfillment.R
 import app.mblackman.orderfulfillment.data.database.getDatabase
 import app.mblackman.orderfulfillment.data.network.etsy.EtsyApiService
@@ -19,6 +19,7 @@ import app.mblackman.orderfulfillment.data.repository.OrderRepository
 import app.mblackman.orderfulfillment.data.repository.OrderRepositoryImpl
 import app.mblackman.orderfulfillment.data.repository.ReceiptToOrderMapper
 import app.mblackman.orderfulfillment.databinding.OrderDetailsFragmentBinding
+import app.mblackman.orderfulfillment.ui.debug.MockOrderRepository
 
 class OrdersFragment : Fragment() {
 
@@ -42,7 +43,7 @@ class OrdersFragment : Fragment() {
 
     private val viewModel: OrdersViewModel by lazy {
 
-        val viewModelFactory = OrdersViewModelFactory(orderRepository)
+        val viewModelFactory = OrdersViewModelFactory(MockOrderRepository())
         ViewModelProvider(this, viewModelFactory).get(OrdersViewModel::class.java)
     }
 
@@ -56,8 +57,8 @@ class OrdersFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        val manager = GridLayoutManager(activity, 3)
-        val adapter = OrderDetailAdapter()
+        val manager = LinearLayoutManager(activity)
+        val adapter = OrderDetailAdapter(this)
 
         viewModel.orderDetails.observe(viewLifecycleOwner, Observer {
             it.let {

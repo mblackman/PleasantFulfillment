@@ -6,21 +6,101 @@
     <data>
 
         <variable
+            name="state"
+            type="app.mblackman.orderfulfillment.ui.orders.OrderState" />
+
+        <variable
             name="order"
             type="app.mblackman.orderfulfillment.data.domain.Order" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_small_margin"
+        android:animateLayoutChanges="true"
+        app:cardCornerRadius="@dimen/component_rounding_medium"
+        app:cardElevation="1dp">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:text="@{order.id}"
-            tools:text="{58335-634643-4646464}" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{order.description}"
+                    android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline6"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Test Item Description" />
+
+                <ImageButton
+                    android:id="@+id/expand_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#00FFFFFF"
+                    android:src="@drawable/keyboard_arrow_down_24px"
+                    app:layout_constraintBottom_toBottomOf="@+id/description"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.98"
+                    app:layout_constraintStart_toEndOf="@+id/description"
+                    app:layout_constraintTop_toTopOf="@+id/description"
+                    android:onClick="@{() -> state.toggleExpand()}" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="@{state.isExpanded}">
+
+                <TextView
+                    android:id="@+id/orderDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{order.orderDate.toLocaleString()}"
+                    android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
+                    android:textColor="?android:attr/textColorSecondary"
+                    tools:text="April 20 2020" />
+
+                <TextView
+                    android:id="@+id/buyerName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{order.buyerName}"
+                    android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
+                    android:textColor="?android:attr/textColorSecondary"
+                    tools:text="Test User Name" />
+
+                <TextView
+                    android:id="@+id/buyerEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{order.buyerEmail}"
+                    android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
+                    android:textColor="?android:attr/textColorSecondary"
+                    tools:text="Test@Gmail.com" />
+
+                <TextView
+                    android:id="@+id/buyerAddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
+                    android:textColor="?android:attr/textColorSecondary"
+                    app:address="@{order.buyerAddress}"
+                    tools:text="Test\n1000 Test Lane\nAmerica USA" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 </layout>

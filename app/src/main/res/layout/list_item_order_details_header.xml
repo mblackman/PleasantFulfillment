@@ -3,6 +3,6 @@
     android:id="@+id/text"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textAppearance="?android:attr/textAppearanceLarge"
+    android:padding="8dp"
     android:text="@string/ad_text"
-    android:padding="8dp" />
+    android:textAppearance="?android:attr/textAppearanceLarge" />
