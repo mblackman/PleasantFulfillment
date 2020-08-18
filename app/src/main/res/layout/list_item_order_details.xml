@@ -25,12 +25,12 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:padding="@dimen/grid_small_padding">
 
                 <TextView
                     android:id="@+id/description"
@@ -53,14 +53,18 @@
                     app:layout_constraintHorizontal_bias="0.98"
                     app:layout_constraintStart_toEndOf="@+id/description"
                     app:layout_constraintTop_toTopOf="@+id/description"
-                    android:onClick="@{() -> state.toggleExpand()}" />
+                    android:onClick="@{() -> state.toggleExpand()}"
+                    android:contentDescription="@string/order_details_expand_button_descriptor" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:paddingStart="@dimen/grid_medium_padding"
+                android:paddingEnd="@dimen/grid_medium_padding"
+                android:paddingBottom="@dimen/grid_small_padding"
                 android:visibility="@{state.isExpanded}">
 
                 <TextView
@@ -70,6 +74,8 @@
                     android:text="@{order.orderDate.toLocaleString()}"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                     android:textColor="?android:attr/textColorSecondary"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:text="April 20 2020" />
 
                 <TextView
@@ -79,6 +85,8 @@
                     android:text="@{order.buyerName}"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                     android:textColor="?android:attr/textColorSecondary"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/orderDate"
                     tools:text="Test User Name" />
 
                 <TextView
@@ -88,6 +96,8 @@
                     android:text="@{order.buyerEmail}"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                     android:textColor="?android:attr/textColorSecondary"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/buyerName"
                     tools:text="Test@Gmail.com" />
 
                 <TextView
@@ -97,9 +107,19 @@
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                     android:textColor="?android:attr/textColorSecondary"
                     app:address="@{order.buyerAddress}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/buyerEmail"
                     tools:text="Test\n1000 Test Lane\nAmerica USA" />
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/product_sales"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/list_item_product_sale"
+                tools:itemCount="3" />
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

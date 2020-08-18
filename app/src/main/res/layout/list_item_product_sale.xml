@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="sale"
+            type="app.mblackman.orderfulfillment.data.domain.ProductSale" />
+    </data>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/product_img"
+            imageUrl="@{sale.product.imageUrl}"
+            android:layout_width="@dimen/icon_medium"
+            android:layout_height="@dimen/icon_medium"
+            android:scaleType="centerCrop"
+            tools:src="@tools:sample/backgrounds/scenic"
+            android:contentDescription="@string/image_of_product_in_sale" />
+
+        <LinearLayout
+            android:id="@+id/product_info"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingStart="@dimen/grid_medium_padding"
+            android:paddingTop="@dimen/grid_small_padding"
+            android:paddingEnd="@dimen/grid_medium_padding"
+            android:paddingBottom="@dimen/grid_small_padding">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{sale.product.name}"
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline6"
+                tools:text="Test Product Name " />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{sale.product.price.toString()}"
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
+                android:textColor="?android:attr/textColorSecondary"
+                tools:text="$15.95" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{sale.product.description}"
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
+                android:textColor="?android:attr/textColorSecondary"
+                tools:text="@tools:sample/lorem" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:padding="@dimen/grid_small_padding">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline4"
+                tools:text="01" />
+        </FrameLayout>
+
+    </LinearLayout>
+</layout>

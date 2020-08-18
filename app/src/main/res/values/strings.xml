@@ -2,4 +2,6 @@
     <string name="app_name">Pleasant Fulfillment</string>
     <string name="etsy_login_callback_uri" tools:ignore="ExtraTranslation">app.mblackman.orderfulfillment://logincallback</string>
     <string name="ad_text">Empty ad space.</string>
+    <string name="order_details_expand_button_descriptor">Expand or shrink card for order details.</string>
+    <string name="image_of_product_in_sale">Image of product in sale.</string>
 </resources>

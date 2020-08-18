@@ -8,7 +8,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import app.mblackman.orderfulfillment.R
 import app.mblackman.orderfulfillment.data.database.getDatabase
 import app.mblackman.orderfulfillment.data.network.etsy.EtsyApiService
@@ -57,7 +56,6 @@ class OrdersFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        val manager = LinearLayoutManager(activity)
         val adapter = OrderDetailAdapter(this)
 
         viewModel.orderDetails.observe(viewLifecycleOwner, Observer {
@@ -67,7 +65,6 @@ class OrdersFragment : Fragment() {
         })
 
         adapter.addHeaderAndSubmitList(viewModel.orderDetails.value)
-        binding.orderDetails.layoutManager = manager
         binding.orderDetails.adapter = adapter
 
         return binding.root

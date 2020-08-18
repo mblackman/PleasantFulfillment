@@ -34,8 +34,8 @@ class OrderDetailAdapter(private val lifecycleOwner: LifecycleOwner) :
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder -> {
-                val nightItem = getItem(position) as DataItem.OrderDetailsItem
-                holder.bind(lifecycleOwner, nightItem.order)
+                val item = getItem(position) as DataItem.OrderDetailsItem
+                holder.bind(lifecycleOwner, item.order)
             }
         }
     }
@@ -94,6 +94,10 @@ class OrderDetailAdapter(private val lifecycleOwner: LifecycleOwner) :
             }
 
             binding.state = orderStates[item.id]
+
+            val productSalesAdapter = ProductSaleAdapter(item.productSales)
+            binding.productSales.adapter = productSalesAdapter
+
             binding.lifecycleOwner = lifecycleOwner
             binding.executePendingBindings()
         }

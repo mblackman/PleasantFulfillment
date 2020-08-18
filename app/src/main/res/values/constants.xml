@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="grid_small_margin">8dp</dimen>
+    <dimen name="grid_small_padding">8dp</dimen>
+    <dimen name="grid_medium_padding">16dp</dimen>
     <dimen name="component_rounding_small">8dp</dimen>
     <dimen name="component_rounding_medium">14dp</dimen>
     <dimen name="component_rounding_large">24dp</dimen>
+    <dimen name="icon_medium">96dp</dimen>
 </resources>

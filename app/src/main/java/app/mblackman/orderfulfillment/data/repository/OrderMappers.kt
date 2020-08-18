@@ -3,6 +3,8 @@ package app.mblackman.orderfulfillment.data.repository
 import app.mblackman.orderfulfillment.data.database.OrderDetails
 import app.mblackman.orderfulfillment.data.domain.Address
 import app.mblackman.orderfulfillment.data.domain.Order
+import app.mblackman.orderfulfillment.data.domain.Product
+import app.mblackman.orderfulfillment.data.domain.ProductSale
 import app.mblackman.orderfulfillment.data.network.etsy.json.Receipt
 import java.util.*
 
@@ -40,7 +42,8 @@ class OrderDetailsToOrderMapper : Mapper<OrderDetails, Order> {
             Date(),
             "Temp",
             "Temp",
-            Address("Temp", "Temp", "Temp", "Temp", "Temp", "Temp")
+            Address("Temp", "Temp", "Temp", "Temp", "Temp", "Temp"),
+            listOf(ProductSale(Product("Product 3", "Product 3 descriptor", "null", 17.95f), 1))
         )
     }
 }

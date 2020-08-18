@@ -40,7 +40,7 @@ class EtsyApiInterceptor(
 
         val response = chain.proceed(request)
 
-        if (response.code() == 403) {
+        if (response.code == 403) {
             sessionManager.onAuthenticationFailed()
         }
 

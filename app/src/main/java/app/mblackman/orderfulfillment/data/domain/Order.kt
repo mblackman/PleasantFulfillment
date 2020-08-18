@@ -8,5 +8,6 @@ data class Order(
     val orderDate: Date,
     val buyerName: String,
     val buyerEmail: String,
-    val buyerAddress: Address
+    val buyerAddress: Address,
+    val productSales: List<ProductSale>
 )
