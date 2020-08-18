@@ -7,7 +7,7 @@
 
         <variable
             name="state"
-            type="app.mblackman.orderfulfillment.ui.orders.OrderState" />
+            type="app.mblackman.orderfulfillment.ui.utils.ExpandState" />
 
         <variable
             name="order"
@@ -57,11 +57,9 @@
                     android:contentDescription="@string/order_details_expand_button_descriptor" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:paddingStart="@dimen/grid_medium_padding"
                 android:paddingEnd="@dimen/grid_medium_padding"
                 android:paddingBottom="@dimen/grid_small_padding"

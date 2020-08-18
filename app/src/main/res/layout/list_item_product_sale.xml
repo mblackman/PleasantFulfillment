@@ -5,6 +5,10 @@
     <data>
 
         <variable
+            name="state"
+            type="app.mblackman.orderfulfillment.ui.utils.ExpandState" />
+
+        <variable
             name="sale"
             type="app.mblackman.orderfulfillment.data.domain.ProductSale" />
     </data>
@@ -21,7 +25,8 @@
             android:layout_height="@dimen/icon_medium"
             android:scaleType="centerCrop"
             tools:src="@tools:sample/backgrounds/scenic"
-            android:contentDescription="@string/image_of_product_in_sale" />
+            android:contentDescription="@string/image_of_product_in_sale"
+            android:visibility="@{state.isExpanded}" />
 
         <LinearLayout
             android:id="@+id/product_info"
@@ -44,6 +49,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="@{state.isExpanded}"
                 android:text="@{sale.product.price.toString()}"
                 android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                 android:textColor="?android:attr/textColorSecondary"
@@ -53,6 +59,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{sale.product.description}"
+                android:visibility="@{state.isExpanded}"
                 android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                 android:textColor="?android:attr/textColorSecondary"
                 tools:text="@tools:sample/lorem" />
@@ -68,6 +75,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                truncatedInt="@{sale.quantity}"
                 android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline4"
                 tools:text="01" />
         </FrameLayout>

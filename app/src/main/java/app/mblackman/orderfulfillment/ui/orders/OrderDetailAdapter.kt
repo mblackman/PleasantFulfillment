@@ -1,17 +1,19 @@
 package app.mblackman.orderfulfillment.ui.orders
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import app.mblackman.orderfulfillment.R
 import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.databinding.ListItemOrderDetailsBinding
+import app.mblackman.orderfulfillment.ui.utils.ExpandState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,7 +28,10 @@ private const val ITEM_VIEW_TYPE_ITEM = 1
  *
  * @param lifecycleOwner The lifecycle owner for the owner of this adapter.
  */
-class OrderDetailAdapter(private val lifecycleOwner: LifecycleOwner) :
+class OrderDetailAdapter(
+    private val context: Context,
+    private val lifecycleOwner: LifecycleOwner
+) :
     ListAdapter<DataItem, RecyclerView.ViewHolder>(OrderDetailsDiffCallback()) {
 
     private val adapterScope = CoroutineScope(Dispatchers.Default)
@@ -35,7 +40,7 @@ class OrderDetailAdapter(private val lifecycleOwner: LifecycleOwner) :
         when (holder) {
             is ViewHolder -> {
                 val item = getItem(position) as DataItem.OrderDetailsItem
-                holder.bind(lifecycleOwner, item.order)
+                holder.bind(context, lifecycleOwner, item.order)
             }
         }
     }
@@ -78,7 +83,7 @@ class OrderDetailAdapter(private val lifecycleOwner: LifecycleOwner) :
     class ViewHolder private constructor(private val binding: ListItemOrderDetailsBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        private val orderStates = HashMap<Int, OrderState>()
+        private val orderStates = HashMap<Int, ExpandState>()
 
         /**
          * Binds the view to the given order.
@@ -86,17 +91,22 @@ class OrderDetailAdapter(private val lifecycleOwner: LifecycleOwner) :
          * @param lifecycleOwner The lifecycle owner for this view.
          * @param item The order to bind to.
          */
-        fun bind(lifecycleOwner: LifecycleOwner, item: Order) {
+        fun bind(context: Context, lifecycleOwner: LifecycleOwner, item: Order) {
             binding.order = item
 
             if (!orderStates.containsKey(item.id)) {
-                orderStates[item.id] = OrderState()
+                orderStates[item.id] = ExpandState()
             }
 
             binding.state = orderStates[item.id]
 
-            val productSalesAdapter = ProductSaleAdapter(item.productSales)
+            val productSalesAdapter =
+                ProductSaleAdapter(lifecycleOwner, item.productSales, orderStates[item.id]!!)
+            val decorator = DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
+                setDrawable(ContextCompat.getDrawable(context, R.drawable.divider)!!)
+            }
             binding.productSales.adapter = productSalesAdapter
+            binding.productSales.addItemDecoration(decorator)
 
             binding.lifecycleOwner = lifecycleOwner
             binding.executePendingBindings()
@@ -173,25 +183,4 @@ sealed class DataItem {
     }
 
     abstract val id: Int
-}
-
-/**
- * Contains state information for an order view object.
- */
-class OrderState {
-    private val _isExpanded = MutableLiveData<Boolean>()
-
-    val isExpanded: LiveData<Boolean>
-        get() = _isExpanded
-
-    init {
-        _isExpanded.value = false
-    }
-
-    /**
-     * Toggles the expanded state.
-     */
-    fun toggleExpand() {
-        this._isExpanded.value = !this._isExpanded.value!!
-    }
 }

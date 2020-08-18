@@ -2,18 +2,22 @@ package app.mblackman.orderfulfillment.ui.orders
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import app.mblackman.orderfulfillment.data.domain.ProductSale
 import app.mblackman.orderfulfillment.databinding.ListItemProductSaleBinding
+import app.mblackman.orderfulfillment.ui.utils.ExpandState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ProductSaleAdapter(
-    items: List<ProductSale>
+    private val lifecycleOwner: LifecycleOwner,
+    items: List<ProductSale>,
+    private val state: ExpandState
 ) : ListAdapter<ProductSale, RecyclerView.ViewHolder>(ProductSaleDiffCallback()) {
 
     private val adapterScope = CoroutineScope(Dispatchers.Default)
@@ -33,7 +37,7 @@ class ProductSaleAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is ViewHolder) {
             val item = getItem(position) as ProductSale
-            holder.bind(item)
+            holder.bind(lifecycleOwner, item, state)
         }
     }
 
@@ -45,8 +49,10 @@ class ProductSaleAdapter(
          *
          * @param item The product sale to bind to.
          */
-        fun bind(item: ProductSale) {
+        fun bind(lifecycleOwner: LifecycleOwner, item: ProductSale, state: ExpandState) {
             binding.sale = item
+            binding.state = state
+            binding.lifecycleOwner = lifecycleOwner
             binding.executePendingBindings()
         }
 

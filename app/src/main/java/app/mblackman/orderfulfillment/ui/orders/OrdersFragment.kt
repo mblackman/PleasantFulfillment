@@ -52,11 +52,12 @@ class OrdersFragment : Fragment() {
     ): View {
         val binding: OrderDetailsFragmentBinding =
             DataBindingUtil.inflate(inflater, R.layout.order_details_fragment, container, false)
+        val application = requireNotNull(this.activity).application
 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        val adapter = OrderDetailAdapter(this)
+        val adapter = OrderDetailAdapter(application, this)
 
         viewModel.orderDetails.observe(viewLifecycleOwner, Observer {
             it.let {
