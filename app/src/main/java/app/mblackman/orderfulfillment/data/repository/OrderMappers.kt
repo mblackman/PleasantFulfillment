@@ -43,7 +43,7 @@ class OrderDetailsToOrderMapper : Mapper<OrderDetails, Order> {
             "Temp",
             "Temp",
             Address("Temp", "Temp", "Temp", "Temp", "Temp", "Temp"),
-            listOf(ProductSale(Product("Product 3", "Product 3 descriptor", "null", 17.95f), 1))
+            listOf(ProductSale(1, Product("Product 3", "Product 3 descriptor", "null", 17.95f), 1))
         )
     }
 }

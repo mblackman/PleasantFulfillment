@@ -26,13 +26,29 @@ class MockOrderRepository(
     )
 
     private val mockProducts = listOf(
-        Product("Leaf Pipe", "A pipe to smoke that good leaf.", "null", 15.95f),
-        Product("Stinger", "A sword that glows blue when orcs are near.", "null", 5000.95f),
-        Product("Potatoes", "Boil 'em, mash 'em, stick 'em in a stew.", "null", 3.95f)
+        Product(
+            "Leaf Pipe",
+            "A pipe to smoke that good leaf.",
+            "https://www.gadgetsville.store/wp-content/uploads/2017/12/13247.jpg",
+            15.95f
+        ),
+        Product(
+            "Stinger",
+            "A sword that glows blue when orcs are near.",
+            "https://vignette.wikia.nocookie.net/lotr/images/5/5d/Sting_with_scabbard.jpg/revision/latest/top-crop/width/720/height/900?cb=20140527085852",
+            5000.95f
+        ),
+        Product(
+            "Potatoes",
+            "Boil 'em, mash 'em, stick 'em in a stew.",
+            "https://i.gifer.com/fetch/w300-preview/80/8065e35fe8d1c58fa7827650cbde3388.gif",
+            3.95f
+        )
     )
 
     init {
         val testAddress = Address("Shire", "Shire Way", "MiddleEarth", "Shire", "ME", "1")
+        var currentProductId = 0
 
         val orders = (0..numOrders).map { i ->
             val numSales = (minProductSales..maxProductSales).random()
@@ -44,7 +60,13 @@ class MockOrderRepository(
                 person.name,
                 person.email,
                 testAddress,
-                (0..(i % mockProducts.size)).map { ProductSale(mockProducts[it], numSales) }
+                (0..(i % mockProducts.size)).map {
+                    ProductSale(
+                        currentProductId++,
+                        mockProducts[it],
+                        numSales
+                    )
+                }
             )
         }
 

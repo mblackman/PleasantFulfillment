@@ -7,14 +7,10 @@ import androidx.lifecycle.MutableLiveData
  * Contains state information for an order view object.
  */
 class ExpandState {
-    private val _isExpanded = MutableLiveData<Boolean>()
+    private val _isExpanded = MutableLiveData<Boolean>(false)
 
     val isExpanded: LiveData<Boolean>
         get() = _isExpanded
-
-    init {
-        _isExpanded.value = false
-    }
 
     /**
      * Toggles the expanded state.

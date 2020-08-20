@@ -32,15 +32,28 @@ class OrderDetailAdapter(
     private val context: Context,
     private val lifecycleOwner: LifecycleOwner
 ) :
-    ListAdapter<DataItem, RecyclerView.ViewHolder>(OrderDetailsDiffCallback()) {
+    ListAdapter<DataItem, RecyclerView.ViewHolder>(OrderDetailsDiffCallback) {
 
     private val adapterScope = CoroutineScope(Dispatchers.Default)
 
+    /**
+     * Checks for differences between orders.
+     */
+    companion object OrderDetailsDiffCallback : DiffUtil.ItemCallback<DataItem>() {
+        override fun areItemsTheSame(oldItem: DataItem, newItem: DataItem): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: DataItem, newItem: DataItem): Boolean {
+            return oldItem == newItem
+        }
+    }
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is ViewHolder -> {
+            is BindingViewHolder -> {
                 val item = getItem(position) as DataItem.OrderDetailsItem
-                holder.bind(context, lifecycleOwner, item.order)
+                holder.bind(item)
             }
         }
     }
@@ -48,7 +61,12 @@ class OrderDetailAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             ITEM_VIEW_TYPE_HEADER -> TextViewHolder.from(parent)
-            ITEM_VIEW_TYPE_ITEM -> ViewHolder.from(parent)
+            ITEM_VIEW_TYPE_ITEM -> {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = ListItemOrderDetailsBinding.inflate(layoutInflater, parent, false)
+
+                return BindingViewHolder(binding)
+            }
             else -> throw ClassCastException("Unknown viewType $viewType")
         }
     }
@@ -80,28 +98,20 @@ class OrderDetailAdapter(
     /**
      * View Holder for the order items being created. Handles binding the views to the orders.
      */
-    class ViewHolder private constructor(private val binding: ListItemOrderDetailsBinding) :
+    inner class BindingViewHolder(private val binding: ListItemOrderDetailsBinding) :
         RecyclerView.ViewHolder(binding.root) {
-
-        private val orderStates = HashMap<Int, ExpandState>()
 
         /**
          * Binds the view to the given order.
          *
-         * @param lifecycleOwner The lifecycle owner for this view.
          * @param item The order to bind to.
          */
-        fun bind(context: Context, lifecycleOwner: LifecycleOwner, item: Order) {
-            binding.order = item
-
-            if (!orderStates.containsKey(item.id)) {
-                orderStates[item.id] = ExpandState()
-            }
-
-            binding.state = orderStates[item.id]
+        fun bind(item: DataItem.OrderDetailsItem) {
+            binding.order = item.order
+            binding.state = item.state
 
             val productSalesAdapter =
-                ProductSaleAdapter(lifecycleOwner, item.productSales, orderStates[item.id]!!)
+                ProductSaleAdapter(lifecycleOwner, item.order.productSales, item.state.isExpanded)
             val decorator = DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
                 setDrawable(ContextCompat.getDrawable(context, R.drawable.divider)!!)
             }
@@ -110,21 +120,6 @@ class OrderDetailAdapter(
 
             binding.lifecycleOwner = lifecycleOwner
             binding.executePendingBindings()
-        }
-
-        companion object {
-            /**
-             * Factory to create the view holder from a parent view group.
-             *
-             * @param parent The parent view for this view being created.
-             * @return The created view holder.
-             */
-            fun from(parent: ViewGroup): ViewHolder {
-                val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = ListItemOrderDetailsBinding.inflate(layoutInflater, parent, false)
-
-                return ViewHolder(binding)
-            }
         }
     }
 
@@ -150,19 +145,6 @@ class OrderDetailAdapter(
 }
 
 /**
- * Checks for differences between orders.
- */
-private class OrderDetailsDiffCallback : DiffUtil.ItemCallback<DataItem>() {
-    override fun areItemsTheSame(oldItem: DataItem, newItem: DataItem): Boolean {
-        return oldItem.id == newItem.id
-    }
-
-    override fun areContentsTheSame(oldItem: DataItem, newItem: DataItem): Boolean {
-        return oldItem == newItem
-    }
-}
-
-/**
  * Decorator to contain the items stored inside the adapter's collection.
  */
 sealed class DataItem {
@@ -173,6 +155,7 @@ sealed class DataItem {
      */
     data class OrderDetailsItem(val order: Order) : DataItem() {
         override val id = order.id
+        val state = ExpandState()
     }
 
     /**

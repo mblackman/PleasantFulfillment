@@ -3,10 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="androidx.core.content.ContextCompat" />
 
         <variable
             name="state"
-            type="app.mblackman.orderfulfillment.ui.utils.ExpandState" />
+            type="app.mblackman.orderfulfillment.ui.orders.ProductSalesState" />
 
         <variable
             name="sale"
@@ -26,7 +27,8 @@
             android:scaleType="centerCrop"
             tools:src="@tools:sample/backgrounds/scenic"
             android:contentDescription="@string/image_of_product_in_sale"
-            android:visibility="@{state.isExpanded}" />
+            android:visibility="@{state.isExpanded}"
+            tools:visibility="gone" />
 
         <LinearLayout
             android:id="@+id/product_info"
@@ -43,8 +45,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{sale.product.name}"
-                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline6"
-                tools:text="Test Product Name " />
+                android:textAppearance="@{state.headerTextAppearance}"
+                tools:text="Test Product Name "
+                tools:textAppearance="@style/TextAppearance_MdcTypographyStyles_Headline6" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -53,7 +56,8 @@
                 android:text="@{sale.product.price.toString()}"
                 android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                 android:textColor="?android:attr/textColorSecondary"
-                tools:text="$15.95" />
+                tools:text="$15.95"
+                tools:visibility="gone" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -62,7 +66,8 @@
                 android:visibility="@{state.isExpanded}"
                 android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                 android:textColor="?android:attr/textColorSecondary"
-                tools:text="@tools:sample/lorem" />
+                tools:text="@tools:sample/lorem"
+                tools:visibility="gone" />
         </LinearLayout>
 
         <FrameLayout
@@ -76,8 +81,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 truncatedInt="@{sale.quantity}"
-                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline4"
-                tools:text="01" />
+                android:textAppearance="@{state.itemCountTextAppearance}"
+                tools:text="01"
+                tools:textAppearance="@style/TextAppearance_MdcTypographyStyles_Headline5" />
         </FrameLayout>
 
     </LinearLayout>
