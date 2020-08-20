@@ -6,7 +6,7 @@ import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.data.domain.Product
 import app.mblackman.orderfulfillment.data.domain.ProductSale
 import app.mblackman.orderfulfillment.data.network.etsy.json.Receipt
-import java.util.*
+import java.time.LocalDate
 
 /**
  * Maps a receipt object to order details.
@@ -39,7 +39,7 @@ class OrderDetailsToOrderMapper : Mapper<OrderDetails, Order> {
         return Order(
             input.id,
             "Temp",
-            Date(),
+            LocalDate.now(),
             "Temp",
             "Temp",
             Address("Temp", "Temp", "Temp", "Temp", "Temp", "Temp"),

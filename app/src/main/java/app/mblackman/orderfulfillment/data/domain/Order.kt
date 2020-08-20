@@ -1,11 +1,11 @@
 package app.mblackman.orderfulfillment.data.domain
 
-import java.util.*
+import java.time.LocalDate
 
 data class Order(
     val id: Int,
     val description: String,
-    val orderDate: Date,
+    val orderDate: LocalDate,
     val buyerName: String,
     val buyerEmail: String,
     val buyerAddress: Address,

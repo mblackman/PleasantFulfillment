@@ -4,96 +4,54 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import app.mblackman.orderfulfillment.data.domain.*
 import app.mblackman.orderfulfillment.data.repository.OrderRepository
-import java.util.*
+import java.time.LocalDate
 
-class MockOrderRepository : OrderRepository() {
-    var liveData = MutableLiveData<List<Order>>()
+class MockOrderRepository(
+    numOrders: Int = 10,
+    minProductSales: Int = 1,
+    maxProductSales: Int = 10
+) : OrderRepository() {
+
+    private var liveData = MutableLiveData<List<Order>>()
+
+    private val mockPeople = listOf(
+        MockPerson("Samwise Gamgee", "2breakfast@gmail.com"),
+        MockPerson("Gandalf the Grey", "shallnotpass@gmail.com"),
+        MockPerson("Legolas", "betterThanU@gmail.com"),
+        MockPerson("Gimli", "stillCountsAs1@gmail.com"),
+        MockPerson("Boromir", "arrowMagnet@gmail.com"),
+        MockPerson("Peregrin", "luvs2smoke@gmail.com"),
+        MockPerson("Frodo Baggins", "itchyFeet@gmail.com"),
+        MockPerson("Aragorn", "rangerDanger@gmail.com")
+    )
+
+    private val mockProducts = listOf(
+        Product("Leaf Pipe", "A pipe to smoke that good leaf.", "null", 15.95f),
+        Product("Stinger", "A sword that glows blue when orcs are near.", "null", 5000.95f),
+        Product("Potatoes", "Boil 'em, mash 'em, stick 'em in a stew.", "null", 3.95f)
+    )
 
     init {
         val testAddress = Address("Shire", "Shire Way", "MiddleEarth", "Shire", "ME", "1")
-        val testSales = listOf(
-            ProductSale(Product("Product 1", "Product 1 descriptor", "null", 15.95f), 1),
-            ProductSale(Product("Product 2", "Product 2 descriptor", "null", 16.95f), 1),
-            ProductSale(Product("Product 3", "Product 3 descriptor", "null", 17.95f), 1)
-        )
 
-        val orders = listOf(
+        val orders = (0..numOrders).map { i ->
+            val numSales = (minProductSales..maxProductSales).random()
+            val person = mockPeople[i % mockPeople.size]
             Order(
-                1,
-                "Test Order 1",
-                Date(),
-                "Samwise Gamgee",
-                "2breakfast@gmail.com",
+                i,
+                "Test Order $i",
+                LocalDate.now(),
+                person.name,
+                person.email,
                 testAddress,
-                testSales
-            ),
-            Order(
-                2,
-                "Test Order 2",
-                Date(),
-                "Gandalf the Grey",
-                "shallnotpass@gmail.com",
-                testAddress,
-                testSales
-            ),
-            Order(
-                3,
-                "Test Order 3",
-                Date(),
-                "Legolas",
-                "betterThanU@gmail.com",
-                testAddress,
-                testSales
-            ),
-            Order(
-                4,
-                "Test Order 4",
-                Date(),
-                "Gimli",
-                "stillCountsAs1@gmail.com",
-                testAddress,
-                testSales
-            ),
-            Order(
-                5,
-                "Test Order 5",
-                Date(),
-                "Boromir",
-                "arrowMagnet@gmail.com",
-                testAddress,
-                testSales
-            ),
-            Order(
-                6,
-                "Test Order 6",
-                Date(),
-                "Peregrin",
-                "luvs2smoke@gmail.com",
-                testAddress,
-                testSales
-            ),
-            Order(
-                7,
-                "Test Order 7",
-                Date(),
-                "Frodo Baggins",
-                "itchyFeet@gmail.com",
-                testAddress,
-                testSales
-            ),
-            Order(
-                8,
-                "Test Order 8",
-                Date(),
-                "Aragorn",
-                "rangerDanger@gmail.com",
-                testAddress,
-                testSales
+                (0..(i % mockProducts.size)).map { ProductSale(mockProducts[it], numSales) }
             )
-        )
+        }
 
         liveData.value = orders
     }
 
     override suspend fun getOrderDetails(shop: Shop): LiveData<List<Order>> = liveData
+
+    data class MockPerson(val name: String, val email: String)
 }

@@ -69,7 +69,7 @@
                     android:id="@+id/orderDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{order.orderDate.toLocaleString()}"
+                    android:text="@{order.orderDate.toString()}"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                     android:textColor="?android:attr/textColorSecondary"
                     app:layout_constraintStart_toStartOf="parent"
