@@ -4,14 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
-        <variable
-            name="state"
-            type="app.mblackman.orderfulfillment.ui.utils.ExpandState" />
-
         <variable
             name="order"
-            type="app.mblackman.orderfulfillment.data.domain.Order" />
+            type="app.mblackman.orderfulfillment.ui.orders.OrderDetailsDataItem.OrderDetailsItem" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -25,7 +20,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:animateLayoutChanges="true">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -36,7 +32,7 @@
                     android:id="@+id/description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{order.description}"
+                    android:text="@{order.order.description}"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline6"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -47,14 +43,37 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="#00FFFFFF"
-                    android:src="@drawable/keyboard_arrow_down_24px"
+                    android:src="@{order.isExpanded ? @drawable/keyboard_arrow_up_24px : @drawable/keyboard_arrow_down_24px}"
                     app:layout_constraintBottom_toBottomOf="@+id/description"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.98"
                     app:layout_constraintStart_toEndOf="@+id/description"
                     app:layout_constraintTop_toTopOf="@+id/description"
-                    android:onClick="@{() -> state.toggleExpand()}"
+                    android:onClick="@{() -> order.toggleExpand()}"
                     android:contentDescription="@string/order_details_expand_button_descriptor" />
+
+                <ImageView
+                    android:id="@+id/status_icon"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:contentDescription="@string/status_icon_for_order"
+                    android:src="@drawable/order_status_indicator"
+                    android:tintMode="screen"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/description"
+                    app:tint="@color/status_icon_purchased" />
+
+                <TextView
+                    android:id="@+id/order_status_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Subtitle1"
+                    android:paddingStart="@dimen/grid_small_padding"
+                    android:paddingEnd="@dimen/grid_small_padding"
+                    app:layout_constraintStart_toEndOf="@+id/status_icon"
+                    app:layout_constraintTop_toBottomOf="@+id/description"
+                    tools:text="Filled" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -63,13 +82,14 @@
                 android:paddingStart="@dimen/grid_medium_padding"
                 android:paddingEnd="@dimen/grid_medium_padding"
                 android:paddingBottom="@dimen/grid_small_padding"
-                android:visibility="@{state.isExpanded}">
+                android:paddingTop="@dimen/grid_small_padding"
+                android:visibility="@{order.isExpanded}">
 
                 <TextView
                     android:id="@+id/orderDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{order.orderDate.toString()}"
+                    android:text="@{order.order.orderDate.toString()}"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                     android:textColor="?android:attr/textColorSecondary"
                     app:layout_constraintStart_toStartOf="parent"
@@ -80,7 +100,7 @@
                     android:id="@+id/buyerName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{order.buyerName}"
+                    android:text="@{order.order.buyerName}"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                     android:textColor="?android:attr/textColorSecondary"
                     app:layout_constraintStart_toStartOf="parent"
@@ -91,7 +111,7 @@
                     android:id="@+id/buyerEmail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{order.buyerEmail}"
+                    android:text="@{order.order.buyerEmail}"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                     android:textColor="?android:attr/textColorSecondary"
                     app:layout_constraintStart_toStartOf="parent"
@@ -104,7 +124,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                     android:textColor="?android:attr/textColorSecondary"
-                    app:address="@{order.buyerAddress}"
+                    app:address="@{order.order.buyerAddress}"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/buyerEmail"
                     tools:text="Test\n1000 Test Lane\nAmerica USA" />
@@ -119,6 +139,50 @@
                 tools:listitem="@layout/list_item_product_sale"
                 tools:itemCount="3" />
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="@color/color_accent" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:padding="@dimen/grid_small_padding">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingEnd="@dimen/grid_small_padding"
+                    android:paddingStart="@dimen/grid_small_padding"
+                    android:text="@string/total_cost" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cost="@{order.order.totalCost}"
+                    tools:text="$19.96" />
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.button.MaterialButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/grid_small_padding"
+                    android:paddingEnd="@dimen/grid_small_padding"
+                    android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Button"
+                    android:onClick="@{() -> order.changeOrderStatus()}"
+                    app:statusButtonText="@{order.order.orderStatus}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.96"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Mark Filled" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </layout>

@@ -4,4 +4,6 @@
     <string name="ad_text">Empty ad space.</string>
     <string name="order_details_expand_button_descriptor">Expand or shrink card for order details.</string>
     <string name="image_of_product_in_sale">Image of product in sale.</string>
+    <string name="status_icon_for_order">Status icon for order.</string>
+    <string name="total_cost">Total Cost:</string>
 </resources>

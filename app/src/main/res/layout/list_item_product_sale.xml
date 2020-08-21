@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -17,7 +18,8 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true">
 
         <ImageView
             android:id="@+id/product_img"
@@ -27,8 +29,7 @@
             android:scaleType="centerCrop"
             tools:src="@tools:sample/backgrounds/scenic"
             android:contentDescription="@string/image_of_product_in_sale"
-            android:visibility="@{state.isExpanded}"
-            tools:visibility="gone" />
+            android:visibility="@{state.isExpanded}" />
 
         <LinearLayout
             android:id="@+id/product_info"
@@ -38,6 +39,7 @@
             android:orientation="vertical"
             android:paddingStart="@dimen/grid_medium_padding"
             android:paddingTop="@dimen/grid_small_padding"
+            android:animateLayoutChanges="true"
             android:paddingEnd="@dimen/grid_medium_padding"
             android:paddingBottom="@dimen/grid_small_padding">
 
@@ -53,11 +55,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="@{state.isExpanded}"
-                android:text="@{sale.product.price.toString()}"
+                app:cost="@{sale.product.price}"
                 android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                 android:textColor="?android:attr/textColorSecondary"
-                tools:text="$15.95"
-                tools:visibility="gone" />
+                tools:text="$15.95" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -66,8 +67,7 @@
                 android:visibility="@{state.isExpanded}"
                 android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                 android:textColor="?android:attr/textColorSecondary"
-                tools:text="@tools:sample/lorem"
-                tools:visibility="gone" />
+                tools:text="@tools:sample/lorem" />
         </LinearLayout>
 
         <FrameLayout

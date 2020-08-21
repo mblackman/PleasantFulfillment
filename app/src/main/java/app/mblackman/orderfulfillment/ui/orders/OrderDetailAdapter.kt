@@ -6,18 +6,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import app.mblackman.orderfulfillment.R
+import app.mblackman.orderfulfillment.data.common.OrderStatus
 import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.databinding.ListItemOrderDetailsBinding
-import app.mblackman.orderfulfillment.ui.utils.ExpandState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 private const val ITEM_VIEW_TYPE_HEADER = 0
 private const val ITEM_VIEW_TYPE_ITEM = 1
@@ -32,19 +35,29 @@ class OrderDetailAdapter(
     private val context: Context,
     private val lifecycleOwner: LifecycleOwner
 ) :
-    ListAdapter<DataItem, RecyclerView.ViewHolder>(OrderDetailsDiffCallback) {
+    ListAdapter<OrderDetailsDataItem, RecyclerView.ViewHolder>(OrderDetailsDiffCallback) {
 
     private val adapterScope = CoroutineScope(Dispatchers.Default)
+    private val _orderUpdated = MutableLiveData<Order>()
+
+    val orderUpdated: LiveData<Order>
+        get() = _orderUpdated
 
     /**
      * Checks for differences between orders.
      */
-    companion object OrderDetailsDiffCallback : DiffUtil.ItemCallback<DataItem>() {
-        override fun areItemsTheSame(oldItem: DataItem, newItem: DataItem): Boolean {
+    companion object OrderDetailsDiffCallback : DiffUtil.ItemCallback<OrderDetailsDataItem>() {
+        override fun areItemsTheSame(
+            oldItem: OrderDetailsDataItem,
+            newItem: OrderDetailsDataItem
+        ): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: DataItem, newItem: DataItem): Boolean {
+        override fun areContentsTheSame(
+            oldItem: OrderDetailsDataItem,
+            newItem: OrderDetailsDataItem
+        ): Boolean {
             return oldItem == newItem
         }
     }
@@ -52,7 +65,7 @@ class OrderDetailAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is BindingViewHolder -> {
-                val item = getItem(position) as DataItem.OrderDetailsItem
+                val item = getItem(position) as OrderDetailsDataItem.OrderDetailsItem
                 holder.bind(item)
             }
         }
@@ -73,8 +86,8 @@ class OrderDetailAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
-            is DataItem.Header -> ITEM_VIEW_TYPE_HEADER
-            is DataItem.OrderDetailsItem -> ITEM_VIEW_TYPE_ITEM
+            is OrderDetailsDataItem.Header -> ITEM_VIEW_TYPE_HEADER
+            is OrderDetailsDataItem.OrderDetailsItem -> ITEM_VIEW_TYPE_ITEM
         }
     }
 
@@ -86,8 +99,13 @@ class OrderDetailAdapter(
     fun addHeaderAndSubmitList(list: List<Order>?) {
         adapterScope.launch {
             val items = when (list) {
-                null -> listOf(DataItem.Header)
-                else -> listOf(DataItem.Header) + list.map { DataItem.OrderDetailsItem(it) }
+                null -> listOf(OrderDetailsDataItem.Header)
+                else -> listOf(OrderDetailsDataItem.Header) + list.map {
+                    OrderDetailsDataItem.OrderDetailsItem(
+                        context,
+                        it
+                    )
+                }
             }
             withContext(Dispatchers.Main) {
                 submitList(items)
@@ -106,17 +124,36 @@ class OrderDetailAdapter(
          *
          * @param item The order to bind to.
          */
-        fun bind(item: DataItem.OrderDetailsItem) {
-            binding.order = item.order
-            binding.state = item.state
+        fun bind(item: OrderDetailsDataItem.OrderDetailsItem) {
+            binding.order = item
 
             val productSalesAdapter =
-                ProductSaleAdapter(lifecycleOwner, item.order.productSales, item.state.isExpanded)
+                ProductSaleAdapter(lifecycleOwner, item.order.productSales, item.isExpanded)
             val decorator = DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
                 setDrawable(ContextCompat.getDrawable(context, R.drawable.divider)!!)
             }
             binding.productSales.adapter = productSalesAdapter
-            binding.productSales.addItemDecoration(decorator)
+            binding.productSales.addItemDecoration(decorator, 0)
+
+            item.order.orderStatus.observe(lifecycleOwner) {
+                binding.statusIcon.imageTintList = when (it) {
+                    OrderStatus.Purchased -> context.getColorStateList(R.color.order_status_purchased_tint)
+                    OrderStatus.Filled -> context.getColorStateList(R.color.order_status_filled_tint)
+                    OrderStatus.Shipped -> context.getColorStateList(R.color.order_status_shipped_tint)
+                    OrderStatus.Delivered -> context.getColorStateList(R.color.order_status_delivered_tint)
+                    else -> context.getColorStateList(R.color.order_status_purchased_tint)
+                }
+
+                binding.orderStatusText.text = when (it) {
+                    OrderStatus.Purchased -> "Purchased"
+                    OrderStatus.Filled -> "Filled"
+                    OrderStatus.Shipped -> "Shipped"
+                    OrderStatus.Delivered -> "Delivered"
+                    else -> "What"
+                }
+
+                _orderUpdated.postValue(item.order)
+            }
 
             binding.lifecycleOwner = lifecycleOwner
             binding.executePendingBindings()
@@ -147,21 +184,36 @@ class OrderDetailAdapter(
 /**
  * Decorator to contain the items stored inside the adapter's collection.
  */
-sealed class DataItem {
+sealed class OrderDetailsDataItem {
     /**
      * Holds an order.
      *
      * @param order The order to hold.
      */
-    data class OrderDetailsItem(val order: Order) : DataItem() {
+    data class OrderDetailsItem(val context: Context, val order: Order) : OrderDetailsDataItem() {
         override val id = order.id
-        val state = ExpandState()
+        val isExpanded = MutableLiveData(false)
+
+        fun toggleExpand() {
+            val nextValue = if (isExpanded.value == null) false else !isExpanded.value!!
+            isExpanded.postValue(nextValue)
+        }
+
+        fun changeOrderStatus() {
+            order.orderStatus.value?.let {
+                when (it) {
+                    OrderStatus.Purchased -> order.orderStatus.postValue(OrderStatus.Filled)
+                    OrderStatus.Filled -> order.orderStatus.postValue(OrderStatus.Purchased)
+                    else -> Timber.i("Invalid button state for change order status button $it.")
+                }
+            }
+        }
     }
 
     /**
      * Holds the header for the list.
      */
-    object Header : DataItem() {
+    object Header : OrderDetailsDataItem() {
         override val id = Int.MIN_VALUE
     }
 

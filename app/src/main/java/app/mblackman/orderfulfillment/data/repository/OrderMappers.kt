@@ -1,5 +1,6 @@
 package app.mblackman.orderfulfillment.data.repository
 
+import app.mblackman.orderfulfillment.data.common.OrderStatus
 import app.mblackman.orderfulfillment.data.database.OrderDetails
 import app.mblackman.orderfulfillment.data.domain.Address
 import app.mblackman.orderfulfillment.data.domain.Order
@@ -39,11 +40,12 @@ class OrderDetailsToOrderMapper : Mapper<OrderDetails, Order> {
         return Order(
             input.id,
             "Temp",
+            OrderStatus.Purchased,
             LocalDate.now(),
             "Temp",
             "Temp",
             Address("Temp", "Temp", "Temp", "Temp", "Temp", "Temp"),
-            listOf(ProductSale(1, Product("Product 3", "Product 3 descriptor", "null", 17.95f), 1))
+            listOf(ProductSale(1, Product("Product 3", "Product 3 descriptor", "null", 17.95), 1))
         )
     }
 }

@@ -8,10 +8,12 @@ import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
 import androidx.databinding.BindingConversion
 import app.mblackman.orderfulfillment.R
+import app.mblackman.orderfulfillment.data.common.OrderStatus
 import app.mblackman.orderfulfillment.data.domain.Address
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import java.text.DecimalFormat
+import java.text.NumberFormat
 
 
 /**
@@ -29,6 +31,21 @@ fun setAddress(textView: TextView, address: Address) {
 @BindingAdapter("truncatedInt")
 fun setTruncatedInt(textView: TextView, value: Int) {
     textView.text = DecimalFormat("00").format(value)
+}
+
+@BindingAdapter("statusButtonText")
+fun setStatusButtonText(textView: TextView, value: OrderStatus) {
+    textView.text = when (value) {
+        OrderStatus.Purchased -> "Mark Filled"
+        OrderStatus.Filled -> "Mark Not Filled"
+        else -> "Don't do it"
+    }
+}
+
+@BindingAdapter("cost")
+fun setCost(textView: TextView, value: Double?) {
+    val format = NumberFormat.getCurrencyInstance()
+    textView.text = format.format(value)
 }
 
 @BindingConversion
