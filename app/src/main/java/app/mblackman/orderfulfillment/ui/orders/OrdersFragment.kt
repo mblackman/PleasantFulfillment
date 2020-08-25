@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import app.mblackman.orderfulfillment.R
 import app.mblackman.orderfulfillment.data.database.getDatabase
@@ -59,11 +58,11 @@ class OrdersFragment : Fragment() {
 
         val adapter = OrderDetailAdapter(application, this)
 
-        viewModel.orderDetails.observe(viewLifecycleOwner, Observer {
+        viewModel.orderDetails.observe(viewLifecycleOwner) {
             it.let {
                 adapter.addHeaderAndSubmitList(it)
             }
-        })
+        }
 
         adapter.addHeaderAndSubmitList(viewModel.orderDetails.value)
         binding.orderDetails.adapter = adapter

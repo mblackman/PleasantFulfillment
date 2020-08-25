@@ -74,7 +74,7 @@ class OrderRepositoryImplTest {
         )
     }
 
-    class MockStoreDao(var orderDetails: List<OrderDetails>) : StoreDao {
+    class MockStoreDao(private var orderDetails: List<OrderDetails>) : StoreDao {
         private val liveOrderDetails = MutableLiveData<List<OrderDetails>>()
 
         init {

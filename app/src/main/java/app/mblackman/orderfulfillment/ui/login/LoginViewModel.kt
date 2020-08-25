@@ -52,7 +52,7 @@ class LoginViewModel(
     val authorizationUrl: LiveData<String>
         get() = _authorizationUrl
 
-    private val _loginStatus = MutableLiveData<LoginStatus>(LoginStatus.GETTING_AUTH_URL)
+    private val _loginStatus = MutableLiveData(LoginStatus.GETTING_AUTH_URL)
 
     /**
      * Gets the login status.

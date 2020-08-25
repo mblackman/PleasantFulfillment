@@ -5,7 +5,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import app.mblackman.orderfulfillment.data.network.etsy.SessionManager
 import app.mblackman.orderfulfillment.ui.login.LoginViewModel
@@ -36,7 +35,7 @@ class LoginActivity : AppCompatActivity() {
 
         setContentView(R.layout.login_activity)
 
-        loginViewModel.authorizationUrl.observe(this, Observer {
+        loginViewModel.authorizationUrl.observe(this) {
             it?.let {
                 val parsedUri: Uri = Uri.parse(it)
                 val intent = Intent(Intent.ACTION_VIEW, parsedUri)
@@ -44,7 +43,7 @@ class LoginActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
             }
-        })
+        }
 
         loginViewModel.getAuthorization()
     }
