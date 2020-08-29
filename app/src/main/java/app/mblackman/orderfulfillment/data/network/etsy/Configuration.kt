@@ -1,4 +1,4 @@
-package app.mblackman.orderfulfillment.data
+package app.mblackman.orderfulfillment.data.network.etsy
 
 /**
  * Configuration information for the data.

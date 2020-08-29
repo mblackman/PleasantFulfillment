@@ -40,7 +40,7 @@ class EtsyServiceGenerator(sessionManager: SessionManager) {
      * @param serviceClass The class to generate the service from.
      * @return The new service.
      */
-    fun <S> createService(serviceClass: Class<S>): S {
+    fun <T> createService(serviceClass: Class<T>): T {
         return retrofit.create(serviceClass)
     }
 }

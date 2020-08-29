@@ -1,9 +1,6 @@
 package app.mblackman.orderfulfillment.data.network.etsy
 
-import app.mblackman.orderfulfillment.data.network.etsy.json.EtsyResponseWrapper
-import app.mblackman.orderfulfillment.data.network.etsy.json.Receipt
-import app.mblackman.orderfulfillment.data.network.etsy.json.Shop
-import app.mblackman.orderfulfillment.data.network.etsy.json.User
+import app.mblackman.orderfulfillment.data.network.etsy.json.*
 import kotlinx.coroutines.Deferred
 import retrofit2.Response
 import retrofit2.http.GET
@@ -31,6 +28,26 @@ interface EtsyApiService {
         @Path(LimitPropertyName) limit: Int,
         @Path(OffsetPropertyName) offset: Int
     ): Deferred<Response<EtsyResponseWrapper<Receipt>>>
+
+    @GET("shops/{shopId}/transactions")
+    fun findAllTransactionsAsync(
+        @Path("shopId") shopId: Int,
+        @Path(LimitPropertyName) limit: Int,
+        @Path(OffsetPropertyName) offset: Int
+    ): Deferred<Response<EtsyResponseWrapper<Transaction>>>
+
+    @GET("shop/{shopId}/listings/active")
+    fun findAllActiveShopListingsAsync(
+        @Path("shopId") shopId: Int,
+        @Path(LimitPropertyName) limit: Int,
+        @Path(OffsetPropertyName) offset: Int
+    ): Deferred<Response<EtsyResponseWrapper<Listing>>>
+
+    @GET("listings/{listingId}/images/{listingImageId}")
+    fun getImageListingAsync(
+        @Path("listingId") listingId: Int,
+        @Path("listingImageId") listingImageId: Int
+    ): Deferred<Response<EtsyResponseWrapper<ListingImage>>>
 
     /**
      * Gets the user for the authenticated user.

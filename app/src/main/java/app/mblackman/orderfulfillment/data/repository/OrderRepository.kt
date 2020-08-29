@@ -2,18 +2,19 @@ package app.mblackman.orderfulfillment.data.repository
 
 import androidx.lifecycle.LiveData
 import app.mblackman.orderfulfillment.data.domain.Order
-import app.mblackman.orderfulfillment.data.domain.Shop
 
 /**
  * Represents a repository of orders.
  */
-abstract class OrderRepository : BaseRepository() {
+abstract class OrderRepository {
 
     /**
-     * Gets the live data collection of the order details.
-     *
-     * @param shop The shop to get order details from.
-     * @return A live data with the collection of order details.
+     * Gets the list of orders.
      */
-    abstract suspend fun getOrderDetails(shop: Shop): LiveData<List<Order>>
+    abstract val orderDetails: LiveData<List<Order>>
+
+    /**
+     * Gets the latest order detail data and stores it.
+     */
+    abstract suspend fun updateOrderDetails()
 }

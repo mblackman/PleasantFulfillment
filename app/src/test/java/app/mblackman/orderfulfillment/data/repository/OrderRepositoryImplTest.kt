@@ -44,7 +44,8 @@ class OrderRepositoryImplTest {
         val receipts = listOf(Receipt(1))
         val repo = setupMocks(shop.id, receipts)
 
-        val result = runBlocking { repo.getOrderDetails(shop) }
+        runBlocking { repo.updateOrderDetails(shop) }
+        val result = repo.orderDetails
         result.observeForever(observer)
 
         Truth.assertWithMessage("The user should have come from the database since it matches the config's user id.")
@@ -69,7 +70,7 @@ class OrderRepositoryImplTest {
         return OrderRepositoryImpl(
             etsyApiService,
             database,
-            ReceiptToOrderMapper(),
+            NetworkOrderToOrderDetailsMapper(),
             OrderDetailsToOrderMapper()
         )
     }

@@ -4,49 +4,49 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.*
 
-/**
- * Dao interface to define methods to interact with room database.
- */
-@Dao
-interface StoreDao {
-
+interface BaseDao<T> {
     /**
-     * Gets all the order details from the dao.
-     */
-    @Query("SELECT * FROM orderdetails")
-    fun getOrderDetails(): LiveData<List<OrderDetails>>
-
-    /**
-     * Inserts all the given order details in the dao.
+     * Inserts all the items into the dao.
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(orderDetails: List<OrderDetails>)
+    fun insertAll(orderDetails: List<T>)
 }
 
 /**
  * Dao interface to define methods to interact with room database.
  */
 @Dao
-interface UserDao {
+interface StoreDao : BaseDao<OrderDetails> {
 
     /**
-     * Gets a user by id.
-     *
-     * @param id The id to look up the user with.
-     * @return The user if found, else null.
+     * Gets all the order details from the dao.
      */
-    @Query("SELECT * FROM user WHERE id = :id")
-    fun findUserById(id: Int): User?
+    @Query("SELECT * FROM order_details")
+    fun getOrderDetails(): LiveData<List<OrderDetails>>
+}
+
+@Dao
+interface ProductDao : BaseDao<Product>
+
+@Dao
+interface ProductSaleDao : BaseDao<ProductSale> {
+    @Query("SELECT * FROM product_sale LEFT JOIN product ON product_sale.product_sale_adapterId=product.product_adapterId AND product_sale.productId WHERE adapterId = :adapterId AND order_details_foreignKey = :orderId")
+    fun getProductSalesWithProduct(adapterId: Int, orderId: Long): List<ProductSale>
 }
 
 /**
  * The database containing all the data for the store and user.
  */
-@Database(entities = [OrderDetails::class, User::class], version = 1, exportSchema = false)
+@Database(
+    entities = [OrderDetails::class, Product::class, ProductSale::class, EntityIdentity::class],
+    version = 1,
+    exportSchema = false
+)
 abstract class StoreDatabase : RoomDatabase() {
 
     abstract val storeDao: StoreDao
-    abstract val userDao: UserDao
+    abstract val productDao: ProductDao
+    abstract val productSaleDao: ProductSaleDao
 }
 
 private lateinit var INSTANCE: StoreDatabase

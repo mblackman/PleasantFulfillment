@@ -2,8 +2,12 @@ package app.mblackman.orderfulfillment.ui.debug
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import app.mblackman.orderfulfillment.data.common.Address
 import app.mblackman.orderfulfillment.data.common.OrderStatus
-import app.mblackman.orderfulfillment.data.domain.*
+import app.mblackman.orderfulfillment.data.domain.Order
+import app.mblackman.orderfulfillment.data.domain.Product
+import app.mblackman.orderfulfillment.data.domain.ProductSale
+import app.mblackman.orderfulfillment.data.domain.Shop
 import app.mblackman.orderfulfillment.data.repository.OrderRepository
 import java.time.LocalDate
 
@@ -75,7 +79,7 @@ class MockOrderRepository(
         liveData.value = orders
     }
 
-    override suspend fun getOrderDetails(shop: Shop): LiveData<List<Order>> = liveData
+    override suspend fun updateOrderDetails(shop: Shop): LiveData<List<Order>> = liveData
 
     data class MockPerson(val name: String, val email: String)
 }

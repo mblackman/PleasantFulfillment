@@ -1,5 +1,7 @@
 package app.mblackman.orderfulfillment.data
 
+import app.mblackman.orderfulfillment.data.network.etsy.Configuration
+
 /**
  * A mock implementation of the app Configuration with public getters and setters.
  */

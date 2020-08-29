@@ -1,4 +1,4 @@
-package app.mblackman.orderfulfillment.data.domain
+package app.mblackman.orderfulfillment.data.common
 
 data class Address(
     val name: String,

@@ -8,8 +8,8 @@ import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
 import androidx.databinding.BindingConversion
 import app.mblackman.orderfulfillment.R
+import app.mblackman.orderfulfillment.data.common.Address
 import app.mblackman.orderfulfillment.data.common.OrderStatus
-import app.mblackman.orderfulfillment.data.domain.Address
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import java.text.DecimalFormat

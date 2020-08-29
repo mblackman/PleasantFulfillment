@@ -14,7 +14,7 @@ data class Product(
  * Represents a sale of a product.
  */
 data class ProductSale(
-    val id: Int,
+    val id: Long,
     val product: Product,
     val quantity: Int
 )

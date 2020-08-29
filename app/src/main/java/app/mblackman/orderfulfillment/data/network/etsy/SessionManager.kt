@@ -2,6 +2,8 @@ package app.mblackman.orderfulfillment.data.network.etsy
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import app.mblackman.orderfulfillment.R
 
 /**
@@ -9,7 +11,7 @@ import app.mblackman.orderfulfillment.R
  *
  * @param context The context of the constructing caller.
  */
-class SessionManager(context: Context) {
+class SessionManager(context: Context, private val suppressEvents: Boolean = false) {
     private var prefs: SharedPreferences =
         context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE)
 
@@ -22,7 +24,9 @@ class SessionManager(context: Context) {
     companion object {
         const val USER_TOKEN = "user_token"
         const val USER_TOKEN_SECRET = "user_token_secret"
-        private var authenticationListener: AuthenticationListener? = null
+        private val _authenticationChanged = MutableLiveData<Boolean>()
+        val authenticationChanged: LiveData<Boolean>
+            get() = _authenticationChanged
     }
 
     /**
@@ -33,6 +37,10 @@ class SessionManager(context: Context) {
             .putString(USER_TOKEN, token)
             .putString(USER_TOKEN_SECRET, secret)
             .apply()
+
+        if (!suppressEvents) {
+            _authenticationChanged.postValue(true)
+        }
     }
 
     /**
@@ -60,18 +68,11 @@ class SessionManager(context: Context) {
     }
 
     /**
-     * Sets the authentication listener to notify listeners.
-     *
-     * @param listener The listener to set.
-     */
-    fun setAuthenticationListener(listener: AuthenticationListener) {
-        authenticationListener = listener
-    }
-
-    /**
      * Call whenever authentication has failed for the stored credentials.
      */
     fun onAuthenticationFailed() {
-        authenticationListener?.onAuthenticationFailed()
+        if (!suppressEvents) {
+            _authenticationChanged.postValue(false)
+        }
     }
 }
