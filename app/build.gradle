@@ -18,7 +18,7 @@ android {
 
     defaultConfig {
         applicationId "app.mblackman.orderfulfillment"
-        minSdkVersion 26
+        minSdkVersion 28
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -54,41 +54,48 @@ android {
     }
 }
 
+allprojects {
+    repositories {
+        google()
+        jcenter()
+
+    }
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$version_kotlin"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$version_kotlin"
 
-    // JUnit 4 framework
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'io.mockk:mockk:1.10.0'
+    // Test dependencies
+    testImplementation "io.mockk:mockk:$version_mockk"
     testImplementation 'junit:junit:4.13'
-    testImplementation "com.google.truth:truth:1.0.1"
+    testImplementation "com.google.truth:truth:$version_truth"
     testImplementation "android.arch.core:core-testing:$version_arch"
+    androidTestImplementation "com.google.truth:truth:$version_truth"
+    androidTestImplementation "android.arch.core:core-testing:$version_arch"
+    androidTestImplementation "androidx.test:core:$version_androidx_text"
+    androidTestImplementation "androidx.test:runner:$version_androidx_text"
+    androidTestImplementation "androidx.test:rules:$version_androidx_text"
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation "io.mockk:mockk-android:$version_mockk"
 
-    implementation "androidx.browser:browser:$version_browser"
-
-    // WorkManager
-    implementation "android.arch.work:work-runtime-ktx:$version_work"
-
-    // Timber
-    implementation 'com.jakewharton.timber:timber:4.7.1'
+    // Androidx dependencies
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation "androidx.appcompat:appcompat:$version_app_compat"
+    implementation "androidx.core:core-ktx:$version_core"
 
     // Constraint Layout
     implementation "androidx.constraintlayout:constraintlayout:$version_constraint_layout"
 
     // ViewModel and LiveData
     implementation "androidx.lifecycle:lifecycle-extensions:$version_lifecycle_extensions"
+    implementation "androidx.lifecycle:lifecycle-extensions:$version_lifecycle_extensions"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$version_lifecycle_extensions"
 
     // Navigation
     implementation "android.arch.navigation:navigation-fragment-ktx:$version_navigation"
     implementation "android.arch.navigation:navigation-ui-ktx:$version_navigation"
-
-    // Core with Ktx
-    implementation "androidx.core:core-ktx:$version_core"
 
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit: $version_retrofit"
@@ -97,12 +104,11 @@ dependencies {
     // Moshi
     implementation "com.squareup.moshi:moshi:$version_moshi"
     implementation "com.squareup.moshi:moshi-kotlin:$version_moshi"
-
     implementation "com.squareup.retrofit2:converter-moshi:$version_retrofit"
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version_kotlin_coroutines"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${version_kotlin_coroutines}"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version_kotlin_coroutines"
     implementation "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:$version_retrofit_coroutines_adapter"
 
     // Volley
@@ -123,4 +129,13 @@ dependencies {
 
     // Glide
     implementation "com.github.bumptech.glide:glide:$version_glide"
+
+    // Browser
+    implementation "androidx.browser:browser:$version_browser"
+
+    // WorkManager
+    implementation "android.arch.work:work-runtime-ktx:$version_work"
+
+    // Timber
+    implementation "com.jakewharton.timber:timber:$version_timber"
 }
