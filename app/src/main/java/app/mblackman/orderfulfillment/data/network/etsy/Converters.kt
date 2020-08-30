@@ -8,7 +8,9 @@ import app.mblackman.orderfulfillment.data.network.NetworkProductSale
 import app.mblackman.orderfulfillment.data.network.etsy.json.Listing
 import app.mblackman.orderfulfillment.data.network.etsy.json.Receipt
 import app.mblackman.orderfulfillment.data.network.etsy.json.Transaction
-import java.time.LocalDate
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 fun Listing.toNetworkProduct(imageUrl: String? = null): NetworkProduct =
     NetworkProduct(
@@ -41,8 +43,9 @@ fun Transaction.toNetworkProductSale(): NetworkProductSale =
     NetworkProductSale(
         this.id.toLong(),
         this.listingId.toLong(),
+        this.receiptId.toLong(),
         this.quantity
     )
 
-fun Float.toDate(): LocalDate =
-    LocalDate.ofEpochDay(this.toLong())
+fun Float.toDate(): LocalDateTime =
+    Instant.ofEpochMilli(this.toLong()).atZone(ZoneId.systemDefault()).toLocalDateTime()

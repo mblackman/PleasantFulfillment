@@ -4,18 +4,16 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import app.mblackman.orderfulfillment.data.TestStoreAdapter
 import app.mblackman.orderfulfillment.data.database.OrderDetails
-import app.mblackman.orderfulfillment.data.database.StoreDao
+import app.mblackman.orderfulfillment.data.database.OrderDetailsDao
 import app.mblackman.orderfulfillment.data.database.StoreDatabase
 import app.mblackman.orderfulfillment.data.domain.Order
-import app.mblackman.orderfulfillment.data.domain.Shop
-import app.mblackman.orderfulfillment.data.network.etsy.EtsyApiService
-import app.mblackman.orderfulfillment.data.network.etsy.json.Receipt
+import app.mblackman.orderfulfillment.data.network.StoreAdapter
 import com.google.common.truth.Truth
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.unmockkObject
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Rule
@@ -27,24 +25,19 @@ class OrderRepositoryImplTest {
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
-    private val etsyApiService: EtsyApiService = mockk()
     private val database: StoreDatabase = mockk(relaxed = true)
 
     @After
     fun after() {
-        unmockkObject(etsyApiService)
         unmockkObject(database)
     }
 
     @Test
     fun getOrdersLoadFromWeb() {
         val observer = Observer<List<Order>> {}
+        val repo = setupMocks(TestStoreAdapter.singleNetworkOrder())
 
-        val shop = Shop(1)
-        val receipts = listOf(Receipt(1))
-        val repo = setupMocks(shop.id, receipts)
-
-        runBlocking { repo.updateOrderDetails(shop) }
+        runBlocking { repo.updateOrderDetails() }
         val result = repo.orderDetails
         result.observeForever(observer)
 
@@ -53,29 +46,19 @@ class OrderRepositoryImplTest {
     }
 
     private fun setupMocks(
-        shopId: Int,
-        receipts: List<Receipt> = emptyList(),
+        storeAdapter: StoreAdapter,
         orderDetails: List<OrderDetails> = emptyList()
     ): OrderRepository {
-        every {
-            etsyApiService.findAllReceiptsAsync(
-                shopId,
-                any(),
-                any()
-            )
-        } returns CompletableDeferred(receipts.toEtsyResponse())
 
-        every { database.storeDao } returns MockStoreDao(orderDetails)
+        every { database.orderDetailsDao } returns MockOrderDetailsDao(orderDetails)
 
         return OrderRepositoryImpl(
-            etsyApiService,
-            database,
-            NetworkOrderToOrderDetailsMapper(),
-            OrderDetailsToOrderMapper()
+            storeAdapter,
+            database
         )
     }
 
-    class MockStoreDao(private var orderDetails: List<OrderDetails>) : StoreDao {
+    class MockOrderDetailsDao(private var orderDetails: List<OrderDetails>) : OrderDetailsDao {
         private val liveOrderDetails = MutableLiveData<List<OrderDetails>>()
 
         init {
@@ -84,8 +67,11 @@ class OrderRepositoryImplTest {
 
         override fun getOrderDetails(): LiveData<List<OrderDetails>> = liveOrderDetails
 
-        override fun insertAll(orderDetails: List<OrderDetails>) {
-            this.orderDetails = this.orderDetails + orderDetails
+        override fun getOrderDetailsByAdapter(adapterId: Int): List<OrderDetails> =
+            liveOrderDetails.value ?: emptyList()
+
+        override fun insertAll(items: List<OrderDetails>) {
+            this.orderDetails = this.orderDetails + items
             this.liveOrderDetails.value = this.orderDetails
         }
 

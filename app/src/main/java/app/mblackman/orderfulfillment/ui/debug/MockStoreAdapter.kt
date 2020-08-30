@@ -1,23 +1,36 @@
 package app.mblackman.orderfulfillment.ui.debug
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import app.mblackman.orderfulfillment.data.common.Address
 import app.mblackman.orderfulfillment.data.common.OrderStatus
-import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.data.domain.Product
-import app.mblackman.orderfulfillment.data.domain.ProductSale
-import app.mblackman.orderfulfillment.data.domain.Shop
-import app.mblackman.orderfulfillment.data.repository.OrderRepository
-import java.time.LocalDate
+import app.mblackman.orderfulfillment.data.network.NetworkOrder
+import app.mblackman.orderfulfillment.data.network.NetworkProduct
+import app.mblackman.orderfulfillment.data.network.NetworkProductSale
+import app.mblackman.orderfulfillment.data.network.StoreAdapter
+import java.time.LocalDateTime
 
-class MockOrderRepository(
-    numOrders: Int = 10,
-    minProductSales: Int = 1,
-    maxProductSales: Int = 10
-) : OrderRepository() {
+class MockStoreAdapter(
+    numOrders: Int = 10
+) : StoreAdapter {
 
-    private var liveData = MutableLiveData<List<Order>>()
+    override val adapterId: Int = 0
+
+    private val orders: List<NetworkOrder> by lazy {
+        val testAddress = Address("Shire", "Shire Way", "MiddleEarth", "Shire", "ME", "1")
+
+        (0..numOrders).map { i ->
+            val person = mockPeople[i % mockPeople.size]
+            NetworkOrder(
+                i.toLong(),
+                OrderStatus.Purchased,
+                LocalDateTime.now(),
+                person.name,
+                person.email,
+                testAddress,
+                null
+            )
+        }
+    }
 
     private val mockPeople = listOf(
         MockPerson("Samwise Gamgee", "2breakfast@gmail.com"),
@@ -51,35 +64,15 @@ class MockOrderRepository(
         )
     )
 
-    init {
-        val testAddress = Address("Shire", "Shire Way", "MiddleEarth", "Shire", "ME", "1")
-        var currentProductId = 0
+    override suspend fun getOrders(): List<NetworkOrder> = orders
 
-        val orders = (0..numOrders).map { i ->
-            val numSales = (minProductSales..maxProductSales).random()
-            val person = mockPeople[i % mockPeople.size]
-            Order(
-                i,
-                "Test Order $i",
-                OrderStatus.Purchased,
-                LocalDate.now(),
-                person.name,
-                person.email,
-                testAddress,
-                (0..(i % mockProducts.size)).map {
-                    ProductSale(
-                        currentProductId++,
-                        mockProducts[it],
-                        numSales
-                    )
-                }
-            )
-        }
-
-        liveData.value = orders
+    override suspend fun getProducts(): List<NetworkProduct> {
+        TODO("Not yet implemented")
     }
 
-    override suspend fun updateOrderDetails(shop: Shop): LiveData<List<Order>> = liveData
+    override suspend fun getProductSales(): List<NetworkProductSale> {
+        TODO("Not yet implemented")
+    }
 
     data class MockPerson(val name: String, val email: String)
 }

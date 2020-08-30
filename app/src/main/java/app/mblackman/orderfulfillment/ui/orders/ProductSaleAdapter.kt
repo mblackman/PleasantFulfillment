@@ -18,7 +18,6 @@ import kotlinx.coroutines.withContext
 
 class ProductSaleAdapter(
     private val lifecycleOwner: LifecycleOwner,
-    items: List<ProductSale>,
     expandState: LiveData<Boolean>
 ) : ListAdapter<ProductSale, RecyclerView.ViewHolder>(ProductSaleDiffCallback) {
 
@@ -38,7 +37,7 @@ class ProductSaleAdapter(
         }
     }
 
-    init {
+    fun setItems(items: List<ProductSale>) {
         adapterScope.launch {
             withContext(Dispatchers.Main) {
                 submitList(items)

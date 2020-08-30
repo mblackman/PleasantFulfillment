@@ -1,34 +1,70 @@
 package app.mblackman.orderfulfillment.data.repository
 
-import app.mblackman.orderfulfillment.data.database.*
+import app.mblackman.orderfulfillment.data.database.DefaultPrimaryKey
+import app.mblackman.orderfulfillment.data.database.OrderDetails
+import app.mblackman.orderfulfillment.data.database.Product
+import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.data.network.NetworkOrder
 import app.mblackman.orderfulfillment.data.network.NetworkProduct
-import app.mblackman.orderfulfillment.data.network.NetworkProductSale
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.util.*
 
-const val DefaultPrimaryKey: Long = 0
+/**
+ * Converts a [Date] to [LocalDateTime]
+ */
+fun Date.toLocalDateTime(): LocalDateTime =
+    Instant.ofEpochMilli(this.time).atZone(ZoneId.systemDefault()).toLocalDateTime()
 
-fun NetworkOrder.asDatabaseObject(adapterId: Int): OrderDetails =
-    OrderDetails(
-        EntityIdentity(adapterId, this.id),
+/**
+ * Converts a [LocalDateTime] to [Date]
+ */
+fun LocalDateTime.toDate(): Date =
+    Date.from(this.atZone(ZoneId.systemDefault()).toInstant())
+
+/**
+ * Converts the database [OrderDetails] object to an [Order]
+ */
+fun OrderDetails.asDomainObject(): Order =
+    Order(
+        this.orderDetailsId,
+        "Order ${this.orderDetailsId}.",
         this.status,
-        this.orderDate,
+        this.orderDate.toLocalDateTime(),
         this.buyerName,
         this.buyerEmail,
         this.address,
-        this.properties?.asProperties()
+        null
     )
 
-fun NetworkProductSale.asDatabaseObject(adapterId: Int): ProductSale =
-    ProductSale(
-        EntityIdentity(adapterId, this.id),
-        EntityIdentity(adapterId, this.orderId),
-        EntityIdentity(adapterId, this.productId),
-        this.quantity
-    )
+/**
+ * Converts a [NetworkOrder] to a database [OrderDetails].
+ *
+ * @param adapterId The id of the StoreAdapter this [NetworkOrder] came from
+ */
+fun NetworkOrder.asDatabaseObject(adapterId: Int): OrderDetails =
+    OrderDetails(
+        DefaultPrimaryKey,
+        adapterId,
+        this.id,
+        this.status,
+        this.orderDate.toDate(),
+        this.buyerName,
+        this.buyerEmail,
+        this.address
+    ).apply {
+        this.adapterId
+    }
 
-fun NetworkProduct.asDatabaseObject(adapterId: Int): Product =
+/**
+ * Converts a [NetworkProduct] to a database [Product].
+ *
+ * @param primaryKey The primary key of an existing entry if it exists. Send null if no entry exists.
+ */
+fun NetworkProduct.asDatabaseObject(primaryKey: Long?): Product =
     Product(
-        EntityIdentity(adapterId, this.id),
+        primaryKey ?: DefaultPrimaryKey,
         this.name,
         this.description,
         this.imageUrl,

@@ -24,9 +24,9 @@ class SessionManager(context: Context, private val suppressEvents: Boolean = fal
     companion object {
         const val USER_TOKEN = "user_token"
         const val USER_TOKEN_SECRET = "user_token_secret"
-        private val _authenticationChanged = MutableLiveData<Boolean>()
+        private val authenticationChangedInternal = MutableLiveData<Boolean>()
         val authenticationChanged: LiveData<Boolean>
-            get() = _authenticationChanged
+            get() = authenticationChangedInternal
     }
 
     /**
@@ -39,7 +39,7 @@ class SessionManager(context: Context, private val suppressEvents: Boolean = fal
             .apply()
 
         if (!suppressEvents) {
-            _authenticationChanged.postValue(true)
+            authenticationChangedInternal.postValue(true)
         }
     }
 
@@ -72,7 +72,7 @@ class SessionManager(context: Context, private val suppressEvents: Boolean = fal
      */
     fun onAuthenticationFailed() {
         if (!suppressEvents) {
-            _authenticationChanged.postValue(false)
+            authenticationChangedInternal.postValue(false)
         }
     }
 }

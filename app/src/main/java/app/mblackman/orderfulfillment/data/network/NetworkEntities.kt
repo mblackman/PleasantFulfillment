@@ -2,7 +2,7 @@ package app.mblackman.orderfulfillment.data.network
 
 import app.mblackman.orderfulfillment.data.common.Address
 import app.mblackman.orderfulfillment.data.common.OrderStatus
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 /**
  * Represents a product for sale.
@@ -31,7 +31,7 @@ data class NetworkProductSale(
 data class NetworkOrder(
     val id: Long,
     val status: OrderStatus,
-    val orderDate: LocalDate,
+    val orderDate: LocalDateTime,
     val buyerName: String,
     val buyerEmail: String,
     val address: Address,

@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -34,14 +33,9 @@ private const val ITEM_VIEW_TYPE_ITEM = 1
 class OrderDetailAdapter(
     private val context: Context,
     private val lifecycleOwner: LifecycleOwner
-) :
-    ListAdapter<OrderDetailsDataItem, RecyclerView.ViewHolder>(OrderDetailsDiffCallback) {
+) : ListAdapter<OrderDetailsDataItem, RecyclerView.ViewHolder>(OrderDetailsDiffCallback) {
 
     private val adapterScope = CoroutineScope(Dispatchers.Default)
-    private val _orderUpdated = MutableLiveData<Order>()
-
-    val orderUpdated: LiveData<Order>
-        get() = _orderUpdated
 
     /**
      * Checks for differences between orders.
@@ -127,13 +121,18 @@ class OrderDetailAdapter(
         fun bind(item: OrderDetailsDataItem.OrderDetailsItem) {
             binding.order = item
 
-            val productSalesAdapter =
-                ProductSaleAdapter(lifecycleOwner, item.order.productSales, item.isExpanded)
-            val decorator = DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
-                setDrawable(ContextCompat.getDrawable(context, R.drawable.divider)!!)
+            with(ProductSaleAdapter(lifecycleOwner, item.isExpanded)) {
+                val decorator =
+                    DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
+                        setDrawable(ContextCompat.getDrawable(context, R.drawable.divider)!!)
+                    }
+                binding.productSales.adapter = this
+                binding.productSales.addItemDecoration(decorator, 0)
+
+                item.order.productSales.observe(lifecycleOwner) {
+                    this.setItems(it)
+                }
             }
-            binding.productSales.adapter = productSalesAdapter
-            binding.productSales.addItemDecoration(decorator, 0)
 
             item.order.orderStatus.observe(lifecycleOwner) {
                 binding.statusIcon.imageTintList = when (it) {
@@ -151,8 +150,6 @@ class OrderDetailAdapter(
                     OrderStatus.Delivered -> "Delivered"
                     else -> "What"
                 }
-
-                _orderUpdated.postValue(item.order)
             }
 
             binding.lifecycleOwner = lifecycleOwner
@@ -191,7 +188,7 @@ sealed class OrderDetailsDataItem {
      * @param order The order to hold.
      */
     data class OrderDetailsItem(val context: Context, val order: Order) : OrderDetailsDataItem() {
-        override val id = order.id
+        override val id = order.id.toInt()
         val isExpanded = MutableLiveData(false)
 
         fun toggleExpand() {

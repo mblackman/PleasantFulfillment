@@ -8,20 +8,22 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import app.mblackman.orderfulfillment.R
+import app.mblackman.orderfulfillment.data.database.getDatabase
 import app.mblackman.orderfulfillment.data.repository.OrderRepository
 import app.mblackman.orderfulfillment.data.repository.OrderRepositoryImpl
 import app.mblackman.orderfulfillment.databinding.OrderDetailsFragmentBinding
-import app.mblackman.orderfulfillment.ui.debug.MockOrderRepository
+import app.mblackman.orderfulfillment.ui.debug.MockStoreAdapter
 
 class OrdersFragment : Fragment() {
 
     private val orderRepository: OrderRepository by lazy {
         val application = requireNotNull(this.activity).application
-        OrderRepositoryImpl.create(application)
+        //OrderRepositoryImpl.create(application)
+        OrderRepositoryImpl(MockStoreAdapter(), getDatabase(application))
     }
 
     private val viewModel: OrdersViewModel by lazy {
-        val viewModelFactory = OrdersViewModelFactory(MockOrderRepository())
+        val viewModelFactory = OrdersViewModelFactory(orderRepository)
         ViewModelProvider(this, viewModelFactory).get(OrdersViewModel::class.java)
     }
 

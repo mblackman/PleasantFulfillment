@@ -1,25 +1,19 @@
 package app.mblackman.orderfulfillment.data.database
 
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
 import app.mblackman.orderfulfillment.data.common.Address
 import app.mblackman.orderfulfillment.data.common.OrderStatus
-import java.time.LocalDate
+import java.util.*
 
-data class EntityIdentity(
-    val adapterId: Int,
-    val foreignKey: Long
-)
+const val DefaultPrimaryKey: Long = 0
 
 /**
  * Represents a product for sale.
  */
 @Entity
 data class Product(
-    @PrimaryKey
-    @Embedded(prefix = "product_")
-    val productId: EntityIdentity,
+    @PrimaryKey(autoGenerate = true)
+    val productId: Long,
     val name: String,
     val description: String,
     val imageUrl: String?,
@@ -31,35 +25,49 @@ data class Product(
  */
 @Entity(tableName = "product_sale")
 data class ProductSale(
-    @PrimaryKey
-    @Embedded(prefix = "product_sale_")
-    val productSaleId: EntityIdentity,
+    @PrimaryKey(autoGenerate = true)
+    val productSaleId: Long,
     val orderDetailId: Long,
     val productId: Long,
     val quantity: Int
 )
 
-data class OrderAndProductSaleDetails(
-    @Embedded
-    val productSales: ProductSale,
-    @Embedded
-    val product: Product
-)
-
 /**
  * Represents an order.
  */
-@Entity(tableName = "order_details")
-data class OrderDetails(
-    @PrimaryKey
-    @Embedded(prefix = "order_details_")
-    val orderDetailsId: EntityIdentity,
-    val status: OrderStatus,
-    val orderDate: LocalDate,
-    val buyerName: String,
-    val buyerEmail: String,
-    @Embedded
-    val address: Address,
-    @Embedded
-    val properties: List<Property>?
+@Entity(
+    tableName = "order_details",
+    indices = [Index(value = ["adapter_id", "adapter_entity_key"], unique = true)]
 )
+data class OrderDetails(
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "order_details_id")
+    val orderDetailsId: Long,
+
+    @ColumnInfo(name = "adapter_id")
+    val adapterId: Int,
+
+    @ColumnInfo(name = "adapter_entity_key")
+    val adapterEntityKey: Long,
+
+    val status: OrderStatus,
+
+    @ColumnInfo(name = "order_date")
+    val orderDate: Date,
+
+    @ColumnInfo(name = "buyer_name")
+    val buyerName: String,
+
+    @ColumnInfo(name = "buyer_email")
+    val buyerEmail: String,
+
+    @Embedded
+    val address: Address
+)
+
+data class OrderDetailsProperty(
+    @ColumnInfo(name = "order_details_id")
+    val orderDetailsId: Long,
+    override val key: String,
+    override val value: String
+) : Property()

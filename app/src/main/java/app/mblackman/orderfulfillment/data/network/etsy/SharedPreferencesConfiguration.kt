@@ -9,11 +9,13 @@ import app.mblackman.orderfulfillment.R
  */
 class SharedPreferencesConfiguration(context: Context) : Configuration {
 
-    private val CURRENT_USER_ID_PROPERTY_NAME = "CURRENT_USER_ID"
-    private val CURRENT_USER_SHOP_ID_PROPERTY_NAME = "CURRENT_USER_SHOP_ID"
-
     private var prefs: SharedPreferences =
         context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE)
+
+    companion object {
+        private const val CURRENT_USER_ID_PROPERTY_NAME = "CURRENT_USER_ID"
+        private const val CURRENT_USER_SHOP_ID_PROPERTY_NAME = "CURRENT_USER_SHOP_ID"
+    }
 
     /**
      * Gets or sets the id of the application user.

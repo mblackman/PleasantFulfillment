@@ -3,8 +3,8 @@ package app.mblackman.orderfulfillment.data.repository
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
+import app.mblackman.orderfulfillment.data.database.OrderDetails
 import app.mblackman.orderfulfillment.data.database.StoreDatabase
-import app.mblackman.orderfulfillment.data.database.asMap
 import app.mblackman.orderfulfillment.data.database.getDatabase
 import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.data.network.StoreAdapter
@@ -19,7 +19,7 @@ import kotlinx.coroutines.withContext
 class OrderRepositoryImpl(
     private val storeAdapter: StoreAdapter,
     private val storeDatabase: StoreDatabase
-) : OrderRepository() {
+) : OrderRepository {
 
     companion object {
         /**
@@ -40,24 +40,9 @@ class OrderRepositoryImpl(
      * Gets the list of orders.
      */
     override val orderDetails: LiveData<List<Order>> =
-        Transformations.map(storeDatabase.storeDao.getOrderDetails()) {
+        Transformations.map(storeDatabase.orderDetailsDao.getOrderDetails()) {
             it.map { orderDetails ->
-                Order(
-                    orderDetails.orderDetailsId.foreignKey,
-                    "Order ${orderDetails.orderDetailsId.foreignKey} from Adapter ${storeAdapter.adapterId}",
-                    orderDetails.status,
-                    orderDetails.orderDate,
-                    orderDetails.buyerName,
-                    orderDetails.buyerEmail,
-                    orderDetails.address,
-                    storeDatabase.productSaleDao.getProductSalesWithProduct(
-                        storeAdapter.adapterId,
-                        orderDetails.orderDetailsId.foreignKey
-                    ).map {
-                        it.
-                    },
-                    orderDetails.properties?.asMap()
-                )
+                orderDetails.asDomainObject()
             }
         }
 
@@ -65,27 +50,19 @@ class OrderRepositoryImpl(
      * Gets the latest order detail data and stores it.
      */
     override suspend fun updateOrderDetails() {
-
-        storeAdapter.getProducts().let {
-            withContext(Dispatchers.IO) {
-                storeDatabase.productDao.insertAll(it.map { networkProduct ->
-                    networkProduct.asDatabaseObject(storeAdapter.adapterId)
-                })
-            }
-        }
-
-        storeAdapter.getProductSales().let {
-            withContext(Dispatchers.IO) {
-                storeDatabase.productSaleDao.insertAll(it.map { networkProductSale ->
-                    networkProductSale.asDatabaseObject(storeAdapter.adapterId)
-                })
-            }
-        }
-
         storeAdapter.getOrders().let {
             withContext(Dispatchers.IO) {
-                storeDatabase.storeDao.insertAll(it.map { networkOrder ->
-                    networkOrder.asDatabaseObject(storeAdapter.adapterId)
+                val existingMappings =
+                    storeDatabase.orderDetailsDao.getOrderDetailsByAdapter(storeAdapter.adapterId)
+                        .associateBy(OrderDetails::adapterEntityKey)
+
+                storeDatabase.orderDetailsDao.insertAll(it.map { networkOrder ->
+                    if (existingMappings.containsKey(networkOrder.id)) {
+                        existingMappings.getValue(networkOrder.id)
+                            .copy(status = networkOrder.status)
+                    } else {
+                        networkOrder.asDatabaseObject(storeAdapter.adapterId)
+                    }
                 })
             }
         }
