@@ -1,6 +1,4 @@
-package app.mblackman.oderfulfillment.data.database
-
-import app.mblackman.orderfulfillment.data.database.OrderDetails
+package app.mblackman.orderfulfillment.data.database
 
 /**
  * A function to compare [OrderDetails] and ignore the id assigned by the database.

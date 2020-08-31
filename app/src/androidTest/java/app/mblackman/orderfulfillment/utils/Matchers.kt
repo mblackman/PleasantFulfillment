@@ -1,4 +1,4 @@
-package app.mblackman.oderfulfillment.utils
+package app.mblackman.orderfulfillment.utils
 
 import org.hamcrest.BaseMatcher
 import org.hamcrest.Description

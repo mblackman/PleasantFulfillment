@@ -1,40 +1,19 @@
 package app.mblackman.orderfulfillment.data
 
-import app.mblackman.orderfulfillment.data.common.Address
-import app.mblackman.orderfulfillment.data.common.OrderStatus
 import app.mblackman.orderfulfillment.data.network.NetworkOrder
 import app.mblackman.orderfulfillment.data.network.NetworkProduct
 import app.mblackman.orderfulfillment.data.network.NetworkProductSale
 import app.mblackman.orderfulfillment.data.network.StoreAdapter
-import java.time.LocalDateTime
+import app.mblackman.orderfulfillment.sharedTest.NetworkObjectUtils
 
-class TestStoreAdapter(private val orders: List<NetworkOrder>) : StoreAdapter {
+class TestStoreAdapter(var orders: List<NetworkOrder>) : StoreAdapter {
 
     override val adapterId: Int = -1
 
     companion object {
         fun emptyNetworkOrders(): TestStoreAdapter = TestStoreAdapter(orders = emptyList())
         fun singleNetworkOrder(): TestStoreAdapter =
-            TestStoreAdapter(
-                orders = listOf(
-                    NetworkOrder(
-                        1,
-                        OrderStatus.Purchased,
-                        LocalDateTime.now(),
-                        "Test",
-                        "Test",
-                        Address(
-                            "Test Name",
-                            "First Line",
-                            "Second Line",
-                            "Test City",
-                            "Test State",
-                            "Test Zip"
-                        ),
-                        null
-                    )
-                )
-            )
+            TestStoreAdapter(orders = listOf(NetworkObjectUtils.createNetworkOrder(id = 1)))
     }
 
     override suspend fun getOrders(): List<NetworkOrder> = orders

@@ -1,4 +1,4 @@
-package app.mblackman.oderfulfillment.data.database
+package app.mblackman.orderfulfillment.data.database
 
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
@@ -6,10 +6,8 @@ import androidx.lifecycle.Observer
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
-import app.mblackman.oderfulfillment.utils.ListMatcherFactory
-import app.mblackman.orderfulfillment.data.database.OrderDetails
-import app.mblackman.orderfulfillment.data.database.OrderDetailsDao
-import app.mblackman.orderfulfillment.data.database.StoreDatabase
+import app.mblackman.orderfulfillment.sharedTest.DomainObjectUtils
+import app.mblackman.orderfulfillment.utils.ListMatcherFactory
 import org.junit.After
 import org.junit.Assert.assertThat
 import org.junit.Before
@@ -52,7 +50,7 @@ class OrderDetailsDaoTest {
     @Test
     @Throws(Exception::class)
     fun writeOrderDetailAndReadList() {
-        val orderDetails = Utils.createOrderDetails()
+        val orderDetails = DomainObjectUtils.createOrderDetails()
 
         orderDetailsDao.insertAll(listOf(orderDetails))
         val storedOrderDetails = orderDetailsDao.getOrderDetails()
@@ -85,17 +83,17 @@ class OrderDetailsDaoTest {
      * Validates the database maintains a single [OrderDetails] with a certain adapter id and
      * adapter entity id.
      */
-    @Test()
+    @Test
     @Throws(Exception::class)
     fun singleRemoteEntityUpdate() {
         val adapterId = 1
         val adapterEntityId = 100L
-        val originalOrderDetails = Utils.createOrderDetails(
+        val originalOrderDetails = DomainObjectUtils.createOrderDetails(
             adapterId = adapterId,
             adapterEntityKey = adapterEntityId,
             buyerName = "original"
         )
-        val replacedOrderDetails = Utils.createOrderDetails(
+        val replacedOrderDetails = DomainObjectUtils.createOrderDetails(
             adapterId = adapterId,
             adapterEntityKey = adapterEntityId,
             buyerName = "replaced"
@@ -115,7 +113,7 @@ class OrderDetailsDaoTest {
     private fun createAdapterUsers(adapterId: Int, numUsers: Int = 3) =
         (1..numUsers).map {
             val id = it.toLong()
-            Utils.createOrderDetails(
+            DomainObjectUtils.createOrderDetails(
                 adapterId = adapterId,
                 adapterEntityKey = id,
                 buyerName = "Adapter $adapterId User $it"

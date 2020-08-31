@@ -1,4 +1,4 @@
-package app.mblackman.oderfulfillment.data.database
+package app.mblackman.orderfulfillment.sharedTest
 
 import app.mblackman.orderfulfillment.data.common.Address
 import app.mblackman.orderfulfillment.data.common.OrderStatus
@@ -9,7 +9,7 @@ import java.util.*
 /**
  * Utilities to assist with database tests.
  */
-class Utils {
+class DomainObjectUtils {
     companion object {
         const val defaultAdapterId: Int = 1
 
