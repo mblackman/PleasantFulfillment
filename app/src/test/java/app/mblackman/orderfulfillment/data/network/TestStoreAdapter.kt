@@ -1,9 +1,5 @@
-package app.mblackman.orderfulfillment.data
+package app.mblackman.orderfulfillment.data.network
 
-import app.mblackman.orderfulfillment.data.network.NetworkOrder
-import app.mblackman.orderfulfillment.data.network.NetworkProduct
-import app.mblackman.orderfulfillment.data.network.NetworkProductSale
-import app.mblackman.orderfulfillment.data.network.StoreAdapter
 import app.mblackman.orderfulfillment.sharedTest.NetworkObjectUtils
 
 class TestStoreAdapter(var orders: List<NetworkOrder>) : StoreAdapter {

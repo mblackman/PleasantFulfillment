@@ -3,6 +3,7 @@ package app.mblackman.orderfulfillment.sharedTest
 import app.mblackman.orderfulfillment.data.common.Address
 import app.mblackman.orderfulfillment.data.common.OrderStatus
 import app.mblackman.orderfulfillment.data.network.NetworkOrder
+import app.mblackman.orderfulfillment.data.repository.toLocalDateTime
 import java.time.LocalDateTime
 
 /**
@@ -14,19 +15,12 @@ class NetworkObjectUtils {
          * Creates a network order with either given values or defaults.
          */
         fun createNetworkOrder(
-            id: Long = 0,
-            orderStatus: OrderStatus = OrderStatus.Purchased,
-            localDateTime: LocalDateTime = LocalDateTime.now(),
-            buyerName: String = "Test Buyer Name",
-            buyerEmail: String = "Test@Email.com",
-            address: Address = Address(
-                "Test Name",
-                "First Line",
-                "Second Line",
-                "Test City",
-                "Test State",
-                "Test Zip"
-            ),
+            id: Long = DefaultLongId,
+            orderStatus: OrderStatus = DefaultStatus,
+            localDateTime: LocalDateTime = DefaultOrderDate.toLocalDateTime(),
+            buyerName: String = DefaultBuyerName,
+            buyerEmail: String = DefaultBuyerEmail,
+            address: Address = DefaultAddress,
             properties: Map<String, String>? = null
         ) =
             NetworkOrder(

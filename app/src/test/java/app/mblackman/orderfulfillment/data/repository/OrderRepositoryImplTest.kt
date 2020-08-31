@@ -2,19 +2,21 @@ package app.mblackman.orderfulfillment.data.repository
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
-import app.mblackman.orderfulfillment.data.TestStoreAdapter
+import app.mblackman.orderfulfillment.data.common.OrderStatus
 import app.mblackman.orderfulfillment.data.database.MockOrderDetailsDao
 import app.mblackman.orderfulfillment.data.database.OrderDetails
 import app.mblackman.orderfulfillment.data.database.StoreDatabase
 import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.data.network.StoreAdapter
+import app.mblackman.orderfulfillment.data.network.TestStoreAdapter
+import app.mblackman.orderfulfillment.sharedTest.DatabaseObjectUtils
+import app.mblackman.orderfulfillment.sharedTest.NetworkObjectUtils
+import com.google.common.truth.Truth
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.unmockkObject
 import kotlinx.coroutines.runBlocking
-import org.hamcrest.core.IsEqual.equalTo
 import org.junit.After
-import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -76,6 +78,37 @@ class OrderRepositoryImplTest {
         Truth.assertWithMessage("No items should have been loaded from the adapter.")
             .that(result.value?.size)
             .isEqualTo(0)
+    }
+
+    /**
+     * Verifies when an order is updated from an adapter, state is retained in the repository.
+     */
+    @Test
+    fun getUpdatedOrderDetails() {
+        val orderForeignId = 100L
+        val updatedOrder = NetworkObjectUtils.createNetworkOrder(
+            id = orderForeignId,
+            orderStatus = OrderStatus.Purchased
+        )
+        val adapter = TestStoreAdapter(orders = listOf(updatedOrder))
+        val existingOrderDetails = DatabaseObjectUtils.createOrderDetails(
+            adapterId = adapter.adapterId,
+            adapterEntityKey = orderForeignId,
+            status = OrderStatus.Filled
+        )
+        val repo = setupMocks(adapter, listOf(existingOrderDetails))
+
+        runBlocking { repo.updateOrderDetails() }
+        val result = repo.orderDetails
+        result.observeForever(observer)
+
+        Truth.assertWithMessage("No items should have been loaded from the adapter.")
+            .that(result.value)
+            .isEqualTo(
+                listOf(
+                    existingOrderDetails.copy(status = OrderStatus.Filled).asDomainObject()
+                )
+            )
     }
 
     private fun setupMocks(

@@ -3,35 +3,25 @@ package app.mblackman.orderfulfillment.sharedTest
 import app.mblackman.orderfulfillment.data.common.Address
 import app.mblackman.orderfulfillment.data.common.OrderStatus
 import app.mblackman.orderfulfillment.data.database.OrderDetails
-import java.time.Instant
 import java.util.*
 
 /**
  * Utilities to assist with database tests.
  */
-class DomainObjectUtils {
+class DatabaseObjectUtils {
     companion object {
-        const val defaultAdapterId: Int = 1
-
         /**
          * Creates a [OrderDetails] with some defaults already provided.
          */
         fun createOrderDetails(
-            orderDetailsId: Long = 0,
-            adapterId: Int = defaultAdapterId,
-            adapterEntityKey: Long = 0,
-            status: OrderStatus = OrderStatus.Purchased,
-            orderDate: Date = Date.from(Instant.now()),
-            buyerName: String = "Test User Name",
-            buyerEmail: String = "TestBuyer@email.com",
-            address: Address = Address(
-                "Test User Name",
-                "Test First Line",
-                "Test Second Line",
-                "Test City",
-                "Test State",
-                "Test Zip"
-            )
+            orderDetailsId: Long = DefaultLongId,
+            adapterId: Int = DefaultAdapterId,
+            adapterEntityKey: Long = DefaultAdapterEntityKey,
+            status: OrderStatus = DefaultStatus,
+            orderDate: Date = DefaultOrderDate,
+            buyerName: String = DefaultBuyerName,
+            buyerEmail: String = DefaultBuyerEmail,
+            address: Address = DefaultAddress
         ): OrderDetails =
             OrderDetails(
                 orderDetailsId,

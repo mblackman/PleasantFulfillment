@@ -1,4 +1,4 @@
-package app.mblackman.orderfulfillment.data
+package app.mblackman.orderfulfillment.sharedTest
 
 import app.mblackman.orderfulfillment.data.network.etsy.Configuration
 

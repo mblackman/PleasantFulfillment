@@ -7,6 +7,7 @@ import app.mblackman.orderfulfillment.data.database.OrderDetails
 import app.mblackman.orderfulfillment.data.database.StoreDatabase
 import app.mblackman.orderfulfillment.data.database.getDatabase
 import app.mblackman.orderfulfillment.data.domain.Order
+import app.mblackman.orderfulfillment.data.network.NetworkOrder
 import app.mblackman.orderfulfillment.data.network.StoreAdapter
 import app.mblackman.orderfulfillment.data.network.etsy.EtsyStoreAdapter
 import kotlinx.coroutines.Dispatchers
@@ -58,8 +59,7 @@ class OrderRepositoryImpl(
 
                 storeDatabase.orderDetailsDao.insertAll(it.map { networkOrder ->
                     if (existingMappings.containsKey(networkOrder.id)) {
-                        existingMappings.getValue(networkOrder.id)
-                            .copy(status = networkOrder.status)
+                        existingMappings.getValue(networkOrder.id).update(networkOrder)
                     } else {
                         networkOrder.asDatabaseObject(storeAdapter.adapterId)
                     }
@@ -67,4 +67,12 @@ class OrderRepositoryImpl(
             }
         }
     }
+
+    private fun OrderDetails.update(order: NetworkOrder) =
+        this.copy(
+            orderDate = order.orderDate.toDate(),
+            buyerName = order.buyerName,
+            buyerEmail = order.buyerEmail,
+            address = order.address,
+        )
 }

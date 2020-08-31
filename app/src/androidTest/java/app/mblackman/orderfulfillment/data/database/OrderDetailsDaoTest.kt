@@ -6,7 +6,7 @@ import androidx.lifecycle.Observer
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
-import app.mblackman.orderfulfillment.sharedTest.DomainObjectUtils
+import app.mblackman.orderfulfillment.sharedTest.DatabaseObjectUtils
 import app.mblackman.orderfulfillment.utils.ListMatcherFactory
 import org.junit.After
 import org.junit.Assert.assertThat
@@ -50,7 +50,7 @@ class OrderDetailsDaoTest {
     @Test
     @Throws(Exception::class)
     fun writeOrderDetailAndReadList() {
-        val orderDetails = DomainObjectUtils.createOrderDetails()
+        val orderDetails = DatabaseObjectUtils.createOrderDetails()
 
         orderDetailsDao.insertAll(listOf(orderDetails))
         val storedOrderDetails = orderDetailsDao.getOrderDetails()
@@ -88,12 +88,12 @@ class OrderDetailsDaoTest {
     fun singleRemoteEntityUpdate() {
         val adapterId = 1
         val adapterEntityId = 100L
-        val originalOrderDetails = DomainObjectUtils.createOrderDetails(
+        val originalOrderDetails = DatabaseObjectUtils.createOrderDetails(
             adapterId = adapterId,
             adapterEntityKey = adapterEntityId,
             buyerName = "original"
         )
-        val replacedOrderDetails = DomainObjectUtils.createOrderDetails(
+        val replacedOrderDetails = DatabaseObjectUtils.createOrderDetails(
             adapterId = adapterId,
             adapterEntityKey = adapterEntityId,
             buyerName = "replaced"
@@ -113,7 +113,7 @@ class OrderDetailsDaoTest {
     private fun createAdapterUsers(adapterId: Int, numUsers: Int = 3) =
         (1..numUsers).map {
             val id = it.toLong()
-            DomainObjectUtils.createOrderDetails(
+            DatabaseObjectUtils.createOrderDetails(
                 adapterId = adapterId,
                 adapterEntityKey = id,
                 buyerName = "Adapter $adapterId User $it"
