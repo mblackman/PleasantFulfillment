@@ -65,6 +65,19 @@ class OrderRepositoryImplTest {
         )
     }
 
+    @Test
+    fun emptyWebRequest() {
+        val repo = setupMocks(TestStoreAdapter.emptyNetworkOrders())
+
+        runBlocking { repo.updateOrderDetails() }
+        val result = repo.orderDetails
+        result.observeForever(observer)
+
+        Truth.assertWithMessage("No items should have been loaded from the adapter.")
+            .that(result.value?.size)
+            .isEqualTo(0)
+    }
+
     private fun setupMocks(
         storeAdapter: StoreAdapter,
         orderDetails: List<OrderDetails> = emptyList()
