@@ -25,7 +25,6 @@ buildscript {
         version_glide = '4.11.0'
         version_work = "2.4.0"
         version_timber="4.7.1"
-        version_truth="1.0.1"
         version_mockk="1.10.0"
     }
 

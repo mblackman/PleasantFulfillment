@@ -8,11 +8,12 @@ import app.mblackman.orderfulfillment.data.network.NetworkProductSale
 import app.mblackman.orderfulfillment.data.network.StoreAdapter
 import java.time.LocalDateTime
 
-class TestStoreAdapter(private val orders: List<NetworkOrder>?) : StoreAdapter {
+class TestStoreAdapter(private val orders: List<NetworkOrder>) : StoreAdapter {
 
     override val adapterId: Int = -1
 
     companion object {
+        fun emptyNetworkOrders(): TestStoreAdapter = TestStoreAdapter(orders = emptyList())
         fun singleNetworkOrder(): TestStoreAdapter =
             TestStoreAdapter(
                 orders = listOf(
@@ -36,7 +37,7 @@ class TestStoreAdapter(private val orders: List<NetworkOrder>?) : StoreAdapter {
             )
     }
 
-    override suspend fun getOrders(): List<NetworkOrder> = orders ?: emptyList()
+    override suspend fun getOrders(): List<NetworkOrder> = orders
 
     override suspend fun getProducts(): List<NetworkProduct> {
         TODO("Not yet implemented")

@@ -70,9 +70,7 @@ dependencies {
     // Test dependencies
     testImplementation "io.mockk:mockk:$version_mockk"
     testImplementation 'junit:junit:4.13'
-    testImplementation "com.google.truth:truth:$version_truth"
     testImplementation "android.arch.core:core-testing:$version_arch"
-    androidTestImplementation "com.google.truth:truth:$version_truth"
     androidTestImplementation "android.arch.core:core-testing:$version_arch"
     androidTestImplementation "androidx.test:core:$version_androidx_text"
     androidTestImplementation "androidx.test:runner:$version_androidx_text"
