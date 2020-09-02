@@ -3,9 +3,11 @@ package app.mblackman.orderfulfillment.data.repository
 import app.mblackman.orderfulfillment.data.database.DefaultPrimaryKey
 import app.mblackman.orderfulfillment.data.database.OrderDetails
 import app.mblackman.orderfulfillment.data.database.Product
+import app.mblackman.orderfulfillment.data.database.ProductSale
 import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.data.network.NetworkOrder
 import app.mblackman.orderfulfillment.data.network.NetworkProduct
+import app.mblackman.orderfulfillment.data.network.NetworkProductSale
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -28,8 +30,8 @@ fun LocalDateTime.toDate(): Date =
  */
 fun OrderDetails.asDomainObject(): Order =
     Order(
-        this.orderDetailsId,
-        "Order ${this.orderDetailsId}.",
+        this.localId,
+        "Order ${this.localId}.",
         this.status,
         this.orderDate.toLocalDateTime(),
         this.buyerName,
@@ -60,13 +62,55 @@ fun NetworkOrder.asDatabaseObject(adapterId: Int): OrderDetails =
 /**
  * Converts a [NetworkProduct] to a database [Product].
  *
- * @param primaryKey The primary key of an existing entry if it exists. Send null if no entry exists.
+ * @param adapterId The id of the adapter the [NetworkProduct] came from.
  */
-fun NetworkProduct.asDatabaseObject(primaryKey: Long?): Product =
+fun NetworkProduct.asDatabaseObject(adapterId: Int): Product =
     Product(
-        primaryKey ?: DefaultPrimaryKey,
+        DefaultPrimaryKey,
+        adapterId,
+        this.id,
         this.name,
         this.description,
         this.imageUrl,
         this.price
     )
+
+fun NetworkProductSale.asDatabaseObject(adapterId: Int): ProductSale =
+    ProductSale(
+        DefaultPrimaryKey,
+        adapterId,
+        this.id,
+        this.orderId,
+        this.productId,
+        this.quantity
+    )
+
+class OrderEntityConverter(private val adapterId: Int) :
+    EntityConverter<OrderDetails, NetworkOrder> {
+    override val canUpdateExisting: Boolean = true
+
+    override fun toEntity(item: NetworkOrder): OrderDetails = item.asDatabaseObject(adapterId)
+
+    override fun updateExisting(existingEntity: OrderDetails, item: NetworkOrder): OrderDetails {
+        return existingEntity.copy(
+            orderDate = item.orderDate.toDate(),
+            buyerName = item.buyerName,
+            buyerEmail = item.buyerEmail,
+            address = item.address,
+        )
+    }
+
+}
+
+class ProductSaleConverter(private val adapterId: Int) :
+    EntityConverter<ProductSale, NetworkProductSale> {
+    override val canUpdateExisting: Boolean = true
+
+    override fun toEntity(item: NetworkProductSale): ProductSale = item.asDatabaseObject(adapterId)
+
+    override fun updateExisting(
+        existingEntity: ProductSale,
+        item: NetworkProductSale
+    ): ProductSale = item.asDatabaseObject(adapterId)
+
+}

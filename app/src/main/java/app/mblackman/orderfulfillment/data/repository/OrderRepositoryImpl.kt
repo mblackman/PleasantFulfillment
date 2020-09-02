@@ -3,15 +3,11 @@ package app.mblackman.orderfulfillment.data.repository
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
-import app.mblackman.orderfulfillment.data.database.OrderDetails
 import app.mblackman.orderfulfillment.data.database.StoreDatabase
 import app.mblackman.orderfulfillment.data.database.getDatabase
 import app.mblackman.orderfulfillment.data.domain.Order
-import app.mblackman.orderfulfillment.data.network.NetworkOrder
 import app.mblackman.orderfulfillment.data.network.StoreAdapter
 import app.mblackman.orderfulfillment.data.network.etsy.EtsyStoreAdapter
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 /**
  * Implementation of OrderRepository that fetches order details from the web
@@ -20,7 +16,9 @@ import kotlinx.coroutines.withContext
 class OrderRepositoryImpl(
     private val storeAdapter: StoreAdapter,
     private val storeDatabase: StoreDatabase
-) : OrderRepository {
+) : OrderRepository() {
+
+    private val orderEntityConverter = OrderEntityConverter(storeAdapter.adapterId)
 
     companion object {
         /**
@@ -51,28 +49,12 @@ class OrderRepositoryImpl(
      * Gets the latest order detail data and stores it.
      */
     override suspend fun updateOrderDetails() {
-        storeAdapter.getOrders().let {
-            withContext(Dispatchers.IO) {
-                val existingMappings =
-                    storeDatabase.orderDetailsDao.getOrderDetailsByAdapter(storeAdapter.adapterId)
-                        .associateBy(OrderDetails::adapterEntityKey)
-
-                storeDatabase.orderDetailsDao.insertAll(it.map { networkOrder ->
-                    if (existingMappings.containsKey(networkOrder.id)) {
-                        existingMappings.getValue(networkOrder.id).update(networkOrder)
-                    } else {
-                        networkOrder.asDatabaseObject(storeAdapter.adapterId)
-                    }
-                })
-            }
-        }
+        getAndUpdate(
+            storeAdapter::getOrders,
+            { storeDatabase.orderDetailsDao.getOrderDetailsByAdapter(storeAdapter.adapterId) },
+            { results -> storeDatabase.orderDetailsDao.insertAll(results) },
+            orderEntityConverter
+        )
     }
 
-    private fun OrderDetails.update(order: NetworkOrder) =
-        this.copy(
-            orderDate = order.orderDate.toDate(),
-            buyerName = order.buyerName,
-            buyerEmail = order.buyerEmail,
-            address = order.address,
-        )
 }

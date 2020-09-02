@@ -16,7 +16,7 @@ interface BaseDao<T> {
 }
 
 /**
- * Dao interface to define methods to interact with [OrderDetails] in a room database.
+ * [Dao] interface to define methods to interact with [OrderDetails] in a room database.
  */
 @Dao
 interface OrderDetailsDao : BaseDao<OrderDetails> {
@@ -39,6 +39,27 @@ interface OrderDetailsDao : BaseDao<OrderDetails> {
 }
 
 /**
+ * [Dao] interface to define methods to interact with [Product] in a room database.
+ */
+@Dao
+interface ProductDao : BaseDao<Product>
+
+/**
+ * [Dao] interface to define methods to interact with [ProductSale] in a room database.
+ */
+@Dao
+interface ProductSaleDao : BaseDao<ProductSale> {
+    /**
+     * Gets all the [ProductSale] that match the given parameters.
+     *
+     * @param adapterId The id of the id to get [ProductSale] from.
+     * @return All the [ProductSale] meeting the criteria.
+     */
+    @Query("SELECT * FROM product_sale WHERE adapter_id=:adapterId")
+    fun getProductSalesByAdapter(adapterId: Int): List<ProductSale>
+}
+
+/**
  * The database containing all the data for the store and user.
  */
 @Database(
@@ -52,6 +73,16 @@ abstract class StoreDatabase : RoomDatabase() {
      * The [Dao] to interact with [OrderDetails].
      */
     abstract val orderDetailsDao: OrderDetailsDao
+
+    /**
+     * The [Dao] to interact with [Product]
+     */
+    abstract val productDao: ProductDao
+
+    /**
+     * The [Dao] to interact with [ProductSale]
+     */
+    abstract val productSaleDao: ProductSaleDao
 }
 
 private lateinit var INSTANCE: StoreDatabase
