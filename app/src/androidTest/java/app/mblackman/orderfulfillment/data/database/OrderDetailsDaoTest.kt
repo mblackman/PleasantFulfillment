@@ -27,13 +27,12 @@ class OrderDetailsDaoTest {
     private lateinit var orderDetailsDao: OrderDetailsDao
     private lateinit var storeDatabase: StoreDatabase
 
-    private fun orderDetailsMatcher(expected: Iterable<OrderDetails>): CollectionMatcher<OrderDetails> {
-        return CollectionMatcher(
+    private fun orderDetailsMatcher(expected: Iterable<OrderDetails>) =
+        CollectionMatcher(
             expected,
             propertyCompare<OrderDetails>(ignoreProperties = listOf(OrderDetails::orderDetailsId))
         )
-    }
-
+    
     @Before
     fun setUp() {
         observer = Observer<List<OrderDetails>> {}
