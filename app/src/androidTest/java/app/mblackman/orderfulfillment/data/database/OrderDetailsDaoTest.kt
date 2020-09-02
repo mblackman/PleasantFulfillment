@@ -7,7 +7,8 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import app.mblackman.orderfulfillment.sharedTest.DatabaseObjectUtils
-import app.mblackman.orderfulfillment.utils.ListMatcherFactory
+import app.mblackman.orderfulfillment.utils.CollectionMatcher
+import app.mblackman.orderfulfillment.utils.propertyCompare
 import org.junit.After
 import org.junit.Assert.assertThat
 import org.junit.Before
@@ -26,10 +27,10 @@ class OrderDetailsDaoTest {
     private lateinit var orderDetailsDao: OrderDetailsDao
     private lateinit var storeDatabase: StoreDatabase
 
-    private val detailsListMatcherFactory = ListMatcherFactory<OrderDetails> { expected, result ->
-        orderDetailsCompare(
+    private fun orderDetailsMatcher(expected: Iterable<OrderDetails>): CollectionMatcher<OrderDetails> {
+        return CollectionMatcher(
             expected,
-            result
+            propertyCompare<OrderDetails>(ignoreProperties = listOf(OrderDetails::orderDetailsId))
         )
     }
 
@@ -56,7 +57,7 @@ class OrderDetailsDaoTest {
         val storedOrderDetails = orderDetailsDao.getOrderDetails()
         storedOrderDetails.observeForever(observer)
 
-        assertThat(storedOrderDetails.value, detailsListMatcherFactory.create(listOf(orderDetails)))
+        assertThat(storedOrderDetails.value, orderDetailsMatcher(listOf(orderDetails)))
     }
 
     @Test
@@ -72,10 +73,10 @@ class OrderDetailsDaoTest {
         val allStoredOrderDetails = orderDetailsDao.getOrderDetails()
         allStoredOrderDetails.observeForever(observer)
 
-        assertThat(allStoredOrderDetails.value, detailsListMatcherFactory.create(allItems))
+        assertThat(allStoredOrderDetails.value, orderDetailsMatcher(allItems))
         assertThat(
             storedOrderDetailsAdapter1,
-            detailsListMatcherFactory.create(adapter1OrderDetails)
+            orderDetailsMatcher(adapter1OrderDetails)
         )
     }
 
@@ -106,7 +107,7 @@ class OrderDetailsDaoTest {
 
         assertThat(
             storedOrderDetails.value,
-            detailsListMatcherFactory.create(listOf(replacedOrderDetails))
+            orderDetailsMatcher(listOf(replacedOrderDetails))
         )
     }
 
