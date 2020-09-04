@@ -48,6 +48,29 @@ fun setCost(textView: TextView, value: Double?) {
     textView.text = format.format(value)
 }
 
+@BindingAdapter("orderStatus")
+fun setOrderStatus(imageView: ImageView, value: OrderStatus?) {
+    val context = imageView.context
+    imageView.imageTintList = when (value) {
+        OrderStatus.Purchased -> context.getColorStateList(R.color.order_status_purchased_tint)
+        OrderStatus.Filled -> context.getColorStateList(R.color.order_status_filled_tint)
+        OrderStatus.Shipped -> context.getColorStateList(R.color.order_status_shipped_tint)
+        OrderStatus.Delivered -> context.getColorStateList(R.color.order_status_delivered_tint)
+        else -> context.getColorStateList(R.color.order_status_purchased_tint)
+    }
+}
+
+@BindingAdapter("orderStatus")
+fun setOrderStatus(textView: TextView, value: OrderStatus?) {
+    textView.text = when (value) {
+        OrderStatus.Purchased -> "Purchased"
+        OrderStatus.Filled -> "Filled"
+        OrderStatus.Shipped -> "Shipped"
+        OrderStatus.Delivered -> "Delivered"
+        else -> "What"
+    }
+}
+
 @BindingConversion
 fun convertBooleanToVisibility(visible: Boolean): Int {
     return if (visible) View.VISIBLE else View.GONE

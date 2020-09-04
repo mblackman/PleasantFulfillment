@@ -6,20 +6,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import app.mblackman.orderfulfillment.R
-import app.mblackman.orderfulfillment.data.common.OrderStatus
 import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.databinding.ListItemOrderDetailsBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 
 private const val ITEM_VIEW_TYPE_HEADER = 0
 private const val ITEM_VIEW_TYPE_ITEM = 1
@@ -36,6 +35,10 @@ class OrderDetailAdapter(
 ) : ListAdapter<OrderDetailsDataItem, RecyclerView.ViewHolder>(OrderDetailsDiffCallback) {
 
     private val adapterScope = CoroutineScope(Dispatchers.Default)
+    private val _orderStatusRequestChanged = MutableLiveData<Order>()
+
+    val orderStatusRequestChanged: LiveData<Order>
+        get() = _orderStatusRequestChanged
 
     /**
      * Checks for differences between orders.
@@ -129,26 +132,12 @@ class OrderDetailAdapter(
                 binding.productSales.adapter = this
                 binding.productSales.addItemDecoration(decorator, 0)
 
+                binding.statusUpdateButton.setOnClickListener {
+                    _orderStatusRequestChanged.postValue(item.order)
+                }
+
                 item.order.productSales.observe(lifecycleOwner) {
                     this.setItems(it)
-                }
-            }
-
-            item.order.orderStatus.observe(lifecycleOwner) {
-                binding.statusIcon.imageTintList = when (it) {
-                    OrderStatus.Purchased -> context.getColorStateList(R.color.order_status_purchased_tint)
-                    OrderStatus.Filled -> context.getColorStateList(R.color.order_status_filled_tint)
-                    OrderStatus.Shipped -> context.getColorStateList(R.color.order_status_shipped_tint)
-                    OrderStatus.Delivered -> context.getColorStateList(R.color.order_status_delivered_tint)
-                    else -> context.getColorStateList(R.color.order_status_purchased_tint)
-                }
-
-                binding.orderStatusText.text = when (it) {
-                    OrderStatus.Purchased -> "Purchased"
-                    OrderStatus.Filled -> "Filled"
-                    OrderStatus.Shipped -> "Shipped"
-                    OrderStatus.Delivered -> "Delivered"
-                    else -> "What"
                 }
             }
 
@@ -194,16 +183,6 @@ sealed class OrderDetailsDataItem {
         fun toggleExpand() {
             val nextValue = if (isExpanded.value == null) false else !isExpanded.value!!
             isExpanded.postValue(nextValue)
-        }
-
-        fun changeOrderStatus() {
-            order.orderStatus.value?.let {
-                when (it) {
-                    OrderStatus.Purchased -> order.orderStatus.postValue(OrderStatus.Filled)
-                    OrderStatus.Filled -> order.orderStatus.postValue(OrderStatus.Purchased)
-                    else -> Timber.i("Invalid button state for change order status button $it.")
-                }
-            }
         }
     }
 

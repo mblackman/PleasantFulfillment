@@ -59,6 +59,7 @@
                     android:contentDescription="@string/status_icon_for_order"
                     android:src="@drawable/order_status_indicator"
                     android:tintMode="screen"
+                    app:orderStatus="@{order.order.orderStatus}"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/description"
                     app:tint="@color/status_icon_purchased" />
@@ -70,6 +71,7 @@
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Subtitle1"
                     android:paddingStart="@dimen/grid_small_padding"
                     android:paddingEnd="@dimen/grid_small_padding"
+                    app:orderStatus="@{order.order.orderStatus}"
                     app:layout_constraintStart_toEndOf="@+id/status_icon"
                     app:layout_constraintTop_toBottomOf="@+id/description"
                     tools:text="Filled" />
@@ -168,12 +170,12 @@
                 android:layout_height="wrap_content">
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/status_update_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingStart="@dimen/grid_small_padding"
                     android:paddingEnd="@dimen/grid_small_padding"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Button"
-                    android:onClick="@{() -> order.changeOrderStatus()}"
                     app:statusButtonText="@{order.order.orderStatus}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.96"

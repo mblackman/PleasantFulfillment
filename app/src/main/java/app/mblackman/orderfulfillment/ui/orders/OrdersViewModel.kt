@@ -1,6 +1,7 @@
 package app.mblackman.orderfulfillment.ui.orders
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.data.repository.OrderRepository
@@ -17,7 +18,10 @@ class OrdersViewModel(private val orderRepository: OrderRepository) : ViewModel(
     private var viewModelJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
-    val orderDetails: LiveData<List<Order>> = orderRepository.orderDetails
+    val orderDetails: LiveData<List<Order>> =
+        Transformations.map(orderRepository.orderDetails) {
+            it
+        }
 
     init {
         getCurrentDetails()
