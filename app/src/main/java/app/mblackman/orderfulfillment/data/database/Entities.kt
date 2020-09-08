@@ -5,8 +5,6 @@ import app.mblackman.orderfulfillment.data.common.Address
 import app.mblackman.orderfulfillment.data.common.OrderStatus
 import java.util.*
 
-const val DefaultPrimaryKey: Long = 0
-
 /**
  * Defines an Entity that comes from a foreign data source.
  */

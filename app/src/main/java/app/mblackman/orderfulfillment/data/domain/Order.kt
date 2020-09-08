@@ -1,6 +1,5 @@
 package app.mblackman.orderfulfillment.data.domain
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import app.mblackman.orderfulfillment.data.common.Address
 import app.mblackman.orderfulfillment.data.common.OrderStatus
@@ -15,5 +14,11 @@ data class Order(
     val buyerEmail: String,
     val buyerAddress: Address,
     val properties: Map<String, String>?,
-    val productSales: LiveData<List<ProductSale>> = MutableLiveData()
-)
+    val productSales: List<ProductSale>?
+) {
+    var isExpanded = MutableLiveData<Boolean>(false)
+
+    fun toggleExpand() {
+        isExpanded.postValue(!isExpanded.value!!)
+    }
+}

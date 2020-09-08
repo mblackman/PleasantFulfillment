@@ -40,13 +40,7 @@ class OrdersFragment : Fragment() {
 
         val adapter = OrderDetailAdapter(application, this)
 
-        viewModel.orderDetails.observe(viewLifecycleOwner) {
-            it.let {
-                adapter.addHeaderAndSubmitList(it)
-            }
-        }
-
-        adapter.addHeaderAndSubmitList(viewModel.orderDetails.value)
+        viewModel.orderDetails.observe(viewLifecycleOwner, adapter::submitList)
         binding.orderDetails.adapter = adapter
 
         return binding.root

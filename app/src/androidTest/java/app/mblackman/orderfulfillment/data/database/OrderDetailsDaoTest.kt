@@ -3,6 +3,7 @@ package app.mblackman.orderfulfillment.data.database
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
+import androidx.paging.LivePagedListBuilder
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
@@ -132,7 +133,8 @@ class OrderDetailsDaoTest {
         orderDetailsDao.insertAll(listOf(orderDetails))
         storeDatabase.productSaleDao.insertAll(productSales)
         storeDatabase.productDao.insertAll(products)
-        val storedOrderDetails = orderDetailsDao.getOrderDetailsWithProducts()
+        val storedOrderDetails =
+            LivePagedListBuilder(orderDetailsDao.getOrderDetailsWithProducts(), 20).build()
         val withProductSalesObserver = Observer<List<OrderDetailsWithProductSales>> {}
         storedOrderDetails.observeForever(withProductSalesObserver)
 

@@ -8,20 +8,18 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import app.mblackman.orderfulfillment.R
 import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.databinding.ListItemOrderDetailsBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-private const val ITEM_VIEW_TYPE_HEADER = 0
-private const val ITEM_VIEW_TYPE_ITEM = 1
+private const val UNKNOWN_VIEW_TYPE_ITEM = -1
+private const val ITEM_VIEW_TYPE_ITEM = 0
 
 /**
  * An adapter for order details and related items. Helps bind the order properties with
@@ -32,7 +30,7 @@ private const val ITEM_VIEW_TYPE_ITEM = 1
 class OrderDetailAdapter(
     private val context: Context,
     private val lifecycleOwner: LifecycleOwner
-) : ListAdapter<OrderDetailsDataItem, RecyclerView.ViewHolder>(OrderDetailsDiffCallback) {
+) : PagedListAdapter<Order, RecyclerView.ViewHolder>(diffCallback) {
 
     private val adapterScope = CoroutineScope(Dispatchers.Default)
     private val _orderStatusRequestChanged = MutableLiveData<Order>()
@@ -43,70 +41,47 @@ class OrderDetailAdapter(
     /**
      * Checks for differences between orders.
      */
-    companion object OrderDetailsDiffCallback : DiffUtil.ItemCallback<OrderDetailsDataItem>() {
-        override fun areItemsTheSame(
-            oldItem: OrderDetailsDataItem,
-            newItem: OrderDetailsDataItem
-        ): Boolean {
-            return oldItem.id == newItem.id
-        }
+    companion object {
+        val diffCallback = object : DiffUtil.ItemCallback<Order>() {
+            override fun areItemsTheSame(
+                oldItem: Order,
+                newItem: Order
+            ): Boolean {
+                return oldItem.id == newItem.id
+            }
 
-        override fun areContentsTheSame(
-            oldItem: OrderDetailsDataItem,
-            newItem: OrderDetailsDataItem
-        ): Boolean {
-            return oldItem == newItem
+            override fun areContentsTheSame(
+                oldItem: Order,
+                newItem: Order
+            ): Boolean {
+                return oldItem == newItem
+            }
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is BindingViewHolder -> {
-                val item = getItem(position) as OrderDetailsDataItem.OrderDetailsItem
+                val item = getItem(position) as Order
                 holder.bind(item)
             }
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when (viewType) {
-            ITEM_VIEW_TYPE_HEADER -> TextViewHolder.from(parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
+        when (viewType) {
             ITEM_VIEW_TYPE_ITEM -> {
                 val layoutInflater = LayoutInflater.from(parent.context)
                 val binding = ListItemOrderDetailsBinding.inflate(layoutInflater, parent, false)
-
-                return BindingViewHolder(binding)
+                BindingViewHolder(binding)
             }
             else -> throw ClassCastException("Unknown viewType $viewType")
         }
-    }
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
-            is OrderDetailsDataItem.Header -> ITEM_VIEW_TYPE_HEADER
-            is OrderDetailsDataItem.OrderDetailsItem -> ITEM_VIEW_TYPE_ITEM
-        }
-    }
-
-    /**
-     * Adds the given collection of orders to the view and creates a header for the list.
-     *
-     * @param list The list of orders.
-     */
-    fun addHeaderAndSubmitList(list: List<Order>?) {
-        adapterScope.launch {
-            val items = when (list) {
-                null -> listOf(OrderDetailsDataItem.Header)
-                else -> listOf(OrderDetailsDataItem.Header) + list.map {
-                    OrderDetailsDataItem.OrderDetailsItem(
-                        context,
-                        it
-                    )
-                }
-            }
-            withContext(Dispatchers.Main) {
-                submitList(items)
-            }
+            is Order -> ITEM_VIEW_TYPE_ITEM
+            else -> UNKNOWN_VIEW_TYPE_ITEM
         }
     }
 
@@ -121,7 +96,7 @@ class OrderDetailAdapter(
          *
          * @param item The order to bind to.
          */
-        fun bind(item: OrderDetailsDataItem.OrderDetailsItem) {
+        fun bind(item: Order) {
             binding.order = item
 
             with(ProductSaleAdapter(lifecycleOwner, item.isExpanded)) {
@@ -133,12 +108,10 @@ class OrderDetailAdapter(
                 binding.productSales.addItemDecoration(decorator, 0)
 
                 binding.statusUpdateButton.setOnClickListener {
-                    _orderStatusRequestChanged.postValue(item.order)
+                    _orderStatusRequestChanged.postValue(item)
                 }
 
-                item.order.productSales.observe(lifecycleOwner) {
-                    this.setItems(it)
-                }
+                item.productSales?.let { this.setItems(it) }
             }
 
             binding.lifecycleOwner = lifecycleOwner
@@ -165,33 +138,4 @@ class OrderDetailAdapter(
             }
         }
     }
-}
-
-/**
- * Decorator to contain the items stored inside the adapter's collection.
- */
-sealed class OrderDetailsDataItem {
-    /**
-     * Holds an order.
-     *
-     * @param order The order to hold.
-     */
-    data class OrderDetailsItem(val context: Context, val order: Order) : OrderDetailsDataItem() {
-        override val id = order.id.toInt()
-        val isExpanded = MutableLiveData(false)
-
-        fun toggleExpand() {
-            val nextValue = if (isExpanded.value == null) false else !isExpanded.value!!
-            isExpanded.postValue(nextValue)
-        }
-    }
-
-    /**
-     * Holds the header for the list.
-     */
-    object Header : OrderDetailsDataItem() {
-        override val id = Int.MIN_VALUE
-    }
-
-    abstract val id: Int
 }

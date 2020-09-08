@@ -3,7 +3,7 @@ package app.mblackman.orderfulfillment.sharedTest
 import app.mblackman.orderfulfillment.data.common.Address
 import app.mblackman.orderfulfillment.data.common.OrderStatus
 import app.mblackman.orderfulfillment.data.network.NetworkOrder
-import app.mblackman.orderfulfillment.data.repository.toLocalDateTime
+import app.mblackman.orderfulfillment.data.util.toLocalDateTime
 import java.time.LocalDateTime
 
 /**

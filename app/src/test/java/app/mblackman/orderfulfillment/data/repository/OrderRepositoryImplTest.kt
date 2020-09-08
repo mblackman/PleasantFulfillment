@@ -9,6 +9,7 @@ import app.mblackman.orderfulfillment.data.database.StoreDatabase
 import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.data.network.StoreAdapter
 import app.mblackman.orderfulfillment.data.network.TestStoreAdapter
+import app.mblackman.orderfulfillment.data.util.asDomainObject
 import app.mblackman.orderfulfillment.sharedTest.DatabaseObjectUtils
 import app.mblackman.orderfulfillment.sharedTest.NetworkObjectUtils
 import com.google.common.truth.Truth

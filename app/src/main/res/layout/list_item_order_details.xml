@@ -6,7 +6,7 @@
     <data>
         <variable
             name="order"
-            type="app.mblackman.orderfulfillment.ui.orders.OrderDetailsDataItem.OrderDetailsItem" />
+            type="app.mblackman.orderfulfillment.data.domain.Order" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -32,7 +32,7 @@
                     android:id="@+id/description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{order.order.description}"
+                    android:text="@{order.description}"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline6"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -59,7 +59,7 @@
                     android:contentDescription="@string/status_icon_for_order"
                     android:src="@drawable/order_status_indicator"
                     android:tintMode="screen"
-                    app:orderStatus="@{order.order.orderStatus}"
+                    app:orderStatus="@{order.orderStatus}"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/description"
                     app:tint="@color/status_icon_purchased" />
@@ -71,7 +71,7 @@
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Subtitle1"
                     android:paddingStart="@dimen/grid_small_padding"
                     android:paddingEnd="@dimen/grid_small_padding"
-                    app:orderStatus="@{order.order.orderStatus}"
+                    app:orderStatus="@{order.orderStatus}"
                     app:layout_constraintStart_toEndOf="@+id/status_icon"
                     app:layout_constraintTop_toBottomOf="@+id/description"
                     tools:text="Filled" />
@@ -91,7 +91,7 @@
                     android:id="@+id/orderDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{order.order.orderDate.toString()}"
+                    android:text="@{order.orderDate.toString()}"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                     android:textColor="?android:attr/textColorSecondary"
                     app:layout_constraintStart_toStartOf="parent"
@@ -102,7 +102,7 @@
                     android:id="@+id/buyerName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{order.order.buyerName}"
+                    android:text="@{order.buyerName}"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                     android:textColor="?android:attr/textColorSecondary"
                     app:layout_constraintStart_toStartOf="parent"
@@ -113,7 +113,7 @@
                     android:id="@+id/buyerEmail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{order.order.buyerEmail}"
+                    android:text="@{order.buyerEmail}"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                     android:textColor="?android:attr/textColorSecondary"
                     app:layout_constraintStart_toStartOf="parent"
@@ -126,7 +126,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                     android:textColor="?android:attr/textColorSecondary"
-                    app:address="@{order.order.buyerAddress}"
+                    app:address="@{order.buyerAddress}"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/buyerEmail"
                     tools:text="Test\n1000 Test Lane\nAmerica USA" />
@@ -176,7 +176,7 @@
                     android:paddingStart="@dimen/grid_small_padding"
                     android:paddingEnd="@dimen/grid_small_padding"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Button"
-                    app:statusButtonText="@{order.order.orderStatus}"
+                    app:statusButtonText="@{order.orderStatus}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.96"
                     app:layout_constraintStart_toStartOf="parent"

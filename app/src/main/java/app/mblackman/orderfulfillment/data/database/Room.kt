@@ -2,6 +2,7 @@ package app.mblackman.orderfulfillment.data.database
 
 import android.content.Context
 import androidx.lifecycle.LiveData
+import androidx.paging.DataSource
 import androidx.room.*
 
 /**
@@ -33,7 +34,7 @@ interface OrderDetailsDao : BaseDao<OrderDetails> {
      */
     @Transaction
     @Query("SELECT * FROM order_details")
-    fun getOrderDetailsWithProducts(): LiveData<List<OrderDetailsWithProductSales>>
+    fun getOrderDetailsWithProducts(): DataSource.Factory<Int, OrderDetailsWithProductSales>
 
     /**
      * Gets all the [OrderDetails] that match the given parameters.
@@ -43,13 +44,28 @@ interface OrderDetailsDao : BaseDao<OrderDetails> {
      */
     @Query("SELECT * FROM order_details WHERE adapter_id=:adapterId")
     fun getOrderDetailsByAdapter(adapterId: Int): List<OrderDetails>
+
+    @Query("SELECT order_details_id FROM order_details WHERE adapter_id=:adapterId AND adapter_entity_key=:adapterEntityKey LIMIT 1")
+    fun getOrderDetailsId(adapterId: Int, adapterEntityKey: Long): Long?
 }
 
 /**
  * [Dao] interface to define methods to interact with [Product] in a room database.
  */
 @Dao
-interface ProductDao : BaseDao<Product>
+interface ProductDao : BaseDao<Product> {
+    @Query("SELECT product_id FROM product WHERE adapter_id=:adapterId AND adapter_entity_key=:adapterEntityKey LIMIT 1")
+    fun getProductId(adapterId: Int, adapterEntityKey: Long): Long?
+
+    /**
+     * Gets all the [OrderDetails] that match the given parameters.
+     *
+     * @param adapterId The id of the id to get [OrderDetails] from.
+     * @return All the [OrderDetails] meeting the criteria.
+     */
+    @Query("SELECT * FROM product WHERE adapter_id=:adapterId")
+    fun getProductByAdapter(adapterId: Int): List<Product>
+}
 
 /**
  * [Dao] interface to define methods to interact with [ProductSale] in a room database.

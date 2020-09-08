@@ -1,8 +1,8 @@
 package app.mblackman.orderfulfillment.ui.orders
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import androidx.paging.PagedList
 import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.data.repository.OrderRepository
 import kotlinx.coroutines.CoroutineScope
@@ -18,10 +18,7 @@ class OrdersViewModel(private val orderRepository: OrderRepository) : ViewModel(
     private var viewModelJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
-    val orderDetails: LiveData<List<Order>> =
-        Transformations.map(orderRepository.orderDetails) {
-            it
-        }
+    val orderDetails: LiveData<PagedList<Order>> = orderRepository.orderDetails
 
     init {
         getCurrentDetails()
