@@ -29,6 +29,13 @@ interface OrderDetailsDao : BaseDao<OrderDetails> {
     fun getOrderDetails(): LiveData<List<OrderDetails>>
 
     /**
+     * Gets [OrderDetails] with their sales data.
+     */
+    @Transaction
+    @Query("SELECT * FROM order_details")
+    fun getOrderDetailsWithProducts(): LiveData<List<OrderDetailsWithProductSales>>
+
+    /**
      * Gets all the [OrderDetails] that match the given parameters.
      *
      * @param adapterId The id of the id to get [OrderDetails] from.

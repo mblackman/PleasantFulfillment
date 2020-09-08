@@ -27,12 +27,33 @@ class OrderDetailsDaoTest {
     private lateinit var orderDetailsDao: OrderDetailsDao
     private lateinit var storeDatabase: StoreDatabase
 
+    val orderDetailsCompare =
+        propertyCompare<OrderDetails>(ignoreProperties = listOf(OrderDetails::localId))
+    val productSaleCompare =
+        propertyCompare<ProductSale>(ignoreProperties = listOf(ProductSale::localId))
+    val productCompare = propertyCompare<Product>(ignoreProperties = listOf(Product::localId))
+
     private fun orderDetailsMatcher(expected: Iterable<OrderDetails>) =
         CollectionMatcher(
             expected,
-            propertyCompare<OrderDetails>(ignoreProperties = listOf(OrderDetails::orderDetailsId))
+            orderDetailsCompare
         )
-    
+
+    private fun orderDetailsWithProductSalesMatcher(expected: Iterable<OrderDetailsWithProductSales>) =
+        CollectionMatcher(expected) { expect, actual ->
+            if (actual !is OrderDetailsWithProductSales) {
+                return@CollectionMatcher false
+            }
+            return@CollectionMatcher orderDetailsCompare(expect.orderDetails, actual.orderDetails)
+                    && expect.productSales.size == actual.productSales.size
+                    && expect.productSales.zip(actual.productSales).all { (ps1, ps2) ->
+                productSaleCompare(ps1.productSale, ps2.productSale) && productCompare(
+                    ps1.product,
+                    ps2.product
+                )
+            }
+        }
+
     @Before
     fun setUp() {
         observer = Observer<List<OrderDetails>> {}
@@ -77,6 +98,45 @@ class OrderDetailsDaoTest {
             storedOrderDetailsAdapter1,
             orderDetailsMatcher(adapter1OrderDetails)
         )
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun getOrderDetailsAndProductSales() {
+        val orderDetails = DatabaseObjectUtils.createOrderDetails()
+        val productSales = listOf(
+            DatabaseObjectUtils.createProductSale(
+                orderDetailsId = 1,
+                adapterEntityKey = 1,
+                productId = 1
+            ),
+            DatabaseObjectUtils.createProductSale(
+                orderDetailsId = 1,
+                adapterEntityKey = 2,
+                productId = 2
+            )
+        )
+        val products = listOf(
+            DatabaseObjectUtils.createProduct(adapterEntityKey = 1),
+            DatabaseObjectUtils.createProduct(adapterEntityKey = 2)
+        )
+        val expected = listOf(
+            OrderDetailsWithProductSales(
+                orderDetails, listOf(
+                    ProductSaleWithProduct(productSales[0], products[0]),
+                    ProductSaleWithProduct(productSales[1], products[1])
+                )
+            )
+        )
+
+        orderDetailsDao.insertAll(listOf(orderDetails))
+        storeDatabase.productSaleDao.insertAll(productSales)
+        storeDatabase.productDao.insertAll(products)
+        val storedOrderDetails = orderDetailsDao.getOrderDetailsWithProducts()
+        val withProductSalesObserver = Observer<List<OrderDetailsWithProductSales>> {}
+        storedOrderDetails.observeForever(withProductSalesObserver)
+
+        assertThat(storedOrderDetails.value, orderDetailsWithProductSalesMatcher(expected))
     }
 
     /**

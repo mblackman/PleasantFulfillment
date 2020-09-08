@@ -67,7 +67,10 @@ data class ProductSale(
     @ColumnInfo(name = "adapter_entity_key")
     override val adapterEntityKey: Long,
 
+    @ColumnInfo(name = "order_details_id")
     val orderDetailId: Long,
+
+    @ColumnInfo(name = "product_id")
     val productId: Long,
     val quantity: Int
 ) : AdapterEntity
@@ -111,3 +114,33 @@ data class OrderDetailsProperty(
     override val key: String,
     override val value: String
 ) : Property()
+
+/**
+ * A relational class between an [OrderDetails] an the containing [ProductSale]s.
+ */
+data class OrderDetailsWithProductSales(
+    @Embedded
+    val orderDetails: OrderDetails,
+
+    @Relation(
+        parentColumn = "order_details_id",
+        entityColumn = "order_details_id",
+        entity = ProductSale::class
+    )
+    val productSales: List<ProductSaleWithProduct>
+)
+
+/**
+ * A relational class between a [ProductSale] and the containing [Product].
+ */
+data class ProductSaleWithProduct(
+    @Embedded
+    val productSale: ProductSale,
+
+    @Relation(
+        parentColumn = "product_id",
+        entityColumn = "product_id",
+        entity = Product::class
+    )
+    val product: Product
+)

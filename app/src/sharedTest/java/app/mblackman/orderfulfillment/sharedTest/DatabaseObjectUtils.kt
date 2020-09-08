@@ -3,6 +3,8 @@ package app.mblackman.orderfulfillment.sharedTest
 import app.mblackman.orderfulfillment.data.common.Address
 import app.mblackman.orderfulfillment.data.common.OrderStatus
 import app.mblackman.orderfulfillment.data.database.OrderDetails
+import app.mblackman.orderfulfillment.data.database.Product
+import app.mblackman.orderfulfillment.data.database.ProductSale
 import java.util.*
 
 /**
@@ -32,6 +34,42 @@ class DatabaseObjectUtils {
                 buyerName,
                 buyerEmail,
                 address
+            )
+
+        fun createProductSale(
+            id: Long = DefaultLongId,
+            adapterId: Int = DefaultAdapterId,
+            adapterEntityKey: Long = DefaultAdapterEntityKey,
+            orderDetailsId: Long = DefaultLongId,
+            productId: Long = DefaultLongId,
+            quantity: Int = DefaultProductSaleQuantity
+        ): ProductSale =
+            ProductSale(
+                id,
+                adapterId,
+                adapterEntityKey,
+                orderDetailsId,
+                productId,
+                quantity
+            )
+
+        fun createProduct(
+            id: Long = DefaultLongId,
+            adapterId: Int = DefaultAdapterId,
+            adapterEntityKey: Long = DefaultAdapterEntityKey,
+            name: String = DefaultProductName,
+            description: String = DefaultProductDescription,
+            imageUrl: String? = null,
+            price: Double? = DefaultPrice
+        ): Product =
+            Product(
+                id,
+                adapterId,
+                adapterEntityKey,
+                name,
+                description,
+                imageUrl,
+                price
             )
     }
 
