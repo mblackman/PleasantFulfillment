@@ -4,22 +4,25 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import app.mblackman.orderfulfillment.data.network.NetworkException
-import app.mblackman.orderfulfillment.data.repository.OrderRepositoryImpl
+import app.mblackman.orderfulfillment.data.repository.OrderRepository
 import kotlinx.coroutines.coroutineScope
 import timber.log.Timber
+import javax.inject.Inject
 
 class OrderWorker(appContext: Context, params: WorkerParameters) :
     CoroutineWorker(appContext, params) {
+
+    @Inject
+    lateinit var repository: OrderRepository
 
     companion object {
         const val WORK_NAME = "RefreshOrdersWorker"
     }
 
     override suspend fun doWork(): Result = coroutineScope {
-        val repo = OrderRepositoryImpl.create(applicationContext)
 
         try {
-            repo.updateOrderDetails()
+            repository.updateOrderDetails()
         } catch (networkException: NetworkException) {
             Timber.e(networkException)
             Result.failure()

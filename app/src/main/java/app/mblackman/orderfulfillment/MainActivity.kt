@@ -4,10 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import app.mblackman.orderfulfillment.data.network.etsy.SessionManager
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Main activity that controls order fulfillment processes.
  */
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

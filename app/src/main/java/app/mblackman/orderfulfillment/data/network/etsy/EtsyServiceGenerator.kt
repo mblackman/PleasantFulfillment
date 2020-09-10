@@ -6,13 +6,14 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import javax.inject.Inject
 
 private const val BASE_URL = "https://openapi.etsy.com/v2/"
 
 /**
  * Generates services to access the Etsy api.
  */
-class EtsyServiceGenerator(sessionManager: SessionManager) {
+class EtsyServiceGenerator @Inject constructor(sessionManager: SessionManager) {
 
     private val moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())

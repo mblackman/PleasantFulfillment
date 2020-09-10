@@ -1,6 +1,5 @@
 package app.mblackman.orderfulfillment.data.database
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.paging.DataSource
 import androidx.room.*
@@ -106,26 +105,4 @@ abstract class StoreDatabase : RoomDatabase() {
      * The [Dao] to interact with [ProductSale]
      */
     abstract val productSaleDao: ProductSaleDao
-}
-
-private lateinit var INSTANCE: StoreDatabase
-
-/**
- * Gets the database instance.
- *
- * @param context The context of the caller.
- * @return The database instance.
- */
-fun getDatabase(context: Context): StoreDatabase {
-    synchronized(StoreDatabase::class.java) {
-        if (!::INSTANCE.isInitialized) {
-            INSTANCE = Room.databaseBuilder(
-                context.applicationContext,
-                StoreDatabase::class.java,
-                "StoreDatabase"
-            ).build()
-        }
-    }
-
-    return INSTANCE
 }

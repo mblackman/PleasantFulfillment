@@ -1,5 +1,6 @@
 package app.mblackman.orderfulfillment.ui.orders
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagedList
@@ -13,7 +14,10 @@ import kotlinx.coroutines.launch
 /**
  * The orders application logic to control user experience.
  */
-class OrdersViewModel(private val orderRepository: OrderRepository) : ViewModel() {
+class OrdersViewModel @ViewModelInject constructor(
+    private val orderRepository: OrderRepository
+) :
+    ViewModel() {
 
     private var viewModelJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)

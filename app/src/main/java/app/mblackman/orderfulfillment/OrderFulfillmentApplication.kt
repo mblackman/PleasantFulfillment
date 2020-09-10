@@ -3,12 +3,14 @@ package app.mblackman.orderfulfillment
 import android.app.Application
 import androidx.work.*
 import app.mblackman.orderfulfillment.data.work.OrderWorker
+import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
+@HiltAndroidApp
 class OrderFulfillmentApplication : Application() {
 
     private val applicationScope = CoroutineScope(Dispatchers.Default)

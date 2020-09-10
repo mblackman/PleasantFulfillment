@@ -1,14 +1,15 @@
 package app.mblackman.orderfulfillment.ui.login
 
-import android.app.Application
-import android.content.Context
-import android.content.SharedPreferences
+import android.os.Parcel
+import android.os.Parcelable
 import android.text.TextUtils
+import androidx.hilt.Assisted
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import app.mblackman.orderfulfillment.BuildConfig
-import app.mblackman.orderfulfillment.R
 import app.mblackman.orderfulfillment.data.network.etsy.SessionManager
 import com.github.scribejava.apis.EtsyApi
 import com.github.scribejava.core.builder.ServiceBuilder
@@ -19,11 +20,10 @@ import kotlinx.coroutines.*
  * Handles authenticating and storing credentials to web endpoints.
  *
  * @param sessionManager The session manager to manage credentials with.
- * @param application The application context.
  */
-class LoginViewModel(
+class LoginViewModel @ViewModelInject constructor(
     private val sessionManager: SessionManager,
-    private val application: Application
+    @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     /**
@@ -31,17 +31,12 @@ class LoginViewModel(
      */
     enum class LoginStatus { GETTING_AUTH_URL, AWAITING_OAUTH_VERIFIER, ERROR, DONE }
 
-    private var prefs: SharedPreferences = application.getSharedPreferences(
-        application.getString(R.string.app_name),
-        Context.MODE_PRIVATE
-    )
-
     private var viewModelJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
     private val apiService = ServiceBuilder(BuildConfig.ETSY_CONSUMER_KEY)
         .apiSecret(BuildConfig.ETSY_CONSUMER_SECRET)
-        .callback(application.getString(R.string.etsy_login_callback_uri))
+        .callback(BuildConfig.ETSY_API_REDIRECT)
         .build(EtsyApi.instance("transactions_r"))
 
     private val _authorizationUrl = MutableLiveData<String>()
@@ -61,10 +56,7 @@ class LoginViewModel(
         get() = _loginStatus
 
     companion object {
-        private const val TEMP_TOKEN_SECRET_PREF_NAME = "etsy_temp_token_secret"
-        private const val TEMP_TOKEN_PREF_NAME = "etsy_temp_token"
-        private const val TEMP_RAW_PREF_NAME = "etsy_temp_raw"
-
+        private const val TEMP_TOKEN_KEY = "etsy_temp_token"
     }
 
     /**
@@ -80,7 +72,7 @@ class LoginViewModel(
 
     private suspend fun getAccessToken(oauthVerifier: String) {
         withContext(Dispatchers.IO) {
-            val requestToken = getSavedOAuthToken()
+            val requestToken = getSavedOAuthToken() ?: return@withContext
             val accessToken = apiService.getAccessToken(requestToken, oauthVerifier)
             if (accessToken.isEmpty) {
                 // No access token retrieved.
@@ -129,24 +121,48 @@ class LoginViewModel(
     }
 
     private fun setSavedOAuthToken(requestToken: OAuth1RequestToken) {
-        prefs.edit()
-            .putString(TEMP_TOKEN_SECRET_PREF_NAME, requestToken.tokenSecret)
-            .putString(TEMP_TOKEN_PREF_NAME, requestToken.token)
-            .putString(TEMP_RAW_PREF_NAME, requestToken.rawResponse)
-            .apply()
+        savedStateHandle.set(
+            TEMP_TOKEN_KEY,
+            TempToken(requestToken.tokenSecret, requestToken.token, requestToken.rawResponse)
+        )
     }
 
-    private fun getSavedOAuthToken(): OAuth1RequestToken {
-        val token = prefs.getString(TEMP_TOKEN_PREF_NAME, "")
-        val secret = prefs.getString(TEMP_TOKEN_SECRET_PREF_NAME, "")
-        val raw = prefs.getString(TEMP_RAW_PREF_NAME, "")
-        val requestToken = OAuth1RequestToken(token, secret, raw)
-        prefs.edit()
-            .remove(TEMP_TOKEN_PREF_NAME)
-            .remove(TEMP_TOKEN_SECRET_PREF_NAME)
-            .remove(TEMP_RAW_PREF_NAME)
-            .apply()
+    private fun getSavedOAuthToken(): OAuth1RequestToken? =
+        savedStateHandle.get<TempToken>(TEMP_TOKEN_KEY)?.asOAuth1RequestToken()
 
-        return requestToken
+    data class TempToken(val secret: String?, val token: String?, val rawResponse: String?) :
+        Parcelable {
+        constructor(parcel: Parcel) : this(
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readString()
+        )
+
+        fun asOAuth1RequestToken(): OAuth1RequestToken? {
+            if (secret != null && token != null && rawResponse != null) {
+                return OAuth1RequestToken(token, secret, rawResponse)
+            }
+            return null
+        }
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeString(secret)
+            parcel.writeString(token)
+            parcel.writeString(rawResponse)
+        }
+
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        companion object CREATOR : Parcelable.Creator<TempToken> {
+            override fun createFromParcel(parcel: Parcel): TempToken {
+                return TempToken(parcel)
+            }
+
+            override fun newArray(size: Int): Array<TempToken?> {
+                return arrayOfNulls(size)
+            }
+        }
     }
 }

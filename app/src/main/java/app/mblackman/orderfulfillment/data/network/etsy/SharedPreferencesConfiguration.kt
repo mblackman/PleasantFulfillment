@@ -3,11 +3,12 @@ package app.mblackman.orderfulfillment.data.network.etsy
 import android.content.Context
 import android.content.SharedPreferences
 import app.mblackman.orderfulfillment.R
+import javax.inject.Inject
 
 /**
  * Uses shared preferences to persist configuration settings.
  */
-class SharedPreferencesConfiguration(context: Context) : Configuration {
+class SharedPreferencesConfiguration @Inject constructor(context: Context) : Configuration {
 
     private var prefs: SharedPreferences =
         context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE)

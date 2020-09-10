@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs"
+apply plugin: 'dagger.hilt.android.plugin'
 
 def etsyApiKeyPropertiesFile = rootProject.file("etsyapikey.properties")
 def etsyApiKeyProperties = new Properties()
@@ -27,6 +28,7 @@ android {
 
         buildConfigField("String", "ETSY_CONSUMER_KEY", etsyApiKeyProperties['CONSUMER_KEY'])
         buildConfigField("String", "ETSY_CONSUMER_SECRET", etsyApiKeyProperties['CONSUMER_SECRET'])
+        buildConfigField("String", "ETSY_API_REDIRECT", etsyApiKeyProperties['API_REDIRECT'])
     }
 
     buildTypes {
@@ -89,18 +91,35 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation "io.mockk:mockk-android:$version_mockk"
 
+    // Hilt
+    implementation "com.google.dagger:hilt-android:$version_hilt"
+    kapt "com.google.dagger:hilt-android-compiler:$version_hilt"
+
     // Androidx dependencies
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation "androidx.appcompat:appcompat:$version_app_compat"
     implementation "androidx.core:core-ktx:$version_core"
+    implementation "androidx.fragment:fragment-ktx:$version_fragment"
+
+    // Hilt
+    implementation "androidx.hilt:hilt-lifecycle-viewmodel:$version_hilt_androidx"
+    kapt "androidx.hilt:hilt-compiler:$version_hilt_androidx"
 
     // Constraint Layout
     implementation "androidx.constraintlayout:constraintlayout:$version_constraint_layout"
 
-    // ViewModel and LiveData
+    // Lifecycle
     implementation "androidx.lifecycle:lifecycle-extensions:$version_lifecycle_extensions"
     implementation "androidx.lifecycle:lifecycle-extensions:$version_lifecycle_extensions"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$version_lifecycle_extensions"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$version_lifecycle_extensions"
+
+    // Room database
+    implementation "androidx.room:room-runtime:$version_room"
+    kapt "androidx.room:room-compiler:$version_room"
+
+    // Browser
+    implementation "androidx.browser:browser:$version_browser"
 
     // Navigation
     implementation "android.arch.navigation:navigation-fragment-ktx:$version_navigation"
@@ -132,15 +151,8 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:$version_okhttp3"
     implementation "oauth.signpost:signpost-core:$version_signpost"
 
-    // Room database
-    implementation "androidx.room:room-runtime:$version_room"
-    kapt "androidx.room:room-compiler:$version_room"
-
     // Glide
     implementation "com.github.bumptech.glide:glide:$version_glide"
-
-    // Browser
-    implementation "androidx.browser:browser:$version_browser"
 
     // WorkManager
     implementation "android.arch.work:work-runtime-ktx:$version_work"

@@ -5,13 +5,14 @@ import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import app.mblackman.orderfulfillment.R
+import javax.inject.Inject
 
 /**
  * Managers online sessions with api endpoints.
  *
  * @param context The context of the constructing caller.
  */
-class SessionManager(context: Context, private val suppressEvents: Boolean = false) {
+class SessionManager @Inject constructor(context: Context) {
     private var prefs: SharedPreferences =
         context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE)
 
@@ -38,9 +39,7 @@ class SessionManager(context: Context, private val suppressEvents: Boolean = fal
             .putString(USER_TOKEN_SECRET, secret)
             .apply()
 
-        if (!suppressEvents) {
-            authenticationChangedInternal.postValue(true)
-        }
+        authenticationChangedInternal.postValue(true)
     }
 
     /**
@@ -71,8 +70,6 @@ class SessionManager(context: Context, private val suppressEvents: Boolean = fal
      * Call whenever authentication has failed for the stored credentials.
      */
     fun onAuthenticationFailed() {
-        if (!suppressEvents) {
-            authenticationChangedInternal.postValue(false)
-        }
+        authenticationChangedInternal.postValue(false)
     }
 }

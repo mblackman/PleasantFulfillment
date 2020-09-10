@@ -4,25 +4,18 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
-import app.mblackman.orderfulfillment.data.network.etsy.SessionManager
 import app.mblackman.orderfulfillment.ui.login.LoginViewModel
-import app.mblackman.orderfulfillment.ui.login.LoginViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Handles retrieving and maintaining login credentials for online endpoint.
  */
+@AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
 
-    private val loginViewModel: LoginViewModel by lazy {
-        val viewModelFactory = LoginViewModelFactory(
-            SessionManager(
-                application
-            ), application
-        )
-        ViewModelProvider(this, viewModelFactory).get(LoginViewModel::class.java)
-    }
+    private val loginViewModel: LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +43,7 @@ class LoginActivity : AppCompatActivity() {
 
     // Tries to parse expected uris. Will handle callbacks.
     private fun handleUriIntent(uri: Uri) {
-        if (uri.toString().startsWith(getString(R.string.etsy_login_callback_uri))) {
+        if (uri.toString().startsWith(BuildConfig.ETSY_API_REDIRECT)) {
             val verifier = uri.getQueryParameter("oauth_verifier")
             if (!TextUtils.isEmpty(verifier)) {
                 loginViewModel.setAccessToken(verifier!!)

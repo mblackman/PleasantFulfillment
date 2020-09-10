@@ -1,26 +1,16 @@
 package app.mblackman.orderfulfillment.data.network.etsy
 
-import android.content.Context
 import app.mblackman.orderfulfillment.data.network.*
 import app.mblackman.orderfulfillment.data.network.etsy.json.EtsyResponseWrapper
 import app.mblackman.orderfulfillment.data.network.etsy.json.Listing
 import retrofit2.Response
 import timber.log.Timber
+import javax.inject.Inject
 
-class EtsyStoreAdapter(
+class EtsyStoreAdapter @Inject constructor(
     private val etsyApiService: EtsyApiService,
     private val configuration: Configuration
 ) : StoreAdapter {
-
-    companion object {
-        fun create(context: Context): EtsyStoreAdapter {
-            val sessionManager = SessionManager(context)
-            val configuration = SharedPreferencesConfiguration(context)
-            val etsyApiService =
-                EtsyServiceGenerator(sessionManager).createService(EtsyApiService::class.java)
-            return EtsyStoreAdapter(etsyApiService, configuration)
-        }
-    }
 
     override val adapterId: Int = 1
 

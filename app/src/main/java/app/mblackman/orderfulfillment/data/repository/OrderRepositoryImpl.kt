@@ -1,45 +1,28 @@
 package app.mblackman.orderfulfillment.data.repository
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.paging.PagedList
 import androidx.paging.toLiveData
 import app.mblackman.orderfulfillment.data.database.ProductSale
 import app.mblackman.orderfulfillment.data.database.StoreDatabase
-import app.mblackman.orderfulfillment.data.database.getDatabase
 import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.data.network.StoreAdapter
-import app.mblackman.orderfulfillment.data.network.etsy.EtsyStoreAdapter
 import app.mblackman.orderfulfillment.data.util.DefaultPrimaryKey
 import app.mblackman.orderfulfillment.data.util.asDomainObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import javax.inject.Inject
 
 /**
  * Implementation of OrderRepository that fetches order details from the web
  * and persists them in a database.
  */
-class OrderRepositoryImpl(
+class OrderRepositoryImpl @Inject constructor(
     private val storeAdapter: StoreAdapter,
     private val storeDatabase: StoreDatabase
 ) : OrderRepository() {
     private val orderDataSourceFactory = storeDatabase.orderDetailsDao.getOrderDetailsWithProducts()
-
-    companion object {
-        /**
-         * Creates a [OrderRepository] from the given [context].
-         *
-         * @param  context The context to create the [OrderRepository] from.
-         * @return The created [OrderRepository].
-         */
-        fun create(context: Context): OrderRepository {
-            return OrderRepositoryImpl(
-                EtsyStoreAdapter.create(context),
-                getDatabase(context)
-            )
-        }
-    }
 
     /**
      * Gets the list of orders.
