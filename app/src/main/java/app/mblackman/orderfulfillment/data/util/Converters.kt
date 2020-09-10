@@ -28,22 +28,6 @@ fun LocalDateTime.toDate(): Date =
     Date.from(this.atZone(ZoneId.systemDefault()).toInstant())
 
 /**
- * Converts the database [OrderDetails] object to an [Order]
- */
-fun OrderDetails.asDomainObject(): Order =
-    Order(
-        this.localId,
-        "Order ${this.localId}.",
-        this.status,
-        this.orderDate.toLocalDateTime(),
-        this.buyerName,
-        this.buyerEmail,
-        this.address,
-        null,
-        null
-    )
-
-/**
  * Converts the data [OrderDetailsWithProductSales] to the domain [Order].
  */
 fun OrderDetailsWithProductSales.asDomainObject(): Order =

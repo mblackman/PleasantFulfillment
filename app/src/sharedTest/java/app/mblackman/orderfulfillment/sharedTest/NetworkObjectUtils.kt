@@ -3,6 +3,8 @@ package app.mblackman.orderfulfillment.sharedTest
 import app.mblackman.orderfulfillment.data.common.Address
 import app.mblackman.orderfulfillment.data.common.OrderStatus
 import app.mblackman.orderfulfillment.data.network.NetworkOrder
+import app.mblackman.orderfulfillment.data.network.NetworkProduct
+import app.mblackman.orderfulfillment.data.network.NetworkProductSale
 import app.mblackman.orderfulfillment.data.util.toLocalDateTime
 import java.time.LocalDateTime
 
@@ -14,7 +16,7 @@ class NetworkObjectUtils {
         /**
          * Creates a network order with either given values or defaults.
          */
-        fun createNetworkOrder(
+        fun createOrder(
             id: Long = DefaultLongId,
             orderStatus: OrderStatus = DefaultStatus,
             localDateTime: LocalDateTime = DefaultOrderDate.toLocalDateTime(),
@@ -32,5 +34,27 @@ class NetworkObjectUtils {
                 address,
                 properties
             )
+
+        fun createProduct(
+            id: Long = DefaultLongId,
+            name: String = DefaultProductName,
+            description: String = DefaultProductDescription,
+            imageUrl: String? = DefaultProductImageUrl,
+            price: Double? = DefaultPrice
+        ) =
+            NetworkProduct(
+                id,
+                name,
+                description,
+                imageUrl,
+                price
+            )
+
+        fun createProductSale(
+            id: Long = DefaultLongId,
+            productId: Long = DefaultLongId,
+            orderId: Long = DefaultLongId,
+            quantity: Int = DefaultQuantity
+        ) = NetworkProductSale(id, productId, orderId, quantity)
     }
 }

@@ -1,48 +1,51 @@
 package app.mblackman.orderfulfillment.data.repository
 
+import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import app.mblackman.orderfulfillment.data.common.OrderStatus
-import app.mblackman.orderfulfillment.data.database.MockOrderDetailsDao
-import app.mblackman.orderfulfillment.data.database.OrderDetails
 import app.mblackman.orderfulfillment.data.database.StoreDatabase
 import app.mblackman.orderfulfillment.data.domain.Order
-import app.mblackman.orderfulfillment.data.network.StoreAdapter
-import app.mblackman.orderfulfillment.data.network.TestStoreAdapter
-import app.mblackman.orderfulfillment.data.util.asDomainObject
 import app.mblackman.orderfulfillment.sharedTest.DatabaseObjectUtils
 import app.mblackman.orderfulfillment.sharedTest.NetworkObjectUtils
+import app.mblackman.orderfulfillment.sharedTest.TestStoreAdapter
 import com.google.common.truth.Truth
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.unmockkObject
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import java.io.IOException
 
-
+@RunWith(AndroidJUnit4ClassRunner::class)
 class OrderRepositoryImplTest {
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
-    private val database: StoreDatabase = mockk(relaxed = true)
     private lateinit var observer: Observer<List<Order>>
+    private lateinit var storeDatabase: StoreDatabase
 
     @Before
     fun setUp() {
         observer = Observer<List<Order>> {}
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        storeDatabase = Room.inMemoryDatabaseBuilder(context, StoreDatabase::class.java).build()
     }
 
     @After
+    @Throws(IOException::class)
     fun after() {
-        unmockkObject(database)
+        storeDatabase.close()
     }
 
     @Test
+    @Throws(Exception::class)
     fun getOrdersLoadFromWeb() {
-        val repo = setupMocks(TestStoreAdapter.singleNetworkOrder())
+        val repo = OrderRepositoryImpl(TestStoreAdapter.singleNetworkOrder(), storeDatabase)
 
         runBlocking { repo.updateOrderDetails() }
         val result = repo.orderDetails
@@ -69,8 +72,9 @@ class OrderRepositoryImplTest {
     }
 
     @Test
+    @Throws(Exception::class)
     fun emptyWebRequest() {
-        val repo = setupMocks(TestStoreAdapter.emptyNetworkOrders())
+        val repo = OrderRepositoryImpl(TestStoreAdapter.empty(), storeDatabase)
 
         runBlocking { repo.updateOrderDetails() }
         val result = repo.orderDetails
@@ -85,9 +89,10 @@ class OrderRepositoryImplTest {
      * Verifies when an order is updated from an adapter, state is retained in the repository.
      */
     @Test
+    @Throws(Exception::class)
     fun getUpdatedOrderDetails() {
         val orderForeignId = 100L
-        val updatedOrder = NetworkObjectUtils.createNetworkOrder(
+        val updatedOrder = NetworkObjectUtils.createOrder(
             id = orderForeignId,
             orderStatus = OrderStatus.Purchased
         )
@@ -95,21 +100,18 @@ class OrderRepositoryImplTest {
         val existingOrderDetails = DatabaseObjectUtils.createOrderDetails(
             adapterId = adapter.adapterId,
             adapterEntityKey = orderForeignId,
-            status = OrderStatus.Filled
+            status = OrderStatus.Filled,
         )
-        val repo = setupMocks(adapter, listOf(existingOrderDetails))
+        val repo = OrderRepositoryImpl(adapter, storeDatabase)
+        storeDatabase.orderDetailsDao.insertAll(listOf(existingOrderDetails))
 
         runBlocking { repo.updateOrderDetails() }
         val result = repo.orderDetails
         result.observeForever(observer)
 
-        Truth.assertWithMessage("No items should have been loaded from the adapter.")
-            .that(result.value)
-            .isEqualTo(
-                listOf(
-                    existingOrderDetails.copy(status = OrderStatus.Filled).asDomainObject()
-                )
-            )
+        Truth.assertWithMessage("No new orders should have been created.")
+            .that(result.value?.size)
+            .isEqualTo(1)
     }
 
     private fun setupMocks(

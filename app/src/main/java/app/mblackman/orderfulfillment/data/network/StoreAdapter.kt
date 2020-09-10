@@ -1,5 +1,7 @@
 package app.mblackman.orderfulfillment.data.network
 
+import app.mblackman.orderfulfillment.data.common.Result
+
 /**
  * Represents an adapter for a storefront data source.
  */
@@ -9,15 +11,15 @@ interface StoreAdapter {
     /**
      * Gets the list of orders.
      */
-    suspend fun getOrders(): List<NetworkOrder>
+    suspend fun getOrders(): Result<List<NetworkOrder>>
 
     /**
      * Gets the list of products.
      */
-    suspend fun getProducts(): List<NetworkProduct>
+    suspend fun getProducts(): Result<List<NetworkProduct>>
 
     /**
      * Gets the list of product sales.
      */
-    suspend fun getProductSales(): List<NetworkProductSale>
+    suspend fun getProductSales(): Result<List<NetworkProductSale>>
 }

@@ -2,6 +2,8 @@ package app.mblackman.orderfulfillment.ui.debug
 
 import app.mblackman.orderfulfillment.data.common.Address
 import app.mblackman.orderfulfillment.data.common.OrderStatus
+import app.mblackman.orderfulfillment.data.common.Result
+import app.mblackman.orderfulfillment.data.common.Success
 import app.mblackman.orderfulfillment.data.network.NetworkOrder
 import app.mblackman.orderfulfillment.data.network.NetworkProduct
 import app.mblackman.orderfulfillment.data.network.NetworkProductSale
@@ -82,11 +84,11 @@ class MockStoreAdapter(
         }
     }
 
-    override suspend fun getOrders(): List<NetworkOrder> = orders
+    override suspend fun getOrders(): Result<List<NetworkOrder>> = Success(orders)
 
-    override suspend fun getProducts(): List<NetworkProduct> = products
+    override suspend fun getProducts(): Result<List<NetworkProduct>> = Success(products)
 
-    override suspend fun getProductSales(): List<NetworkProductSale> = productSales
+    override suspend fun getProductSales(): Result<List<NetworkProductSale>> = Success(productSales)
 
     data class MockPerson(val name: String, val email: String)
 }

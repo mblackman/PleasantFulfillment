@@ -29,14 +29,14 @@ interface EtsyApiService {
         @Path(OffsetPropertyName) offset: Int
     ): Deferred<Response<EtsyResponseWrapper<Receipt>>>
 
-    @GET("shops/{shopId}/transactions")
+    @GET("shops/{shopId}/transactions$LimitAndOffsetParameters")
     fun findAllTransactionsAsync(
         @Path("shopId") shopId: Int,
         @Path(LimitPropertyName) limit: Int,
         @Path(OffsetPropertyName) offset: Int
     ): Deferred<Response<EtsyResponseWrapper<Transaction>>>
 
-    @GET("shop/{shopId}/listings/active")
+    @GET("shop/{shopId}/listings/active$LimitAndOffsetParameters")
     fun findAllActiveShopListingsAsync(
         @Path("shopId") shopId: Int,
         @Path(LimitPropertyName) limit: Int,

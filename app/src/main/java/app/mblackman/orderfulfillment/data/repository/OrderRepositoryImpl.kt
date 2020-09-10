@@ -3,6 +3,8 @@ package app.mblackman.orderfulfillment.data.repository
 import androidx.lifecycle.LiveData
 import androidx.paging.PagedList
 import androidx.paging.toLiveData
+import app.mblackman.orderfulfillment.data.common.Failure
+import app.mblackman.orderfulfillment.data.common.Success
 import app.mblackman.orderfulfillment.data.database.ProductSale
 import app.mblackman.orderfulfillment.data.database.StoreDatabase
 import app.mblackman.orderfulfillment.data.domain.Order
@@ -53,35 +55,41 @@ class OrderRepositoryImpl @Inject constructor(
                 ProductEntityConverter(storeAdapter.adapterId)
             )
 
-            storeDatabase.productSaleDao.insertAll(storeAdapter.getProductSales().mapNotNull {
-                val orderDetailsId = storeDatabase.orderDetailsDao.getOrderDetailsId(
-                    storeAdapter.adapterId,
-                    it.orderId
-                )
-                val productId =
-                    storeDatabase.productDao.getProductId(storeAdapter.adapterId, it.productId)
+            when (val result = storeAdapter.getProductSales()) {
+                is Success -> {
+                    storeDatabase.productSaleDao.insertAll(result.result.mapNotNull {
+                        val orderDetailsId = storeDatabase.orderDetailsDao.getOrderDetailsId(
+                            storeAdapter.adapterId,
+                            it.orderId
+                        )
+                        val productId =
+                            storeDatabase.productDao.getProductId(
+                                storeAdapter.adapterId,
+                                it.productId
+                            )
 
-                if (orderDetailsId == null || productId == null) {
-                    if (orderDetailsId == null) {
-                        Timber.e("Could not find order details with adapter: ${storeAdapter.adapterId} and adapter order id: ${it.orderId}")
-                    }
-                    if (productId == null) {
-                        Timber.e("Could not find product with adapter: ${storeAdapter.adapterId} and adapter order id: ${it.productId}")
-                    }
-                    return@mapNotNull null
-                } else {
-                    return@mapNotNull ProductSale(
-                        DefaultPrimaryKey,
-                        storeAdapter.adapterId,
-                        it.id,
-                        orderDetailsId,
-                        productId,
-                        it.quantity
-                    )
+                        if (orderDetailsId == null || productId == null) {
+                            if (orderDetailsId == null) {
+                                Timber.e("Could not find order details with adapter: ${storeAdapter.adapterId} and adapter order id: ${it.orderId}")
+                            }
+                            if (productId == null) {
+                                Timber.e("Could not find product with adapter: ${storeAdapter.adapterId} and adapter order id: ${it.productId}")
+                            }
+                            return@mapNotNull null
+                        } else {
+                            return@mapNotNull ProductSale(
+                                DefaultPrimaryKey,
+                                storeAdapter.adapterId,
+                                it.id,
+                                orderDetailsId,
+                                productId,
+                                it.quantity
+                            )
+                        }
+                    })
                 }
-            })
-
-
+                is Failure -> Timber.e(result.throwable)
+            }
         }
     }
 
