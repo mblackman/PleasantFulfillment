@@ -1,8 +1,9 @@
 package app.mblackman.orderfulfillment.dagger
 
 import android.content.Context
+import app.mblackman.orderfulfillment.data.network.CredentialManager
+import app.mblackman.orderfulfillment.data.network.CredentialManagerImpl
 import app.mblackman.orderfulfillment.data.network.etsy.Configuration
-import app.mblackman.orderfulfillment.data.network.etsy.SessionManager
 import app.mblackman.orderfulfillment.data.network.etsy.SharedPreferencesConfiguration
 import dagger.Module
 import dagger.Provides
@@ -17,8 +18,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideSessionManager(@ApplicationContext context: Context): SessionManager =
-        SessionManager(context)
+    fun provideCredentialManager(@ApplicationContext context: Context): CredentialManager =
+        CredentialManagerImpl(context)
 
     @Provides
     @Singleton

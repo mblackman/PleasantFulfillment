@@ -28,7 +28,6 @@ android {
 
         buildConfigField("String", "ETSY_CONSUMER_KEY", etsyApiKeyProperties['CONSUMER_KEY'])
         buildConfigField("String", "ETSY_CONSUMER_SECRET", etsyApiKeyProperties['CONSUMER_SECRET'])
-        buildConfigField("String", "ETSY_API_REDIRECT", etsyApiKeyProperties['API_REDIRECT'])
     }
 
     buildTypes {
@@ -90,6 +89,9 @@ dependencies {
     androidTestImplementation "androidx.test:rules:$version_androidx_text"
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation "io.mockk:mockk-android:$version_mockk"
+
+    // Security
+    implementation "androidx.security:security-crypto:1.1.0-alpha02"
 
     // Hilt
     implementation "com.google.dagger:hilt-android:$version_hilt"
@@ -153,6 +155,7 @@ dependencies {
 
     // Glide
     implementation "com.github.bumptech.glide:glide:$version_glide"
+    annotationProcessor "com.github.bumptech.glide:compiler:$version_glide"
 
     // WorkManager
     implementation "android.arch.work:work-runtime-ktx:$version_work"

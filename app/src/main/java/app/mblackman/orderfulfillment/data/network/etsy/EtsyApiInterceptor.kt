@@ -1,7 +1,9 @@
 package app.mblackman.orderfulfillment.data.network.etsy
 
-import android.text.TextUtils
-import app.mblackman.orderfulfillment.BuildConfig
+import app.mblackman.orderfulfillment.data.network.CredentialManager
+import app.mblackman.orderfulfillment.data.network.CredentialSource
+import app.mblackman.orderfulfillment.data.network.OAuthCredential
+import app.mblackman.orderfulfillment.data.network.getCredential
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
@@ -11,39 +13,30 @@ import java.io.IOException
 /**
  * Intercepts requests to the Esty Api and modifies the url.
  *
- * @param sessionManager Holds the session data, including access tokens and secrets.
+ * @param credentialManager Holds the credential data, including access tokens and secrets.
  */
 class EtsyApiInterceptor(
-    private val sessionManager: SessionManager
+    private val credentialManager: CredentialManager
 ) : Interceptor {
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         val original: Request = chain.request()
-        val requestBuilder = original.newBuilder()
-        val request: Request
 
         // Add access token to request if set.
-        val authToken = sessionManager.fetchAuthToken()
-        val authTokenSecret = sessionManager.fetchAuthTokenSecret()
+        val credential = credentialManager.getCredential<OAuthCredential>(CredentialSource.Etsy)
 
-        if (!TextUtils.isEmpty(authToken) && !TextUtils.isEmpty(authTokenSecret)) {
+        if (credential != null) {
+            val requestBuilder = original.newBuilder()
+
             // If the access token and secret are set, add the authorization to the header.
-            val consumer =
-                OkHttpOAuthConsumer(BuildConfig.ETSY_CONSUMER_KEY, BuildConfig.ETSY_CONSUMER_SECRET)
-            consumer.setTokenWithSecret(authToken, authTokenSecret)
-            request = consumer.sign(requestBuilder.build()).unwrap() as Request
+            with(OkHttpOAuthConsumer(credential.consumerKey, credential.consumerSecret)) {
+                setTokenWithSecret(credential.token, credential.tokenSecret)
+                val request = sign(requestBuilder.build()).unwrap() as Request
+                return chain.proceed(request)
+            }
         } else {
-            sessionManager.onAuthenticationFailed()
             return chain.proceed(original)
         }
-
-        val response = chain.proceed(request)
-
-        if (response.code == 403) {
-            sessionManager.onAuthenticationFailed()
-        }
-
-        return response
     }
 }

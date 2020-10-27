@@ -134,7 +134,11 @@ class EtsyStoreAdapter @Inject constructor(
                             response.errorBody()?.string()
                         }"
                     )
-                    return Failure(NetworkException(error))
+
+                    return when (response.code()) {
+                        403 -> Failure(AuthenticationException())
+                        else -> Failure(NetworkException(error))
+                    }
                 }
             }
 

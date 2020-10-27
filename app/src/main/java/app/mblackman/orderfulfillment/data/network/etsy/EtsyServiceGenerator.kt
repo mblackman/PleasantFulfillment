@@ -1,5 +1,6 @@
 package app.mblackman.orderfulfillment.data.network.etsy
 
+import app.mblackman.orderfulfillment.data.network.CredentialManager
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -13,7 +14,7 @@ private const val BASE_URL = "https://openapi.etsy.com/v2/"
 /**
  * Generates services to access the Etsy api.
  */
-class EtsyServiceGenerator @Inject constructor(sessionManager: SessionManager) {
+class EtsyServiceGenerator @Inject constructor(credentialManager: CredentialManager) {
 
     private val moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
@@ -21,11 +22,7 @@ class EtsyServiceGenerator @Inject constructor(sessionManager: SessionManager) {
 
     private val httpClient = OkHttpClient
         .Builder()
-        .addInterceptor(
-            EtsyApiInterceptor(
-                sessionManager
-            )
-        )
+        .addInterceptor(EtsyApiInterceptor(credentialManager))
         .build()
 
     private val retrofit = Retrofit.Builder()

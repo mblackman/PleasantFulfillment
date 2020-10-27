@@ -11,8 +11,6 @@ import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.data.network.StoreAdapter
 import app.mblackman.orderfulfillment.data.util.DefaultPrimaryKey
 import app.mblackman.orderfulfillment.data.util.asDomainObject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -40,56 +38,54 @@ class OrderRepositoryImpl @Inject constructor(
      * Gets the latest order detail data and stores it.
      */
     override suspend fun updateOrderDetails() {
-        withContext(Dispatchers.IO) {
-            getAndUpdate(
-                storeAdapter::getOrders,
-                { storeDatabase.orderDetailsDao.getOrderDetailsByAdapter(storeAdapter.adapterId) },
-                { results -> storeDatabase.orderDetailsDao.insertAll(results) },
-                OrderEntityConverter(storeAdapter.adapterId)
-            )
+        getAndUpdate(
+            storeAdapter::getOrders,
+            { storeDatabase.orderDetailsDao.getOrderDetailsByAdapter(storeAdapter.adapterId) },
+            { results -> storeDatabase.orderDetailsDao.insertAll(results) },
+            OrderEntityConverter(storeAdapter.adapterId)
+        )
 
-            getAndUpdate(
-                storeAdapter::getProducts,
-                { storeDatabase.productDao.getProductByAdapter(storeAdapter.adapterId) },
-                { results -> storeDatabase.productDao.insertAll(results) },
-                ProductEntityConverter(storeAdapter.adapterId)
-            )
+        getAndUpdate(
+            storeAdapter::getProducts,
+            { storeDatabase.productDao.getProductByAdapter(storeAdapter.adapterId) },
+            { results -> storeDatabase.productDao.insertAll(results) },
+            ProductEntityConverter(storeAdapter.adapterId)
+        )
 
-            when (val result = storeAdapter.getProductSales()) {
-                is Success -> {
-                    storeDatabase.productSaleDao.insertAll(result.result.mapNotNull {
-                        val orderDetailsId = storeDatabase.orderDetailsDao.getOrderDetailsId(
+        when (val result = storeAdapter.getProductSales()) {
+            is Success -> {
+                storeDatabase.productSaleDao.insertAll(result.result.mapNotNull {
+                    val orderDetailsId = storeDatabase.orderDetailsDao.getOrderDetailsId(
+                        storeAdapter.adapterId,
+                        it.orderId
+                    )
+                    val productId =
+                        storeDatabase.productDao.getProductId(
                             storeAdapter.adapterId,
-                            it.orderId
+                            it.productId
                         )
-                        val productId =
-                            storeDatabase.productDao.getProductId(
-                                storeAdapter.adapterId,
-                                it.productId
-                            )
 
-                        if (orderDetailsId == null || productId == null) {
-                            if (orderDetailsId == null) {
-                                Timber.e("Could not find order details with adapter: ${storeAdapter.adapterId} and adapter order id: ${it.orderId}")
-                            }
-                            if (productId == null) {
-                                Timber.e("Could not find product with adapter: ${storeAdapter.adapterId} and adapter order id: ${it.productId}")
-                            }
-                            return@mapNotNull null
-                        } else {
-                            return@mapNotNull ProductSale(
-                                DefaultPrimaryKey,
-                                storeAdapter.adapterId,
-                                it.id,
-                                orderDetailsId,
-                                productId,
-                                it.quantity
-                            )
+                    if (orderDetailsId == null || productId == null) {
+                        if (orderDetailsId == null) {
+                            Timber.e("Could not find order details with adapter: ${storeAdapter.adapterId} and adapter order id: ${it.orderId}")
                         }
-                    })
-                }
-                is Failure -> Timber.e(result.throwable)
+                        if (productId == null) {
+                            Timber.e("Could not find product with adapter: ${storeAdapter.adapterId} and adapter order id: ${it.productId}")
+                        }
+                        return@mapNotNull null
+                    } else {
+                        return@mapNotNull ProductSale(
+                            DefaultPrimaryKey,
+                            storeAdapter.adapterId,
+                            it.id,
+                            orderDetailsId,
+                            productId,
+                            it.quantity
+                        )
+                    }
+                })
             }
+            is Failure -> Timber.e(result.throwable)
         }
     }
 

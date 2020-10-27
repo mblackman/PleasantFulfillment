@@ -6,17 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.paging.PagedList
 import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.data.repository.OrderRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 /**
  * The orders application logic to control user experience.
  */
-class OrdersViewModel @ViewModelInject constructor(
-    private val orderRepository: OrderRepository
-) :
+class OrdersViewModel @ViewModelInject constructor(private val orderRepository: OrderRepository) :
     ViewModel() {
 
     private var viewModelJob = Job()
@@ -25,12 +20,14 @@ class OrdersViewModel @ViewModelInject constructor(
     val orderDetails: LiveData<PagedList<Order>> = orderRepository.orderDetails
 
     init {
-        getCurrentDetails()
+        //getCurrentDetails()
     }
 
     private fun getCurrentDetails() {
         uiScope.launch {
-            orderRepository.updateOrderDetails()
+            withContext(Dispatchers.IO) {
+                orderRepository.updateOrderDetails()
+            }
         }
     }
 }

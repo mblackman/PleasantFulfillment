@@ -5,4 +5,6 @@
     <string name="image_of_product_in_sale">Image of product in sale.</string>
     <string name="status_icon_for_order">Status icon for order.</string>
     <string name="total_cost">Total Cost:</string>
+    <string name="get_started">Get Started!</string>
+    <string name="etsy">Etsy</string>
 </resources>

@@ -21,7 +21,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="logincallback"
+                    android:host="etsylogincallback"
                     android:scheme="app.mblackman.orderfulfillment" />
             </intent-filter>
         </activity>
