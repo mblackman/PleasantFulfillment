@@ -29,6 +29,14 @@ interface CredentialManager {
      * @param source The data source for the [Credential] to store.
      */
     fun <T : Credential> storeCredential(credential: T, source: CredentialSource)
+
+    /**
+     * Clears any credentials for the given credential type and source.
+     *
+     * @param credentialClass The [KClass] of the credential to clear.
+     * @param source The source of the credential.
+     */
+    fun <T : Credential> clearCredential(credentialClass: KClass<out T>, source: CredentialSource)
 }
 
 /**

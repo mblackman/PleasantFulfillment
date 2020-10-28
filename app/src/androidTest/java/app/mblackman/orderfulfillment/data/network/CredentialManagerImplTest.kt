@@ -23,6 +23,29 @@ class CredentialManagerImplTest {
         assertThat(actual).isEqualTo(expectedResult)
     }
 
+    @Test
+    fun setAndClearCredential() {
+        val credential = TestCredentials("Test", "Tset")
+
+        credentialManager.storeCredential(credential, CredentialSource.None)
+        credentialManager.clearCredential(credential::class, CredentialSource.None)
+        val actual = credentialManager.getCredential<TestCredentials>(CredentialSource.None)
+
+        assertThat(actual).isNull()
+    }
+
+    @Test
+    fun updateCredential() {
+        val originalCreds = TestCredentials("Test", "Tset")
+        val updatedCreds = TestCredentials("Updated", "Detadpu")
+
+        credentialManager.storeCredential(originalCreds, CredentialSource.None)
+        credentialManager.storeCredential(updatedCreds, CredentialSource.None)
+        val actual = credentialManager.getCredential<TestCredentials>(CredentialSource.None)
+
+        assertThat(actual).isEqualTo(updatedCreds)
+    }
+
     data class TestCredentials(
         val name: String,
         val password: String

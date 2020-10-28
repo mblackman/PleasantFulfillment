@@ -52,6 +52,19 @@ class CredentialManagerImpl @Inject constructor(private val context: Context) : 
             .apply()
     }
 
+    /**
+     * Clears any credentials for the given credential type and source.
+     *
+     * @param credentialClass The [KClass] of the credential to clear.
+     * @param source The source of the credential.
+     */
+    override fun <T : Credential> clearCredential(
+        credentialClass: KClass<out T>,
+        source: CredentialSource
+    ) {
+        getSharedPreferences().edit().remove(getKey(credentialClass, source)).apply()
+    }
+
     private fun getKey(credentialClass: KClass<out Credential>, source: CredentialSource) =
         credentialClass.qualifiedName + source.storageName
 
