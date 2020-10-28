@@ -1,6 +1,7 @@
 package app.mblackman.orderfulfillment.data.network
 
 import androidx.test.core.app.ApplicationProvider
+import app.mblackman.orderfulfillment.sharedTest.TestCredentials
 import com.google.common.truth.Truth.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -45,9 +46,4 @@ class CredentialManagerImplTest {
 
         assertThat(actual).isEqualTo(updatedCreds)
     }
-
-    data class TestCredentials(
-        val name: String,
-        val password: String
-    ) : Credential
 }

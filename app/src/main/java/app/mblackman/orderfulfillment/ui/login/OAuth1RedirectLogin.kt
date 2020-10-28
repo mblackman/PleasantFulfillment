@@ -15,7 +15,7 @@ class OAuth1RedirectLogin(
     callbackUri: String,
     private val credentialSource: CredentialSource,
     private val credentialManager: CredentialManager
-) {
+) : RedirectLogin {
     private val apiService = ServiceBuilder(consumerKey)
         .apiSecret(consumerSecret)
         .callback(callbackUri)
@@ -29,7 +29,7 @@ class OAuth1RedirectLogin(
     /**
      * Gets the access token from the OAuth source.
      */
-    fun getAccessToken(oauthVerifier: String): Credential? {
+    override fun getAccessToken(oauthVerifier: String): Credential? {
         val requestToken =
             credentialManager.getCredential<TempToken>(credentialSource)?.asOAuth1RequestToken()
 
@@ -44,6 +44,8 @@ class OAuth1RedirectLogin(
             Timber.w("Failed to get access token for service: ${credentialSource.storageName}")
             null
         } else {
+            credentialManager.clearCredential(TempToken::class, credentialSource)
+
             // Retrieved access token
             OAuthCredential(
                 requestToken.token,
@@ -57,7 +59,7 @@ class OAuth1RedirectLogin(
     /**
      * Gets the url to the login page for OAuth.
      */
-    fun getAuthorizationPage(): String? {
+    override fun getAuthorizationPage(): String? {
         try {
             val requestToken = apiService.requestToken
             val authUrl = apiService.getAuthorizationUrl(requestToken)

@@ -4,10 +4,18 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs"
 apply plugin: 'dagger.hilt.android.plugin'
+apply plugin: 'de.mobilej.unmock'
 
 def etsyApiKeyPropertiesFile = rootProject.file("etsyapikey.properties")
 def etsyApiKeyProperties = new Properties()
 etsyApiKeyProperties.load(new FileInputStream(etsyApiKeyPropertiesFile))
+
+unMock {
+    keep "android.net.Uri"
+    keepStartingWith "org."
+    keepStartingWith "libcore."
+    keepAndRename "java.nio.charset.Charsets" to "xjava.nio.charset.Charsets"
+}
 
 android {
     compileSdkVersion 29
@@ -28,6 +36,7 @@ android {
 
         buildConfigField("String", "ETSY_CONSUMER_KEY", etsyApiKeyProperties['CONSUMER_KEY'])
         buildConfigField("String", "ETSY_CONSUMER_SECRET", etsyApiKeyProperties['CONSUMER_SECRET'])
+        buildConfigField("String", "ETSY_REDIRECT_URL", "\"app.mblackman.orderfulfillment://etsylogincallback\"")
     }
 
     buildTypes {
