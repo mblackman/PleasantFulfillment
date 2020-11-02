@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="color_primary">#6200EE</color>
-    <color name="color_primary_dark">#3700B3</color>
-    <color name="color_accent">#03DAC5</color>
+    <color name="color_primary">#ce93d8</color>
+    <color name="color_primary_dark">#9c64a6</color>
+    <color name="color_primary_light">#ffc4ff</color>
+    <color name="color_secondary">#d1c4e9</color>
+    <color name="color_secondary_dark">#a094b7</color>
+    <color name="color_secondary_light">#fff7ff</color>
+    <color name="color_text_on_primary">#000000</color>
+    <color name="color_text_on_secondary">#000000</color>
+    <color name="color_success">#64DD17</color>
+    <color name="color_failure">#DD2C00</color>
+    <color name="color_clear">#00000000</color>
     <color name="order_status_purchased">#FF9800</color>
     <color name="order_status_filled">#4CAF50</color>
     <color name="order_status_shipped">#E91E63</color>

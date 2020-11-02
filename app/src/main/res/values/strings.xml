@@ -5,6 +5,11 @@
     <string name="image_of_product_in_sale">Image of product in sale.</string>
     <string name="status_icon_for_order">Status icon for order.</string>
     <string name="total_cost">Total Cost:</string>
-    <string name="get_started">Get Started!</string>
+    <string name="get_started">Get Started</string>
     <string name="etsy">Etsy</string>
+    <string name="login_successful_message">Successfully logged in!</string>
+    <string name="login_button_successful_message">Get started</string>
+    <string name="login_button_failed_message">Go back</string>
+    <string name="login_failed_message">Log in failed. Try again another day.</string>
+    <string name="sun_status_content_description">A sun that displays the login status.</string>
 </resources>

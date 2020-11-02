@@ -1,9 +1,9 @@
 package app.mblackman.orderfulfillment
 
+import android.net.Uri
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import app.mblackman.orderfulfillment.ui.login.LoginViewModel
+import androidx.navigation.Navigation
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -11,15 +11,23 @@ import dagger.hilt.android.AndroidEntryPoint
  */
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
-    private val loginViewModel: LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.login_activity)
+    }
+
+    override fun onStart() {
+        super.onStart()
 
         intent?.data?.let {
-            loginViewModel.handleRedirectUri(it)
+            handleUriRedirect(it)
         }
+    }
+
+    private fun handleUriRedirect(uri: Uri) {
+        val action = LoginNavigationDirections.actionGlobalLoginFragment(uri)
+        Navigation.findNavController(this, R.id.login_host_nav).navigate(action)
     }
 }

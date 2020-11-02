@@ -9,5 +9,28 @@
         android:id="@+id/loginFragment"
         android:name="app.mblackman.orderfulfillment.ui.login.LoginFragment"
         android:label="LoginFragment"
-        tools:layout="@layout/login_fragment" />
+        tools:layout="@layout/login_fragment">
+
+        <argument
+            android:name="redirectUri"
+            app:argType="android.net.Uri"
+            app:nullable="true" />
+
+        <action
+            android:id="@+id/action_loginFragment_to_loginMessage"
+            app:destination="@id/loginMessage" />
+    </fragment>
+    <fragment
+        android:id="@+id/loginMessage"
+        android:name="app.mblackman.orderfulfillment.ui.login.LoginMessage"
+        android:label="LoginMessage"
+        tools:layout="@layout/fragment_login_message">
+
+        <argument
+            android:name="loginResult"
+            app:argType="app.mblackman.orderfulfillment.ui.login.LoginResult" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_loginFragment"
+        app:destination="@id/loginFragment" />
 </navigation>

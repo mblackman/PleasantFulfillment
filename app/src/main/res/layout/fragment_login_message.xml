@@ -12,32 +12,49 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/background_mountains">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:backgroundTint="@color/color_success"
+            app:borderWidth="0dp"
+            app:elevation="6dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.91"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.01999998"
+            android:contentDescription="@string/sun_status_content_description" />
 
         <TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:text="@{result.message}"
+            app:loginMessage="@{result}"
             android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline5"
-            app:layout_constraintBottom_toTopOf="@+id/materialButton2"
+            app:layout_constraintBottom_toTopOf="@+id/main_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.5"
             app:layout_constraintVertical_chainStyle="packed"
-            tools:text="Successfully logged into Etsy." />
+            tools:text="@string/login_successful_message" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/materialButton2"
+            android:id="@+id/main_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/get_started"
+            app:loginButtonMessage="@{result}"
+            android:textColor="@color/color_text_on_secondary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/textView2"
             app:layout_constraintStart_toStartOf="@+id/textView2"
-            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+            app:layout_constraintTop_toBottomOf="@+id/textView2"
+            tools:text="@string/login_button_successful_message" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

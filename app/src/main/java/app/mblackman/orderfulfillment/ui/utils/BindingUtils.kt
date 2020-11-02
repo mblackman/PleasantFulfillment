@@ -10,6 +10,8 @@ import androidx.databinding.BindingConversion
 import app.mblackman.orderfulfillment.R
 import app.mblackman.orderfulfillment.data.common.Address
 import app.mblackman.orderfulfillment.data.common.OrderStatus
+import app.mblackman.orderfulfillment.ui.login.LoginResult
+import app.mblackman.orderfulfillment.ui.login.LoginStatus
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import java.text.DecimalFormat
@@ -68,6 +70,26 @@ fun setOrderStatus(textView: TextView, value: OrderStatus?) {
         OrderStatus.Shipped -> "Shipped"
         OrderStatus.Delivered -> "Delivered"
         else -> "What"
+    }
+}
+
+@BindingAdapter("loginMessage")
+fun setLoginMessage(textView: TextView, value: LoginResult?) = value?.let {
+    require(it.status == LoginStatus.LOGIN_SUCCESSFUL || it.status == LoginStatus.LOGIN_FAILED)
+    val context = textView.context
+    textView.text = when (it.status) {
+        LoginStatus.LOGIN_SUCCESSFUL -> context.getString(R.string.login_successful_message)
+        LoginStatus.LOGIN_FAILED -> context.getString(R.string.login_failed_message)
+        else -> ""
+    }
+}
+
+@BindingAdapter("loginButtonMessage")
+fun setLoginButtonMessage(textView: TextView, value: LoginResult?) = value?.let {
+    val context = textView.context
+    textView.text = when (it.status) {
+        LoginStatus.LOGIN_FAILED -> context.getString(R.string.login_button_failed_message)
+        else -> context.getString(R.string.login_button_successful_message)
     }
 }
 

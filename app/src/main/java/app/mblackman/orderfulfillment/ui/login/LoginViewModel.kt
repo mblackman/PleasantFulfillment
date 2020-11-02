@@ -52,7 +52,14 @@ class LoginViewModel @ViewModelInject constructor(
             val verifier = uri.getQueryParameter("oauth_verifier")
             if (!TextUtils.isEmpty(verifier)) {
                 saveEtsyAccessToken(verifier!!)
+                _loginStatus.postValue(LoginStatus.LOGIN_SUCCESSFUL)
+            } else {
+                Timber.e("Failed to retrieve oauth verifier from Etsy login.")
+                _loginStatus.postValue(LoginStatus.LOGIN_FAILED)
             }
+        } else {
+            Timber.e("Attempted to handle redirect from unrecognized host: $uri")
+            _loginStatus.postValue(LoginStatus.LOGIN_FAILED)
         }
     }
 
@@ -60,6 +67,7 @@ class LoginViewModel @ViewModelInject constructor(
         viewModelScope.launch(defaultDispatcher) {
             etsyRedirectLogin.getAccessToken(verifier)?.let {
                 credentialManager.storeCredential(it, CredentialSource.Etsy)
+                _loginStatus.postValue(LoginStatus.LOGIN_SUCCESSFUL)
             }
         }
     }
@@ -79,5 +87,13 @@ class LoginViewModel @ViewModelInject constructor(
                 _loginStatus.postValue(LoginStatus.GET_AUTHORIZATION_PAGE_SUCCESS)
             }
         }
+    }
+
+    fun handledAuthorizationUrl() {
+        _authorizationUrl.postValue(null)
+    }
+
+    fun handledLoginStatus() {
+        _loginStatus.postValue(LoginStatus.NONE)
     }
 }

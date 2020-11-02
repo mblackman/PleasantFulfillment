@@ -1,3 +1,7 @@
 package app.mblackman.orderfulfillment.ui.login
 
-data class LoginResult(val isSuccess: Boolean, val message: String)
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
+data class LoginResult(val status: LoginStatus) : Parcelable
