@@ -23,6 +23,7 @@ import java.io.IOException
 
 @RunWith(AndroidJUnit4ClassRunner::class)
 class OrderRepositoryImplTest {
+
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
@@ -51,24 +52,9 @@ class OrderRepositoryImplTest {
         val result = repo.orderDetails
         result.observeForever(observer)
 
-        assertThat(
-            "The user should have come from the database since it matches the config's user id.",
-            result.value?.size, equalTo(1)
-        )
-    }
-
-    @Test
-    fun emptyWebRequest() {
-        val repo = setupMocks(TestStoreAdapter.emptyNetworkOrders())
-
-        runBlocking { repo.updateOrderDetails() }
-        val result = repo.orderDetails
-        result.observeForever(observer)
-
-        assertThat(
-            "No items should have been loaded into the repo.",
-            result.value?.size, equalTo(0)
-        )
+        Truth.assertWithMessage("The user should have come from the database since it matches the config's user id.")
+            .that(result.value?.size)
+            .isEqualTo(1)
     }
 
     @Test
@@ -112,18 +98,5 @@ class OrderRepositoryImplTest {
         Truth.assertWithMessage("No new orders should have been created.")
             .that(result.value?.size)
             .isEqualTo(1)
-    }
-
-    private fun setupMocks(
-        storeAdapter: StoreAdapter,
-        orderDetails: List<OrderDetails> = emptyList()
-    ): OrderRepository {
-
-        every { database.orderDetailsDao } returns MockOrderDetailsDao(orderDetails)
-
-        return OrderRepositoryImpl(
-            storeAdapter,
-            database
-        )
     }
 }
