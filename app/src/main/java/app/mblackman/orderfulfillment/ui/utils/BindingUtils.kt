@@ -93,6 +93,11 @@ fun setLoginButtonMessage(textView: TextView, value: LoginResult?) = value?.let 
     }
 }
 
+@BindingAdapter("visibleOrInvisible")
+fun setVisibleOrInvisible(view: View, value: Boolean?) {
+    view.visibility = if (value == false) View.INVISIBLE else View.VISIBLE
+}
+
 @BindingConversion
 fun convertBooleanToVisibility(visible: Boolean): Int {
     return if (visible) View.VISIBLE else View.GONE

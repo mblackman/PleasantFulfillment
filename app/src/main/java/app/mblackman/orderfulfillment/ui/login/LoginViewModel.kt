@@ -10,7 +10,9 @@ import androidx.lifecycle.viewModelScope
 import app.mblackman.orderfulfillment.BuildConfig
 import app.mblackman.orderfulfillment.dagger.DefaultDispatcher
 import app.mblackman.orderfulfillment.data.network.CredentialManager
-import app.mblackman.orderfulfillment.data.network.CredentialSource
+import app.mblackman.orderfulfillment.ui.utils.clearEtsyLogin
+import app.mblackman.orderfulfillment.ui.utils.hasEtsyLogin
+import app.mblackman.orderfulfillment.ui.utils.storeEtsyCredential
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -42,6 +44,15 @@ class LoginViewModel @ViewModelInject constructor(
     val loginStatus: LiveData<LoginStatus>
         get() = _loginStatus
 
+    private val _hasEtsyLogin = MutableLiveData<Boolean>()
+
+    val hasEtsyLogin: LiveData<Boolean>
+        get() = _hasEtsyLogin
+
+    init {
+        _hasEtsyLogin.postValue(credentialManager.hasEtsyLogin())
+    }
+
     /**
      * Handles the given login redirect url.
      *
@@ -52,6 +63,7 @@ class LoginViewModel @ViewModelInject constructor(
             val verifier = uri.getQueryParameter("oauth_verifier")
             if (!TextUtils.isEmpty(verifier)) {
                 saveEtsyAccessToken(verifier!!)
+                _hasEtsyLogin.postValue(true)
                 _loginStatus.postValue(LoginStatus.LOGIN_SUCCESSFUL)
             } else {
                 Timber.e("Failed to retrieve oauth verifier from Etsy login.")
@@ -66,8 +78,7 @@ class LoginViewModel @ViewModelInject constructor(
     private fun saveEtsyAccessToken(verifier: String) {
         viewModelScope.launch(defaultDispatcher) {
             etsyRedirectLogin.getAccessToken(verifier)?.let {
-                credentialManager.storeCredential(it, CredentialSource.Etsy)
-                _loginStatus.postValue(LoginStatus.LOGIN_SUCCESSFUL)
+                credentialManager.storeEtsyCredential(it)
             }
         }
     }
@@ -87,6 +98,14 @@ class LoginViewModel @ViewModelInject constructor(
                 _loginStatus.postValue(LoginStatus.GET_AUTHORIZATION_PAGE_SUCCESS)
             }
         }
+    }
+
+    /**
+     * Clears the Etsy login.
+     */
+    fun clearEtsyLogin() {
+        credentialManager.clearEtsyLogin()
+        _hasEtsyLogin.postValue(false)
     }
 
     fun handledAuthorizationUrl() {

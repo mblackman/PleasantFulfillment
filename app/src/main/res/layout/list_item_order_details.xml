@@ -20,8 +20,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:animateLayoutChanges="true">
+            android:animateLayoutChanges="true"
+            android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -43,14 +43,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="#00FFFFFF"
+                    android:contentDescription="@string/order_details_expand_button_descriptor"
+                    android:onClick="@{() -> order.toggleExpand()}"
                     android:src="@{order.isExpanded ? @drawable/keyboard_arrow_up_24px : @drawable/keyboard_arrow_down_24px}"
                     app:layout_constraintBottom_toBottomOf="@+id/description"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.98"
                     app:layout_constraintStart_toEndOf="@+id/description"
-                    app:layout_constraintTop_toTopOf="@+id/description"
-                    android:onClick="@{() -> order.toggleExpand()}"
-                    android:contentDescription="@string/order_details_expand_button_descriptor" />
+                    app:layout_constraintTop_toTopOf="@+id/description" />
 
                 <ImageView
                     android:id="@+id/status_icon"
@@ -59,21 +59,21 @@
                     android:contentDescription="@string/status_icon_for_order"
                     android:src="@drawable/order_status_indicator"
                     android:tintMode="screen"
-                    app:orderStatus="@{order.orderStatus}"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/description"
+                    app:orderStatus="@{order.orderStatus}"
                     app:tint="@color/status_icon_purchased" />
 
                 <TextView
                     android:id="@+id/order_status_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Subtitle1"
                     android:paddingStart="@dimen/grid_small_padding"
                     android:paddingEnd="@dimen/grid_small_padding"
-                    app:orderStatus="@{order.orderStatus}"
+                    android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Subtitle1"
                     app:layout_constraintStart_toEndOf="@+id/status_icon"
                     app:layout_constraintTop_toBottomOf="@+id/description"
+                    app:orderStatus="@{order.orderStatus}"
                     tools:text="Filled" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -82,9 +82,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/grid_medium_padding"
+                android:paddingTop="@dimen/grid_small_padding"
                 android:paddingEnd="@dimen/grid_medium_padding"
                 android:paddingBottom="@dimen/grid_small_padding"
-                android:paddingTop="@dimen/grid_small_padding"
                 android:visibility="@{order.isExpanded}">
 
                 <TextView
@@ -138,8 +138,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/list_item_product_sale"
-                tools:itemCount="3" />
+                tools:itemCount="3"
+                tools:listitem="@layout/list_item_product_sale" />
 
             <View
                 android:layout_width="match_parent"
@@ -155,8 +155,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingEnd="@dimen/grid_small_padding"
                     android:paddingStart="@dimen/grid_small_padding"
+                    android:paddingEnd="@dimen/grid_small_padding"
                     android:text="@string/total_cost" />
 
                 <TextView
@@ -176,11 +176,11 @@
                     android:paddingStart="@dimen/grid_small_padding"
                     android:paddingEnd="@dimen/grid_small_padding"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Button"
-                    app:statusButtonText="@{order.orderStatus}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.96"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
+                    app:statusButtonText="@{order.orderStatus}"
                     tools:text="Mark Filled" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

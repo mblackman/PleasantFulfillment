@@ -12,4 +12,8 @@
     <string name="login_button_failed_message">Go back</string>
     <string name="login_failed_message">Log in failed. Try again another day.</string>
     <string name="sun_status_content_description">A sun that displays the login status.</string>
+    <string name="store_login_title">Store Logins</string>
+    <string name="clear_login">Clear login</string>
+    <string name="login">Login</string>
+    <string name="login_help_text">Log in to Etsy using their website.</string>
 </resources>

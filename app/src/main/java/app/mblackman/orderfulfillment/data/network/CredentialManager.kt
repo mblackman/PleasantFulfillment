@@ -40,11 +40,18 @@ interface CredentialManager {
 }
 
 /**
- * Gets an OAuth 1.0 credential [OAuthCredential] for the given [CredentialSource].
+ * Gets a [Credential] for the given [CredentialSource].
  *
- * @param source The data source to get a [OAuthCredential] for.
+ * @param source The data source to get a [Credential] for.
  * @return The credential if exists, else null.
  */
-inline fun <reified T : Credential> CredentialManager.getCredential(source: CredentialSource): T? {
-    return getCredential(T::class, source)
-}
+inline fun <reified T : Credential> CredentialManager.getCredential(source: CredentialSource): T? =
+    getCredential(T::class, source)
+
+/**
+ * Clears the stored [Credential] for the given source.
+ *
+ * @param source The data source to clear ta [Credential] for.
+ */
+inline fun <reified T : Credential> CredentialManager.clearCredential(source: CredentialSource) =
+    clearCredential(T::class, source)
