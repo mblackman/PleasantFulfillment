@@ -3,31 +3,38 @@ package app.mblackman.orderfulfillment.ui.orders
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
+import app.mblackman.orderfulfillment.dagger.DefaultDispatcher
 import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.data.repository.OrderRepository
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 
 /**
  * The orders application logic to control user experience.
  */
-class OrdersViewModel @ViewModelInject constructor(private val orderRepository: OrderRepository) :
+class OrdersViewModel @ViewModelInject constructor(
+    private val orderRepository: OrderRepository,
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
+) :
     ViewModel() {
 
-    private var viewModelJob = Job()
-    private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
-
+    /**
+     * Gets the [Order]s.
+     */
     val orderDetails: LiveData<PagedList<Order>> = orderRepository.orderDetails
 
-    init {
-        //getCurrentDetails()
-    }
+    /**
+     * Gets whether the current login is valid.
+     */
+    val hasValidLogin: LiveData<Boolean>
+        get() = orderRepository.hasValidLogin
 
-    private fun getCurrentDetails() {
-        uiScope.launch {
-            withContext(Dispatchers.IO) {
-                orderRepository.updateOrderDetails()
-            }
+
+    fun updateCurrentOrderDetails() {
+        viewModelScope.launch(defaultDispatcher) {
+            orderRepository.updateOrderDetails()
         }
     }
 }

@@ -1,9 +1,9 @@
 package app.mblackman.orderfulfillment.data.network.etsy
 
-import app.mblackman.orderfulfillment.data.common.Failure
-import app.mblackman.orderfulfillment.data.common.Result
-import app.mblackman.orderfulfillment.data.common.Success
-import app.mblackman.orderfulfillment.data.network.*
+import app.mblackman.orderfulfillment.data.network.NetworkOrder
+import app.mblackman.orderfulfillment.data.network.NetworkProduct
+import app.mblackman.orderfulfillment.data.network.NetworkProductSale
+import app.mblackman.orderfulfillment.data.network.StoreAdapter
 import app.mblackman.orderfulfillment.data.network.etsy.json.EtsyResponseWrapper
 import app.mblackman.orderfulfillment.data.network.etsy.json.Receipt
 import app.mblackman.orderfulfillment.data.network.etsy.json.Transaction
@@ -15,18 +15,39 @@ import javax.inject.Inject
  * The adapter for an Etsy Store.
  */
 class EtsyStoreAdapter @Inject constructor(
-    private val etsyApiService: EtsyApiService,
-    private val configuration: Configuration
+    private val etsyApiService: EtsyApiService
 ) : StoreAdapter {
+    private val pageSize: Int = 50
+    private var _hasValidSession: Boolean = false
+    private var shopId: Int? = null
 
     override val adapterId: Int = 1
-    private val pageSize: Int = 50
 
-    override suspend fun getOrders(): Result<List<NetworkOrder>> {
-        val shopId =
-            getShopId() ?: return Failure(NetworkException("Failed to get the user's shop id."))
+    override val hasValidSession: Boolean
+        get() = _hasValidSession
+
+    /**
+     * Initializes the [StoreAdapter] to start any services and get important information.
+     */
+    override suspend fun initialize() {
+        val request = safeApiCall(
+            call = { _, _ -> etsyApiService.getShopSelfAsync().await() },
+            convert = { shop -> shop.id }
+        )?.firstOrNull()
+
+        if (request != null) {
+            shopId = request
+            _hasValidSession = true
+        } else {
+            shopId = null
+            _hasValidSession = false
+        }
+    }
+
+    override suspend fun getOrders(): List<NetworkOrder>? {
+        val shopId = validateAndGetShopId() ?: return null
+
         return safeApiCall(
-            error = "Failed to get receipts",
             call = { limit, offset ->
                 etsyApiService.findAllReceiptsAsync(shopId, limit, offset).await()
             },
@@ -34,11 +55,10 @@ class EtsyStoreAdapter @Inject constructor(
         )
     }
 
-    override suspend fun getProducts(): Result<List<NetworkProduct>> {
-        val shopId =
-            getShopId() ?: return Failure(NetworkException("Failed to get the user's shop id."))
+    override suspend fun getProducts(): List<NetworkProduct>? {
+        val shopId = validateAndGetShopId() ?: return null
+
         return safeApiCall(
-            "Failed to get active listings",
             call = { limit, offset ->
                 etsyApiService.findAllActiveShopListingsAsync(
                     shopId,
@@ -50,11 +70,10 @@ class EtsyStoreAdapter @Inject constructor(
         )
     }
 
-    override suspend fun getProductSales(): Result<List<NetworkProductSale>> {
-        val shopId =
-            getShopId() ?: return Failure(NetworkException("Failed to get the user's shop id."))
+    override suspend fun getProductSales(): List<NetworkProductSale>? {
+        val shopId = validateAndGetShopId() ?: return null
+
         return safeApiCall(
-            error = "Failed to get transactions",
             call = { limit, offset ->
                 etsyApiService.findAllTransactionsAsync(shopId, limit, offset).await()
             },
@@ -62,61 +81,48 @@ class EtsyStoreAdapter @Inject constructor(
         )
     }
 
-    private suspend fun getProductImageUrl(productId: Int): String? {
-        val result = safeApiCall(
-            error = "Couldn't get image for listing with id: $productId",
+    private suspend fun getProductImageUrl(productId: Int): String? =
+        safeApiCall(
             call = { _, _ -> etsyApiService.getImageListingAsync(productId, 0).await() },
             convert = { image -> image.imageUrl75X75 }
-        )
+        )?.firstOrNull()
 
-        return when (result) {
-            is Success -> result.result.firstOrNull()
-            is Failure -> null
+    private suspend fun validate() {
+        if (!hasValidSession || shopId == null) {
+            initialize()
         }
     }
 
-    private suspend fun getShopId(): Int? =
-        with(configuration) {
-            if (this.currentUserShopId == null) {
-                val result = safeApiCall(
-                    error = "Failed to get shop",
-                    call = { _, _ -> etsyApiService.getShopSelfAsync().await() },
-                    convert = { shop -> shop.id }
-                )
-
-                if (result is Success) {
-                    this.currentUserShopId = result.result.firstOrNull()
-                }
-            }
-
-            this.currentUserShopId
+    private suspend fun validateAndGetShopId(): Int? {
+        validate()
+        if (hasValidSession && shopId != null) {
+            return shopId
         }
+        return null
+    }
 
-    /**
-     * Safely make Retrofit API calls, and wrap any errors with a provided message.
-     *
-     * @param error The error string to provide on error.
-     * @param call The Retrofit API call to make.
-     *
-     * @return The value retrieved from the API.
-     */
     private suspend fun <T : Any, V : Any> safeApiCall(
-        error: String,
         call: suspend (limit: Int, offset: Int) -> Response<EtsyResponseWrapper<T>>,
         convert: suspend (input: T) -> V
-    ): Result<List<V>> {
+    ): List<V>? {
         try {
             var currentOffset = 0
             var isValid = true
             val returnValues = mutableListOf<V>()
 
             while (isValid) {
-                val response = call(pageSize, currentOffset)
+                val response = try {
+                    call(pageSize, currentOffset)
+                } catch (e: Throwable) {
+                    Timber.e(e)
+                    return null
+                }
+
                 Timber.i(response.toString())
 
                 if (response.isSuccessful) {
                     val body = response.body()
-                        ?: return Failure(NetworkException("Etsy API response body was empty."))
+                        ?: return null
 
                     returnValues.addAll(body.results.map { convert(it) })
 
@@ -130,22 +136,20 @@ class EtsyStoreAdapter @Inject constructor(
                     }
                 } else {
                     Timber.e(
-                        "Etsy adapter failed to load API response: ${
+                        "Etsy adapter failed to load API code: ${response.code()}, error body: ${
                             response.errorBody()?.string()
                         }"
                     )
 
-                    return when (response.code()) {
-                        403 -> Failure(AuthenticationException())
-                        else -> Failure(NetworkException(error))
-                    }
+                    return null
                 }
             }
 
-            return Success(returnValues)
-
+            return returnValues
         } catch (e: Exception) {
-            return Failure(e)
+            Timber.e(e)
         }
+
+        return null
     }
 }

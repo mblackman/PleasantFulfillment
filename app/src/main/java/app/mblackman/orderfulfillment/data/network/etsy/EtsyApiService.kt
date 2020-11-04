@@ -5,10 +5,10 @@ import kotlinx.coroutines.Deferred
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 const val LimitPropertyName = "limit"
 const val OffsetPropertyName = "offset"
-const val LimitAndOffsetParameters = "limit={$LimitPropertyName}&offset={$OffsetPropertyName}"
 
 /**
  * Provides an interface for methods used on Etsy api.
@@ -22,25 +22,25 @@ interface EtsyApiService {
      * @param offset The offset from 0 to get the receipts.
      * @return A list of all receipts.
      */
-    @GET("shops/{shopId}/receipts?$LimitAndOffsetParameters")
+    @GET("shops/{shopId}/receipts")
     fun findAllReceiptsAsync(
         @Path("shopId") shopId: Int,
-        @Path(LimitPropertyName) limit: Int,
-        @Path(OffsetPropertyName) offset: Int
+        @Query(LimitPropertyName) limit: Int,
+        @Query(OffsetPropertyName) offset: Int
     ): Deferred<Response<EtsyResponseWrapper<Receipt>>>
 
-    @GET("shops/{shopId}/transactions$LimitAndOffsetParameters")
+    @GET("shops/{shopId}/transactions")
     fun findAllTransactionsAsync(
         @Path("shopId") shopId: Int,
-        @Path(LimitPropertyName) limit: Int,
-        @Path(OffsetPropertyName) offset: Int
+        @Query(LimitPropertyName) limit: Int,
+        @Query(OffsetPropertyName) offset: Int
     ): Deferred<Response<EtsyResponseWrapper<Transaction>>>
 
-    @GET("shop/{shopId}/listings/active$LimitAndOffsetParameters")
+    @GET("shops/{shopId}/listings/active")
     fun findAllActiveShopListingsAsync(
         @Path("shopId") shopId: Int,
-        @Path(LimitPropertyName) limit: Int,
-        @Path(OffsetPropertyName) offset: Int
+        @Query(LimitPropertyName) limit: Int,
+        @Query(OffsetPropertyName) offset: Int
     ): Deferred<Response<EtsyResponseWrapper<Listing>>>
 
     @GET("listings/{listingId}/images/{listingImageId}")

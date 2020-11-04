@@ -10,8 +10,8 @@ import timber.log.Timber
  * Handles redirect logic for OAuth 1.0.
  */
 class OAuth1RedirectLogin(
-    consumerKey: String,
-    consumerSecret: String,
+    private val consumerKey: String,
+    private val consumerSecret: String,
     callbackUri: String,
     private val credentialSource: CredentialSource,
     private val credentialManager: CredentialManager
@@ -48,8 +48,8 @@ class OAuth1RedirectLogin(
 
             // Retrieved access token
             OAuthCredential(
-                requestToken.token,
-                requestToken.tokenSecret,
+                consumerKey,
+                consumerSecret,
                 accessToken.token,
                 accessToken.tokenSecret
             )

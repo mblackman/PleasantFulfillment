@@ -5,8 +5,6 @@ import app.mblackman.orderfulfillment.BuildConfig
 import app.mblackman.orderfulfillment.data.network.CredentialManager
 import app.mblackman.orderfulfillment.data.network.CredentialManagerImpl
 import app.mblackman.orderfulfillment.data.network.CredentialSource
-import app.mblackman.orderfulfillment.data.network.etsy.Configuration
-import app.mblackman.orderfulfillment.data.network.etsy.SharedPreferencesConfiguration
 import app.mblackman.orderfulfillment.ui.login.OAuth1RedirectLogin
 import app.mblackman.orderfulfillment.ui.login.RedirectLogin
 import dagger.Module
@@ -24,11 +22,6 @@ object AppModule {
     @Singleton
     fun provideCredentialManager(@ApplicationContext context: Context): CredentialManager =
         CredentialManagerImpl(context)
-
-    @Provides
-    @Singleton
-    fun provideConfiguration(@ApplicationContext context: Context): Configuration =
-        SharedPreferencesConfiguration(context)
 
     @Provides
     fun provideEtsyRedirectLogin(credentialManager: CredentialManager): RedirectLogin =

@@ -2,8 +2,6 @@ package app.mblackman.orderfulfillment.ui.debug
 
 import app.mblackman.orderfulfillment.data.common.Address
 import app.mblackman.orderfulfillment.data.common.OrderStatus
-import app.mblackman.orderfulfillment.data.common.Result
-import app.mblackman.orderfulfillment.data.common.Success
 import app.mblackman.orderfulfillment.data.network.NetworkOrder
 import app.mblackman.orderfulfillment.data.network.NetworkProduct
 import app.mblackman.orderfulfillment.data.network.NetworkProductSale
@@ -12,10 +10,18 @@ import java.time.LocalDateTime
 
 class MockStoreAdapter(
     numOrders: Int = 10,
-    numSalesPerOrder: Int = 3
+    numSalesPerOrder: Int = 3,
+    override val hasValidSession: Boolean
 ) : StoreAdapter {
 
     override val adapterId: Int = 0
+
+    /**
+     * Initializes the [StoreAdapter] to start any services and get important information.
+     */
+    override suspend fun initialize() {
+
+    }
 
     private val fellowship = listOf(
         MockPerson("Samwise Gamgee", "2breakfast@gmail.com"),
@@ -84,11 +90,11 @@ class MockStoreAdapter(
         }
     }
 
-    override suspend fun getOrders(): Result<List<NetworkOrder>> = Success(orders)
+    override suspend fun getOrders(): List<NetworkOrder> = orders
 
-    override suspend fun getProducts(): Result<List<NetworkProduct>> = Success(products)
+    override suspend fun getProducts(): List<NetworkProduct> = products
 
-    override suspend fun getProductSales(): Result<List<NetworkProductSale>> = Success(productSales)
+    override suspend fun getProductSales(): List<NetworkProductSale> = productSales
 
     data class MockPerson(val name: String, val email: String)
 }

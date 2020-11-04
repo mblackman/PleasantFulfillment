@@ -15,10 +15,10 @@ import java.time.ZoneId
 fun Listing.toNetworkProduct(imageUrl: String? = null): NetworkProduct =
     NetworkProduct(
         this.id.toLong(),
-        this.title,
-        this.description,
+        this.title ?: "",
+        this.description ?: "",
         imageUrl,
-        this.price.toDoubleOrNull()
+        this.price?.toDoubleOrNull()
     )
 
 fun Receipt.toNetworkOrder(): NetworkOrder =

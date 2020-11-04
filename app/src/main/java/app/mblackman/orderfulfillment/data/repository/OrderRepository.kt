@@ -7,15 +7,15 @@ import app.mblackman.orderfulfillment.data.domain.Order
 /**
  * Represents a repository of orders.
  */
-abstract class OrderRepository : BaseRepository() {
+interface OrderRepository : BaseRepository {
 
     /**
      * Gets the list of orders.
      */
-    abstract val orderDetails: LiveData<PagedList<Order>>
+    val orderDetails: LiveData<PagedList<Order>>
 
     /**
      * Gets the latest order detail data and stores it.
      */
-    abstract suspend fun updateOrderDetails()
+    suspend fun updateOrderDetails()
 }

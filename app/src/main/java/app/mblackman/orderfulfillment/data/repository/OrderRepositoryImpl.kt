@@ -1,15 +1,15 @@
 package app.mblackman.orderfulfillment.data.repository
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagedList
 import androidx.paging.toLiveData
-import app.mblackman.orderfulfillment.data.common.Failure
-import app.mblackman.orderfulfillment.data.common.Success
 import app.mblackman.orderfulfillment.data.database.ProductSale
 import app.mblackman.orderfulfillment.data.database.StoreDatabase
 import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.data.network.StoreAdapter
 import app.mblackman.orderfulfillment.data.util.DefaultPrimaryKey
+import app.mblackman.orderfulfillment.data.util.asDatabaseObject
 import app.mblackman.orderfulfillment.data.util.asDomainObject
 import timber.log.Timber
 import javax.inject.Inject
@@ -21,72 +21,100 @@ import javax.inject.Inject
 class OrderRepositoryImpl @Inject constructor(
     private val storeAdapter: StoreAdapter,
     private val storeDatabase: StoreDatabase
-) : OrderRepository() {
-    private val orderDataSourceFactory = storeDatabase.orderDetailsDao.getOrderDetailsWithProducts()
+) : OrderRepository {
+
+    private val _hasValidLogin = MutableLiveData<Boolean>()
+
+    override val hasValidLogin: LiveData<Boolean>
+        get() = _hasValidLogin
 
     /**
      * Gets the list of orders.
      */
     override val orderDetails: LiveData<PagedList<Order>> =
-        orderDataSourceFactory.mapByPage {
-            it.map { orderDetails ->
-                orderDetails.asDomainObject()
-            }
-        }.toLiveData(pageSize = 50)
+        storeDatabase.orderDetailsDao.getOrderDetailsWithProducts()
+            .mapByPage {
+                it.map { orderDetails ->
+                    orderDetails.asDomainObject()
+                }
+            }.toLiveData(pageSize = 50)
 
     /**
      * Gets the latest order detail data and stores it.
      */
     override suspend fun updateOrderDetails() {
-        getAndUpdate(
-            storeAdapter::getOrders,
-            { storeDatabase.orderDetailsDao.getOrderDetailsByAdapter(storeAdapter.adapterId) },
-            { results -> storeDatabase.orderDetailsDao.insertAll(results) },
-            OrderEntityConverter(storeAdapter.adapterId)
-        )
+        if (!validateStoreAdapter()) return
 
-        getAndUpdate(
-            storeAdapter::getProducts,
-            { storeDatabase.productDao.getProductByAdapter(storeAdapter.adapterId) },
-            { results -> storeDatabase.productDao.insertAll(results) },
-            ProductEntityConverter(storeAdapter.adapterId)
-        )
+        storeAdapter.getOrders()?.let {
+            storeDatabase.orderDetailsDao.insertAll(it.map { order ->
+                order.asDatabaseObject(
+                    storeAdapter.adapterId
+                )
+            })
+        }
 
-        when (val result = storeAdapter.getProductSales()) {
-            is Success -> {
-                storeDatabase.productSaleDao.insertAll(result.result.mapNotNull {
-                    val orderDetailsId = storeDatabase.orderDetailsDao.getOrderDetailsId(
+        if (!validateStoreAdapter()) return
+
+        storeAdapter.getProducts()?.let {
+            storeDatabase.productDao.insertAll(it.map { product ->
+                product.asDatabaseObject(
+                    storeAdapter.adapterId
+                )
+            })
+        }
+
+        if (!validateStoreAdapter()) return
+
+        storeAdapter.getProductSales()?.let { sales ->
+            storeDatabase.productSaleDao.insertAll(sales.mapNotNull {
+                val orderDetailsId = storeDatabase.orderDetailsDao.getOrderDetailsId(
+                    storeAdapter.adapterId,
+                    it.orderId
+                )
+                val productId =
+                    storeDatabase.productDao.getProductId(
                         storeAdapter.adapterId,
-                        it.orderId
+                        it.productId
                     )
-                    val productId =
-                        storeDatabase.productDao.getProductId(
-                            storeAdapter.adapterId,
-                            it.productId
-                        )
 
-                    if (orderDetailsId == null || productId == null) {
-                        if (orderDetailsId == null) {
-                            Timber.e("Could not find order details with adapter: ${storeAdapter.adapterId} and adapter order id: ${it.orderId}")
-                        }
-                        if (productId == null) {
-                            Timber.e("Could not find product with adapter: ${storeAdapter.adapterId} and adapter order id: ${it.productId}")
-                        }
-                        return@mapNotNull null
-                    } else {
-                        return@mapNotNull ProductSale(
-                            DefaultPrimaryKey,
-                            storeAdapter.adapterId,
-                            it.id,
-                            orderDetailsId,
-                            productId,
-                            it.quantity
-                        )
+                if (orderDetailsId == null || productId == null) {
+                    if (orderDetailsId == null) {
+                        Timber.e("Could not find order details with adapter: ${storeAdapter.adapterId} and adapter order id: ${it.orderId}")
                     }
-                })
-            }
-            is Failure -> Timber.e(result.throwable)
+                    if (productId == null) {
+                        Timber.e("Could not find product with adapter: ${storeAdapter.adapterId} and adapter order id: ${it.productId}")
+                    }
+                    return@mapNotNull null
+                } else {
+                    return@mapNotNull ProductSale(
+                        DefaultPrimaryKey,
+                        storeAdapter.adapterId,
+                        it.id,
+                        orderDetailsId,
+                        productId,
+                        it.quantity
+                    )
+                }
+            })
         }
     }
 
+    private suspend fun validateStoreAdapter(): Boolean {
+        if (storeAdapter.hasValidSession) {
+            if (_hasValidLogin.value != true) {
+                _hasValidLogin.postValue(true)
+            }
+            return true
+        }
+
+        storeAdapter.initialize()
+
+        if (storeAdapter.hasValidSession) {
+            _hasValidLogin.postValue(true)
+            return true
+        }
+
+        _hasValidLogin.postValue(false)
+        return false
+    }
 }
