@@ -32,7 +32,14 @@ class LoginMessage : Fragment() {
         binding.result = args.loginResult
 
         binding.mainButton.setOnClickListener {
-            this.findNavController().popBackStack()
+            when (args.loginResult.status) {
+                LoginStatus.LOGIN_SUCCESSFUL -> {
+                    requireActivity().finish()
+                }
+                else -> {
+                    this.findNavController().popBackStack()
+                }
+            }
         }
 
         return binding.root
