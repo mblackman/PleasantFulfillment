@@ -15,7 +15,7 @@
         android:layout_margin="@dimen/grid_small_margin"
         android:animateLayoutChanges="true"
         app:cardCornerRadius="@dimen/component_rounding_medium"
-        app:cardElevation="1dp">
+        app:cardElevation="@dimen/elevation_small">
 
         <LinearLayout
             android:layout_width="match_parent"

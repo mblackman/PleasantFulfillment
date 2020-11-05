@@ -2,6 +2,7 @@ package app.mblackman.orderfulfillment.ui.orders
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
@@ -31,10 +32,22 @@ class OrdersViewModel @ViewModelInject constructor(
     val hasValidLogin: LiveData<Boolean>
         get() = orderRepository.hasValidLogin
 
+    private val _isLoadingOrders = MutableLiveData<Boolean>()
+
+    /**
+     * Gets whether orders are currently being loaded.
+     */
+    val isLoadingOrders: LiveData<Boolean>
+        get() = _isLoadingOrders
 
     fun updateCurrentOrderDetails() {
         viewModelScope.launch(defaultDispatcher) {
-            orderRepository.updateOrderDetails()
+            try {
+                _isLoadingOrders.postValue(true)
+                orderRepository.updateOrderDetails()
+            } finally {
+                _isLoadingOrders.postValue(false)
+            }
         }
     }
 }
