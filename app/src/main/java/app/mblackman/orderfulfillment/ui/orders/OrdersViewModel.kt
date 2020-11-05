@@ -1,10 +1,7 @@
 package app.mblackman.orderfulfillment.ui.orders
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.paging.PagedList
 import app.mblackman.orderfulfillment.dagger.DefaultDispatcher
 import app.mblackman.orderfulfillment.data.domain.Order
@@ -39,6 +36,14 @@ class OrdersViewModel @ViewModelInject constructor(
      */
     val isLoadingOrders: LiveData<Boolean>
         get() = _isLoadingOrders
+
+    /**
+     * Gets whether any orders have been loaded.
+     */
+    val hasNoOrdersLoaded: LiveData<Boolean>
+        get() = Transformations.map(isLoadingOrders) { isLoading ->
+            !isLoading && orderDetails.value.isNullOrEmpty()
+        }
 
     fun updateCurrentOrderDetails() {
         viewModelScope.launch(defaultDispatcher) {

@@ -16,5 +16,7 @@
     <string name="clear_login">Clear login</string>
     <string name="login">Login</string>
     <string name="login_help_text">Log in to Etsy using their website.</string>
-    <string name="getting_orders_progress_text">Getting orders...</string>
+    <string name="getting_orders_progress_text">Getting orders…</string>
+    <string name="no_orders_message">No orders found here. Take a break!</string>
+    <string name="no_orders_icon_content_description">No orders icon. It\'s a couch because you should take a break!</string>
 </resources>

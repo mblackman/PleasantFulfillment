@@ -47,6 +47,33 @@
         </LinearLayout>
 
 
+        <LinearLayout
+            android:id="@+id/no_items_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="@{viewModel.hasNoOrdersLoaded}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/progress_layout"
+            tools:ignore="UseCompoundDrawables">
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:contentDescription="@string/no_orders_icon_content_description"
+                android:src="@drawable/weekend_24px"
+                app:tint="@color/color_secondary" />
+
+            <TextView
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_orders_message" />
+        </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/order_details"
             android:layout_width="match_parent"
@@ -55,7 +82,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/progress_layout"
+            app:layout_constraintTop_toBottomOf="@+id/no_items_layout"
             tools:listitem="@layout/list_item_order_details" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
