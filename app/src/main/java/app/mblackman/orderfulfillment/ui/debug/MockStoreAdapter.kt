@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 class MockStoreAdapter(
     numOrders: Int = 10,
     numSalesPerOrder: Int = 3,
-    override val hasValidSession: Boolean
+    override val hasValidSession: Boolean = true
 ) : StoreAdapter {
 
     override val adapterId: Int = 0
