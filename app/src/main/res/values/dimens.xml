@@ -10,4 +10,7 @@
     <dimen name="component_rounding_large">24dp</dimen>
     <dimen name="icon_medium">96dp</dimen>
     <dimen name="elevation_small">8dp</dimen>
+    <dimen name="small_toolbar_height">24dp</dimen>
+    <dimen name="medium_toolbar_height">48dp</dimen>
+    <dimen name="tall_toolbar_height">64dp</dimen>
 </resources>

@@ -46,7 +46,6 @@
                 android:text="@string/getting_orders_progress_text" />
         </LinearLayout>
 
-
         <LinearLayout
             android:id="@+id/no_items_layout"
             android:layout_width="match_parent"
@@ -82,7 +81,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/no_items_layout"
+            app:layout_constraintTop_toBottomOf="@+id/progress_layout"
             tools:listitem="@layout/list_item_order_details" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
