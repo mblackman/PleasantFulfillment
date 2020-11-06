@@ -41,6 +41,10 @@ class LoginFragment : Fragment() {
         binding.viewModel = loginViewModel
         binding.lifecycleOwner = this
 
+        binding.imageButton.setOnClickListener {
+            requireActivity().finish()
+        }
+
         arguments?.getParcelable<Uri>("redirectUri")?.let {
             loginViewModel.handleRedirectUri(it)
         }

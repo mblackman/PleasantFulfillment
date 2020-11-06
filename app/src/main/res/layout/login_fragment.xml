@@ -14,6 +14,31 @@
         android:layout_height="match_parent"
         android:background="@color/color_secondary_light">
 
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="@color/color_secondary_dark"
+            android:layout_marginTop="@dimen/grid_medium_margin"
+            android:layout_marginStart="@dimen/grid_medium_margin"
+            android:background="@color/color_clear"
+            android:src="@drawable/arrow_back_black_big"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView3"
+            style="@style/TextAppearance.AppCompat.Headline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/grid_small_margin"
+            android:layout_marginEnd="@dimen/grid_small_margin"
+            android:text="@string/account_management_page_title"
+            android:textColor="@color/color_primary_dark"
+            app:layout_constraintBottom_toBottomOf="@+id/imageButton"
+            app:layout_constraintStart_toEndOf="@+id/imageButton"
+            app:layout_constraintTop_toTopOf="@+id/imageButton" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/materialButton"
             android:layout_width="wrap_content"
@@ -43,15 +68,15 @@
             android:id="@+id/etsy_clear_login_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="@{() -> viewModel.clearEtsyLogin()}"
             android:text="@string/clear_login"
             android:visibility="invisible"
-            app:visibleOrInvisible="@{viewModel.hasEtsyLogin}"
-            android:onClick="@{() -> viewModel.clearEtsyLogin()}"
             app:layout_constraintBottom_toBottomOf="@+id/materialButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/materialButton"
-            app:layout_constraintTop_toTopOf="@+id/materialButton" />
+            app:layout_constraintTop_toTopOf="@+id/materialButton"
+            app:visibleOrInvisible="@{viewModel.hasEtsyLogin}" />
 
         <TextView
             android:id="@+id/login_help_text"
@@ -64,7 +89,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialButton"
-            app:layout_constraintVertical_bias="0.17000002" />
+            app:layout_constraintVertical_bias="0.060000002" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
