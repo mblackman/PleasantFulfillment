@@ -27,7 +27,7 @@ class OrdersViewModel @ViewModelInject constructor(
      * Gets whether the current login is valid.
      */
     val hasValidLogin: LiveData<Boolean>
-        get() = orderRepository.hasValidLogin
+        get() = orderRepository.hasValidSession
 
     private val _isLoadingOrders = MutableLiveData<Boolean>()
 
@@ -45,6 +45,9 @@ class OrdersViewModel @ViewModelInject constructor(
             !isLoading && orderDetails.value.isNullOrEmpty()
         }
 
+    /**
+     * Gets the latest orders data and updates the persistent storage.
+     */
     fun updateCurrentOrderDetails() {
         viewModelScope.launch(defaultDispatcher) {
             try {

@@ -108,10 +108,16 @@ class LoginViewModel @ViewModelInject constructor(
         _hasEtsyLogin.postValue(false)
     }
 
+    /**
+     * Call when [authorizationUrl] changes are handled.
+     */
     fun handledAuthorizationUrl() {
         _authorizationUrl.postValue(null)
     }
 
+    /**
+     * Call when [loginStatus] changes are handled.
+     */
     fun handledLoginStatus() {
         _loginStatus.postValue(LoginStatus.NONE)
     }

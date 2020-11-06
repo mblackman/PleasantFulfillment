@@ -41,7 +41,7 @@ class LoginFragment : Fragment() {
         binding.viewModel = loginViewModel
         binding.lifecycleOwner = this
 
-        binding.imageButton.setOnClickListener {
+        binding.backButton.setOnClickListener {
             requireActivity().finish()
         }
 

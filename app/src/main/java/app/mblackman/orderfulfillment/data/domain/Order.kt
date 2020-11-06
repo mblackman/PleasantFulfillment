@@ -16,7 +16,7 @@ data class Order(
     val properties: Map<String, String>?,
     val productSales: List<ProductSale>?
 ) {
-    var isExpanded = MutableLiveData<Boolean>(false)
+    var isExpanded = MutableLiveData(false)
 
     fun toggleExpand() {
         isExpanded.postValue(!isExpanded.value!!)

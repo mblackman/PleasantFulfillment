@@ -16,6 +16,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * A [ListAdapter] for product sales.
+ *
+ * @param lifecycleOwner The lifecycle owner for the owner of this adapter.
+ * @param expandState A [LiveData] with the expand state of the product sale.
+ */
 class ProductSaleAdapter(
     private val lifecycleOwner: LifecycleOwner,
     expandState: LiveData<Boolean>
@@ -37,6 +43,11 @@ class ProductSaleAdapter(
         }
     }
 
+    /**
+     * Sets the items on the adapter.
+     *
+     * @param items The [ProductSale]s to set on the list.
+     */
     fun setItems(items: List<ProductSale>) {
         adapterScope.launch {
             withContext(Dispatchers.Main) {

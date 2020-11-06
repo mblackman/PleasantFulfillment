@@ -2,6 +2,12 @@ package app.mblackman.orderfulfillment.data.repository
 
 import androidx.lifecycle.LiveData
 
+/**
+ * The base functionality for a repository.
+ */
 interface BaseRepository {
-    val hasValidLogin: LiveData<Boolean>
+    /**
+     * Gets whether the current session is valid for use.
+     */
+    val hasValidSession: LiveData<Boolean>
 }

@@ -6,7 +6,7 @@ import app.mblackman.orderfulfillment.data.network.*
  * Gets the Etsy [Credential] if they exist, else null.
  */
 fun CredentialManager.getEtsyLogin(): OAuthCredential? =
-    this.getCredential<OAuthCredential>(CredentialSource.Etsy)
+    this.getCredential(CredentialSource.Etsy)
 
 /**
  * Checks whether a [Credential] for Etsy exists.

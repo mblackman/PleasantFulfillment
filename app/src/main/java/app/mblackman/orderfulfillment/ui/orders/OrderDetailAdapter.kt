@@ -2,7 +2,6 @@ package app.mblackman.orderfulfillment.ui.orders
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
@@ -15,8 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import app.mblackman.orderfulfillment.R
 import app.mblackman.orderfulfillment.data.domain.Order
 import app.mblackman.orderfulfillment.databinding.ListItemOrderDetailsBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 
 private const val UNKNOWN_VIEW_TYPE_ITEM = -1
 private const val ITEM_VIEW_TYPE_ITEM = 0
@@ -25,14 +22,13 @@ private const val ITEM_VIEW_TYPE_ITEM = 0
  * An adapter for order details and related items. Helps bind the order properties with
  * view items in a collection.
  *
+ * @param context The context of the owner of this adapter.
  * @param lifecycleOwner The lifecycle owner for the owner of this adapter.
  */
 class OrderDetailAdapter(
     private val context: Context,
     private val lifecycleOwner: LifecycleOwner
 ) : PagedListAdapter<Order, RecyclerView.ViewHolder>(diffCallback) {
-
-    private val adapterScope = CoroutineScope(Dispatchers.Default)
     private val _orderStatusRequestChanged = MutableLiveData<Order>()
 
     val orderStatusRequestChanged: LiveData<Order>
@@ -116,26 +112,6 @@ class OrderDetailAdapter(
 
             binding.lifecycleOwner = lifecycleOwner
             binding.executePendingBindings()
-        }
-    }
-
-    /**
-     * Creates a text view holder.
-     */
-    class TextViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        companion object {
-            /**
-             * Factory to create the view holder from a parent view group.
-             *
-             * @param parent The parent view for this view being created.
-             * @return The created view holder.
-             */
-            fun from(parent: ViewGroup): TextViewHolder {
-                val layoutInflater = LayoutInflater.from(parent.context)
-                val view =
-                    layoutInflater.inflate(R.layout.list_item_order_details_header, parent, false)
-                return TextViewHolder(view)
-            }
         }
     }
 }

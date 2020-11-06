@@ -49,7 +49,7 @@
                 android:text="@{sale.product.name}"
                 android:textAppearance="@{state.headerTextAppearance}"
                 tools:text="Test Product Name "
-                tools:textAppearance="@style/TextAppearance_MdcTypographyStyles_Headline6" />
+                tools:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline6" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -83,7 +83,7 @@
                 truncatedInt="@{sale.quantity}"
                 android:textAppearance="@{state.itemCountTextAppearance}"
                 tools:text="01"
-                tools:textAppearance="@style/TextAppearance_MdcTypographyStyles_Headline5" />
+                tools:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline5" />
         </FrameLayout>
 
     </LinearLayout>

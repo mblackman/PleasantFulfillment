@@ -106,13 +106,6 @@ data class OrderDetails(
     val address: Address
 ) : AdapterEntity
 
-data class OrderDetailsProperty(
-    @ColumnInfo(name = "order_details_id")
-    val orderDetailsId: Long,
-    override val key: String,
-    override val value: String
-) : Property()
-
 /**
  * A relational class between an [OrderDetails] an the containing [ProductSale]s.
  */

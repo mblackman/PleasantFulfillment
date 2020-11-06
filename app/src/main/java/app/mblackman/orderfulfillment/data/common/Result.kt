@@ -19,4 +19,4 @@ class Success<T>(val result: T) : Result<T>()
  *
  * @param throwable The [Throwable] resulting from the failure.
  */
-class Failure(val throwable: Throwable) : Result<Nothing>()
+class Failure(private val throwable: Throwable) : Result<Nothing>()

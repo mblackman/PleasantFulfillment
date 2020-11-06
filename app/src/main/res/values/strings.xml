@@ -21,4 +21,5 @@
     <string name="no_orders_icon_content_description">No orders icon. It\'s a couch because you should take a break!</string>
     <string name="account_management_item_text">Account Management</string>
     <string name="account_management_page_title">Account Management</string>
+    <string name="login_back_button_content_description">Button to go back to previous screen.</string>
 </resources>

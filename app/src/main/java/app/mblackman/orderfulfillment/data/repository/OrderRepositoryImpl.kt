@@ -23,10 +23,10 @@ class OrderRepositoryImpl @Inject constructor(
     private val storeDatabase: StoreDatabase
 ) : OrderRepository {
 
-    private val _hasValidLogin = MutableLiveData<Boolean>()
+    private val _hasValidSession = MutableLiveData<Boolean>()
 
-    override val hasValidLogin: LiveData<Boolean>
-        get() = _hasValidLogin
+    override val hasValidSession: LiveData<Boolean>
+        get() = _hasValidSession
 
     /**
      * Gets the list of orders.
@@ -101,8 +101,8 @@ class OrderRepositoryImpl @Inject constructor(
 
     private suspend fun validateStoreAdapter(): Boolean {
         if (storeAdapter.hasValidSession) {
-            if (_hasValidLogin.value != true) {
-                _hasValidLogin.postValue(true)
+            if (_hasValidSession.value != true) {
+                _hasValidSession.postValue(true)
             }
             return true
         }
@@ -110,11 +110,11 @@ class OrderRepositoryImpl @Inject constructor(
         storeAdapter.initialize()
 
         if (storeAdapter.hasValidSession) {
-            _hasValidLogin.postValue(true)
+            _hasValidSession.postValue(true)
             return true
         }
 
-        _hasValidLogin.postValue(false)
+        _hasValidSession.postValue(false)
         return false
     }
 }
