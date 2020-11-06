@@ -31,6 +31,10 @@ class OrdersFragment : Fragment() {
             startLoginActivity()
             true
         }
+        R.id.action_refresh -> {
+            viewModel.updateCurrentOrderDetails()
+            true
+        }
         else -> {
             super.onOptionsItemSelected(item)
         }
@@ -59,11 +63,6 @@ class OrdersFragment : Fragment() {
         binding.orderDetails.adapter = adapter
 
         return binding.root
-    }
-
-    override fun onStart() {
-        super.onStart()
-        viewModel.updateCurrentOrderDetails()
     }
 
     // Starts the login activity.

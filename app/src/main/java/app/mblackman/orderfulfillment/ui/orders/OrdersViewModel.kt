@@ -15,8 +15,7 @@ import kotlinx.coroutines.launch
 class OrdersViewModel @ViewModelInject constructor(
     private val orderRepository: OrderRepository,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
-) :
-    ViewModel() {
+) : ViewModel() {
 
     /**
      * Gets the [Order]s.
@@ -40,10 +39,9 @@ class OrdersViewModel @ViewModelInject constructor(
     /**
      * Gets whether any orders have been loaded.
      */
-    val hasNoOrdersLoaded: LiveData<Boolean>
-        get() = Transformations.map(isLoadingOrders) { isLoading ->
-            !isLoading && orderDetails.value.isNullOrEmpty()
-        }
+    val hasNoOrdersLoaded: LiveData<Boolean> = Transformations.map(isLoadingOrders) { isLoading ->
+        !isLoading && orderDetails.value.isNullOrEmpty()
+    }
 
     /**
      * Gets the latest orders data and updates the persistent storage.

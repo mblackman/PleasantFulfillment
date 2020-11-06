@@ -98,6 +98,11 @@ fun setVisibleOrInvisible(view: View, value: Boolean?) {
     view.visibility = if (value == false) View.INVISIBLE else View.VISIBLE
 }
 
+@BindingAdapter("visibleOrGone")
+fun setVisibleOrGone(view: View, value: Boolean?) {
+    view.visibility = if (value == false) View.GONE else View.VISIBLE
+}
+
 @BindingConversion
 fun convertBooleanToVisibility(visible: Boolean): Int {
     return if (visible) View.VISIBLE else View.GONE

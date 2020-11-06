@@ -22,4 +22,5 @@
     <string name="account_management_item_text">Account Management</string>
     <string name="account_management_page_title">Account Management</string>
     <string name="login_back_button_content_description">Button to go back to previous screen.</string>
+    <string name="refresh_action_text">Refresh</string>
 </resources>

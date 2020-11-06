@@ -37,6 +37,12 @@ android {
         buildConfigField("String", "ETSY_CONSUMER_KEY", etsyApiKeyProperties['CONSUMER_KEY'])
         buildConfigField("String", "ETSY_CONSUMER_SECRET", etsyApiKeyProperties['CONSUMER_SECRET'])
         buildConfigField("String", "ETSY_REDIRECT_URL", "\"app.mblackman.orderfulfillment://etsylogincallback\"")
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments["room.incremental"] = "true"
+            }
+        }
     }
 
     buildTypes {
