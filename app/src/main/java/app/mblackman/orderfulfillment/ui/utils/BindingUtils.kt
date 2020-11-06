@@ -6,7 +6,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
-import androidx.databinding.BindingConversion
 import app.mblackman.orderfulfillment.R
 import app.mblackman.orderfulfillment.data.common.Address
 import app.mblackman.orderfulfillment.data.common.OrderStatus
@@ -101,11 +100,6 @@ fun setVisibleOrInvisible(view: View, value: Boolean?) {
 @BindingAdapter("visibleOrGone")
 fun setVisibleOrGone(view: View, value: Boolean?) {
     view.visibility = if (value == false) View.GONE else View.VISIBLE
-}
-
-@BindingConversion
-fun convertBooleanToVisibility(visible: Boolean): Int {
-    return if (visible) View.VISIBLE else View.GONE
 }
 
 /**

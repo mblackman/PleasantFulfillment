@@ -29,7 +29,7 @@
             android:scaleType="centerCrop"
             tools:src="@tools:sample/backgrounds/scenic"
             android:contentDescription="@string/image_of_product_in_sale"
-            android:visibility="@{state.isExpanded}" />
+            app:visibleOrGone="@{state.isExpanded}" />
 
         <LinearLayout
             android:id="@+id/product_info"
@@ -54,7 +54,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="@{state.isExpanded}"
+                app:visibleOrGone="@{state.isExpanded}"
                 app:cost="@{sale.product.price}"
                 android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                 android:textColor="?android:attr/textColorSecondary"
@@ -64,7 +64,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{sale.product.description}"
-                android:visibility="@{state.isExpanded}"
+                app:visibleOrGone="@{state.isExpanded}"
                 android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                 android:textColor="?android:attr/textColorSecondary"
                 tools:text="@tools:sample/lorem" />

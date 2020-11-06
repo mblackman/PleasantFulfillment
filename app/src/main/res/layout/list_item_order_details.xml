@@ -85,7 +85,7 @@
                 android:paddingTop="@dimen/grid_small_padding"
                 android:paddingEnd="@dimen/grid_medium_padding"
                 android:paddingBottom="@dimen/grid_small_padding"
-                android:visibility="@{order.isExpanded}">
+                app:visibleOrGone="@{order.isExpanded}">
 
                 <TextView
                     android:id="@+id/orderDate"
