@@ -1,24 +1,16 @@
 package app.mblackman.orderfulfillment.data.network
 
-import android.content.Context
-import android.content.SharedPreferences
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
-import app.mblackman.orderfulfillment.R
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import app.mblackman.orderfulfillment.data.common.SafeItemStore
 import javax.inject.Inject
 import kotlin.reflect.KClass
 
 /**
  * Stores and retrieves credentials of different types and sources.
  *
- * @param context The context of the where this is constructed.
+ * @param safeItemStore The [SafeItemStore] to persist credentials in.
  */
-class CredentialManagerImpl @Inject constructor(private val context: Context) : CredentialManager {
-    private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-
+class CredentialManagerImpl @Inject constructor(private val safeItemStore: SafeItemStore) :
+    CredentialManager {
     /**
      * Gets a [Credential] for the given source.
      *
@@ -29,14 +21,7 @@ class CredentialManagerImpl @Inject constructor(private val context: Context) : 
     override fun <T : Credential> getCredential(
         credentialClass: KClass<out T>,
         source: CredentialSource
-    ): T? {
-        getSharedPreferences().getString(getKey(credentialClass, source), null)?.let {
-            val jsonAdapter: JsonAdapter<T> = moshi.adapter(credentialClass.java) as JsonAdapter<T>
-            return jsonAdapter.fromJson(it)
-        }
-
-        return null
-    }
+    ): T? = safeItemStore.getItem(getKey(credentialClass, source), credentialClass)
 
     /**
      * Stores the given [Credential] with its [CredentialSource].
@@ -45,11 +30,7 @@ class CredentialManagerImpl @Inject constructor(private val context: Context) : 
      * @param source The data source for the [Credential] to store.
      */
     override fun <T : Credential> storeCredential(credential: T, source: CredentialSource) {
-        val jsonAdapter: JsonAdapter<T> = moshi.adapter(credential.javaClass)
-        val json = jsonAdapter.toJson(credential)
-        getSharedPreferences().edit()
-            .putString(getKey(credential::class, source), json)
-            .apply()
+        safeItemStore.storeItem(getKey(credential::class, source), credential)
     }
 
     /**
@@ -62,26 +43,9 @@ class CredentialManagerImpl @Inject constructor(private val context: Context) : 
         credentialClass: KClass<out T>,
         source: CredentialSource
     ) {
-        getSharedPreferences().edit().remove(getKey(credentialClass, source)).apply()
+        safeItemStore.clearItem(getKey(credentialClass, source))
     }
 
     private fun getKey(credentialClass: KClass<out Credential>, source: CredentialSource) =
         credentialClass.qualifiedName + source.storageName
-
-    /**
-     * Gets an instance of [SharedPreferences] for this [CredentialManagerImpl].
-     */
-    private fun getSharedPreferences(): SharedPreferences {
-        val keyAlias = "credentialManager"
-        val masterKey = MasterKey.Builder(context, keyAlias)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
-        return EncryptedSharedPreferences.create(
-            context,
-            context.getString(R.string.app_name),
-            masterKey,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
-    }
 }

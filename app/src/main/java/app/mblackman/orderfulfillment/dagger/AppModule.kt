@@ -2,6 +2,8 @@ package app.mblackman.orderfulfillment.dagger
 
 import android.content.Context
 import app.mblackman.orderfulfillment.BuildConfig
+import app.mblackman.orderfulfillment.data.common.SafeItemStore
+import app.mblackman.orderfulfillment.data.common.SafeItemStoreImpl
 import app.mblackman.orderfulfillment.data.network.CredentialManager
 import app.mblackman.orderfulfillment.data.network.CredentialManagerImpl
 import app.mblackman.orderfulfillment.data.network.CredentialSource
@@ -21,8 +23,13 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideCredentialManager(@ApplicationContext context: Context): CredentialManager =
-        CredentialManagerImpl(context)
+    fun provideSafeItemStore(@ApplicationContext context: Context): SafeItemStore =
+        SafeItemStoreImpl(context)
+
+    @Provides
+    @Singleton
+    fun provideCredentialManager(safeItemStore: SafeItemStore): CredentialManager =
+        CredentialManagerImpl(safeItemStore)
 
     @Provides
     fun provideEtsyRedirectLogin(credentialManager: CredentialManager): RedirectLogin =
