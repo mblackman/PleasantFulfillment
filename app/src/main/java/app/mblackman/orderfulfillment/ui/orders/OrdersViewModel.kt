@@ -28,7 +28,7 @@ class OrdersViewModel @ViewModelInject constructor(
     val hasValidLogin: LiveData<Boolean>
         get() = orderRepository.hasValidSession
 
-    private val _isLoadingOrders = MutableLiveData<Boolean>()
+    private val _isLoadingOrders = MutableLiveData<Boolean>(false)
 
     /**
      * Gets whether orders are currently being loaded.
@@ -36,11 +36,21 @@ class OrdersViewModel @ViewModelInject constructor(
     val isLoadingOrders: LiveData<Boolean>
         get() = _isLoadingOrders
 
+
+    private val loadingDataMediator = MediatorLiveData<Pair<Boolean?, PagedList<Order>?>>().apply {
+        addSource(isLoadingOrders) {
+            value = Pair(it, orderDetails.value)
+        }
+        addSource(orderDetails) {
+            value = Pair(isLoadingOrders.value, it)
+        }
+    }
+
     /**
      * Gets whether any orders have been loaded.
      */
-    val hasNoOrdersLoaded: LiveData<Boolean> = Transformations.map(isLoadingOrders) { isLoading ->
-        !isLoading && orderDetails.value.isNullOrEmpty()
+    val hasNoOrdersLoaded: LiveData<Boolean> = Transformations.map(loadingDataMediator) {
+        it.first == false && it.second?.size == 0
     }
 
     /**
