@@ -14,13 +14,17 @@ class MockStoreAdapter(
     override val hasValidSession: Boolean = true
 ) : StoreAdapter {
 
-    override val adapterId: Int = 0
+    override val adapterId: Int = MockAdapterId
 
     /**
      * Initializes the [StoreAdapter] to start any services and get important information.
      */
     override suspend fun initialize() {
 
+    }
+
+    companion object {
+        const val MockAdapterId = 0
     }
 
     private val fellowship = listOf(

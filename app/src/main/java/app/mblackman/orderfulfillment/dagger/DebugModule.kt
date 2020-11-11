@@ -1,9 +1,9 @@
 package app.mblackman.orderfulfillment.dagger
 
 import app.mblackman.orderfulfillment.data.network.StoreAdapter
-import app.mblackman.orderfulfillment.data.network.etsy.EtsyStoreAdapter
-import dagger.Binds
+import app.mblackman.orderfulfillment.ui.debug.MockStoreAdapter
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import dagger.multibindings.IntKey
@@ -11,10 +11,9 @@ import dagger.multibindings.IntoMap
 
 @Module
 @InstallIn(ApplicationComponent::class)
-abstract class NetworkModule {
-
-    @Binds
+object DebugModule {
+    @Provides
     @IntoMap
-    @IntKey(EtsyStoreAdapter.AdapterId)
-    abstract fun bindStoreAdapter(storeAdapter: EtsyStoreAdapter): StoreAdapter
+    @IntKey(MockStoreAdapter.MockAdapterId)
+    fun provideStoreAdapter(): StoreAdapter = MockStoreAdapter()
 }

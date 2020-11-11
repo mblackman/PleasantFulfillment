@@ -5,6 +5,7 @@ import app.mblackman.orderfulfillment.BuildConfig
 import app.mblackman.orderfulfillment.data.network.CredentialManager
 import app.mblackman.orderfulfillment.data.network.CredentialManagerImpl
 import app.mblackman.orderfulfillment.data.network.CredentialSource
+import app.mblackman.orderfulfillment.data.network.StoreAdapter
 import app.mblackman.orderfulfillment.ui.login.OAuth1RedirectLogin
 import app.mblackman.orderfulfillment.ui.login.RedirectLogin
 import dagger.Module
@@ -32,4 +33,12 @@ object AppModule {
             CredentialSource.Etsy,
             credentialManager
         )
+
+    @Provides
+    fun provideStoreAdapter(
+        availableAdapters: Map<Int, @JvmSuppressWildcards StoreAdapter>
+    ): StoreAdapter {
+        return checkNotNull(availableAdapters[BuildConfig.STORE_ADAPTER_ID])
+        { "No Store Adapter was provided matching id: ${BuildConfig.STORE_ADAPTER_ID}." }
+    }
 }

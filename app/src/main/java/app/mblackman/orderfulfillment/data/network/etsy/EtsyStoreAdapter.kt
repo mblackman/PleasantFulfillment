@@ -21,7 +21,11 @@ class EtsyStoreAdapter @Inject constructor(
     private var _hasValidSession: Boolean = false
     private var shopId: Int? = null
 
-    override val adapterId: Int = 1
+    companion object {
+        const val AdapterId = 1
+    }
+
+    override val adapterId: Int = AdapterId
 
     override val hasValidSession: Boolean
         get() = _hasValidSession
